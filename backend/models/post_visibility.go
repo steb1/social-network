@@ -1,0 +1,70 @@
+package models
+
+import "database/sql"
+
+// PostVisibility structure represents the "post_visibilities" table
+type PostVisibility struct {
+	PostVisibilityID int `json:"post_visibility_id"`
+	PostID           int `json:"post_id"`
+	UserIDAuthorized int `json:"user_id_authorized"`
+}
+
+type PostVisibilityRepository struct {
+	db *sql.DB
+}
+
+func NewPostVisibilityRepository(db *sql.DB) *PostVisibilityRepository {
+	return &PostVisibilityRepository{
+		db: db,
+	}
+}
+
+// CreatePostVisibility adds a new post visibility to the database
+func (pvr *PostVisibilityRepository) CreatePostVisibility(postVisibility *PostVisibility) error {
+	query := `
+		INSERT INTO post_visibilities (post_id, user_id_authorized)
+		VALUES (?, ?)
+	`
+	_, err := pvr.db.Exec(query, postVisibility.PostID, postVisibility.UserIDAuthorized)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// GetPostVisibility retrieves a post visibility from the database by post_visibility_id
+func (pvr *PostVisibilityRepository) GetPostVisibility(postVisibilityID int) (*PostVisibility, error) {
+	query := "SELECT * FROM post_visibilities WHERE post_visibility_id = ?"
+	var postVisibility PostVisibility
+	err := pvr.db.QueryRow(query, postVisibilityID).Scan(&postVisibility.PostVisibilityID, &postVisibility.PostID, &postVisibility.UserIDAuthorized)
+	if err != nil {
+		return nil, err
+	}
+	return &postVisibility, nil
+}
+
+// UpdatePostVisibility updates an existing post visibility in the database
+func (pvr *PostVisibilityRepository) UpdatePostVisibility(postVisibility *PostVisibility) error {
+	query := `
+		UPDATE post_visibilities
+		SET post_id = ?, user_id_authorized = ?
+		WHERE post_visibility_id = ?
+	`
+	_, err := pvr.db.Exec(query, postVisibility.PostID, postVisibility.UserIDAuthorized, postVisibility.PostVisibilityID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// DeletePostVisibility removes a post visibility from the database by post_visibility_id
+func (pvr *PostVisibilityRepository) DeletePostVisibility(postVisibilityID int) error {
+	query := "DELETE FROM post_visibilities WHERE post_visibility_id = ?"
+	_, err := pvr.db.Exec(query, postVisibilityID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
