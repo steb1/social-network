@@ -1,0 +1,77 @@
+package models
+
+import "database/sql"
+
+// Group structure represents the "groups" table
+type Group struct {
+	GroupID     int    `json:"group_id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	CreatorID   int    `json:"creator_id"`
+}
+
+type GroupRepository struct {
+	db *sql.DB
+}
+
+func NewGroupRepository(db *sql.DB) *GroupRepository {
+	return &GroupRepository{
+		db: db,
+	}
+}
+
+
+// CreateGroup adds a new group to the database
+func (gr *GroupRepository) CreateGroup(group *Group) error {
+	query := `
+		INSERT INTO groups (title, description, creator_id)
+		VALUES (?, ?, ?)
+	`
+	result, err := gr.db.Exec(query, group.Title, group.Description, group.CreatorID)
+	if err != nil {
+		return err
+	}
+
+	lastInsertID, err := result.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	group.GroupID = int(lastInsertID)
+	return nil
+}
+
+// GetGroup retrieves a group from the database by group_id
+func (gr *GroupRepository) GetGroup(groupID int) (*Group, error) {
+	query := "SELECT * FROM groups WHERE group_id = ?"
+	var group Group
+	err := gr.db.QueryRow(query, groupID).Scan(&group.GroupID, &group.Title, &group.Description, &group.CreatorID)
+	if err != nil {
+		return nil, err
+	}
+	return &group, nil
+}
+
+// UpdateGroup updates an existing group in the database
+func (gr *GroupRepository) UpdateGroup(group *Group) error {
+	query := `
+		UPDATE groups
+		SET title = ?, description = ?, creator_id = ?
+		WHERE group_id = ?
+	`
+	_, err := gr.db.Exec(query, group.Title, group.Description, group.CreatorID, group.GroupID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// DeleteGroup removes a group from the database by group_id
+func (gr *GroupRepository) DeleteGroup(groupID int) error {
+	query := "DELETE FROM groups WHERE group_id = ?"
+	_, err := gr.db.Exec(query, groupID)
+	if err != nil {
+		return err
+	}
+	return nil
+}

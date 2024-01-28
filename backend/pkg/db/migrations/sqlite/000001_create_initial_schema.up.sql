@@ -41,6 +41,22 @@ CREATE TABLE IF NOT EXISTS "posts" (
   FOREIGN KEY (author_id) REFERENCES "users" (user_id)
 );
 
+-- Table for 'post_category'
+CREATE TABLE IF NOT EXISTS "post_category" (
+    id VARCHAR PRIMARY KEY,
+    categoryID VARCHAR,
+    postID VARCHAR,
+    FOREIGN KEY (categoryID) REFERENCES category(category_id),
+    FOREIGN KEY (postID) REFERENCES posts(post_id)
+);
+-- Table for 'category'
+CREATE TABLE IF NOT EXISTS "category" (
+    category_id VARCHAR PRIMARY KEY,
+    name VARCHAR,
+    createDate DATE,
+    modifiedDate DATE
+);
+
 CREATE TABLE IF NOT EXISTS "post_visibilities" (
   "post_visibility_id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
   "post_id" integer NOT NULL,

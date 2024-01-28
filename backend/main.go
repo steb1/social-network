@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"server/handler"
 	"server/pkg/db/sqlite"
 )
 
@@ -15,6 +16,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	handler.HandleIndex()
 
 	// Continue with your server initialization and other logic
 }
