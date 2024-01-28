@@ -1,0 +1,79 @@
+package models
+
+import "database/sql"
+
+// Membership structure represents the "memberships" table
+type Membership struct {
+	MembershipID     int    `json:"membership_id"`
+	UserID           int    `json:"user_id"`
+	GroupID          int    `json:"group_id"`
+	JoinedAt         string `json:"joined_at"`
+	InvitationStatus string `json:"invitation_status"`
+	MembershipStatus string `json:"membership_status"`
+}
+
+type MembershipRepository struct {
+	db *sql.DB
+}
+
+func NewMembershipRepository(db *sql.DB) *MembershipRepository {
+	return &MembershipRepository{
+		db: db,
+	}
+}
+
+
+// CreateMembership adds a new membership to the database
+func (cm *MembershipRepository) CreateMembership(membership *Membership) error {
+	query := `
+		INSERT INTO memberships (user_id, group_id, joined_at, invitation_status, membership_status)
+		VALUES (?, ?, ?, ?, ?)
+	`
+	result, err := cm.db.Exec(query, membership.UserID, membership.GroupID, membership.JoinedAt, membership.InvitationStatus, membership.MembershipStatus)
+	if err != nil {
+		return err
+	}
+
+	lastInsertID, err := result.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	membership.MembershipID = int(lastInsertID)
+	return nil
+}
+
+// GetMembership retrieves a membership from the database by membership_id
+func (cm *MembershipRepository) GetMembership(membershipID int) (*Membership, error) {
+	query := "SELECT * FROM memberships WHERE membership_id = ?"
+	var membership Membership
+	err := cm.db.QueryRow(query, membershipID).Scan(&membership.MembershipID, &membership.UserID, &membership.GroupID, &membership.JoinedAt, &membership.InvitationStatus, &membership.MembershipStatus)
+	if err != nil {
+		return nil, err
+	}
+	return &membership, nil
+}
+
+// UpdateMembership updates an existing membership in the database
+func (cm *MembershipRepository) UpdateMembership(membership *Membership) error {
+	query := `
+		UPDATE memberships
+		SET user_id = ?, group_id = ?, joined_at = ?, invitation_status = ?, membership_status = ?
+		WHERE membership_id = ?
+	`
+	_, err := cm.db.Exec(query, membership.UserID, membership.GroupID, membership.JoinedAt, membership.InvitationStatus, membership.MembershipStatus, membership.MembershipID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// DeleteMembership removes a membership from the database by membership_id
+func  (cm *MembershipRepository) DeleteMembership(membershipID int) error {
+	query := "DELETE FROM memberships WHERE membership_id = ?"
+	_, err := cm.db.Exec(query, membershipID)
+	if err != nil {
+		return err
+	}
+	return nil
+}

@@ -1,0 +1,80 @@
+package models
+
+import "database/sql"
+
+// GroupChat structure represents the "group_chats" table
+type GroupChat struct {
+	GroupChatID int    `json:"group_chat_id"`
+	SenderID    int    `json:"sender_id"`
+	GroupID     int    `json:"group_id"`
+	Content     string `json:"content"`
+	SentTime    string `json:"sent_time"`
+}
+
+type GroupChatRepository struct {
+	db *sql.DB
+}
+
+func NewGroupChatRepository(db *sql.DB) *GroupChatRepository {
+	return &GroupChatRepository{
+		db: db,
+	}
+}
+
+// CreateGroupChat adds a new group chat message to the database
+func (gcr *GroupChatRepository) CreateGroupChat(groupChat *GroupChat) error {
+	query := `
+		INSERT INTO group_chats (sender_id, group_id, content, sent_time)
+		VALUES (?, ?, ?, ?)
+	`
+	result, err := gcr.db.Exec(query, groupChat.SenderID, groupChat.GroupID, groupChat.Content, groupChat.SentTime)
+	if err != nil {
+		return err
+	}
+
+	lastInsertID, err := result.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	groupChat.GroupChatID = int(lastInsertID)
+	return nil
+}
+
+// GetGroupChat retrieves a group chat message from the database by group_chat_id
+func (gcr *GroupChatRepository) GetGroupChat(groupChatID int) (*GroupChat, error) {
+	query := "SELECT * FROM group_chats WHERE group_chat_id = ?"
+	var groupChat GroupChat
+	err := gcr.db.QueryRow(query, groupChatID).Scan(&groupChat.GroupChatID, &groupChat.SenderID, &groupChat.GroupID, &groupChat.Content, &groupChat.SentTime)
+	if err != nil {
+		return nil, err
+	}
+	return &groupChat, nil
+}
+
+// UpdateGroupChat updates an existing group chat message in the database
+func (gcr *GroupChatRepository) UpdateGroupChat(groupChat *GroupChat) error {
+	query := `
+		UPDATE group_chats
+		SET sender_id = ?, group_id = ?, content = ?, sent_time = ?
+		WHERE group_chat_id = ?
+	`
+	_, err := gcr.db.Exec(query, groupChat.SenderID, groupChat.GroupID, groupChat.Content, groupChat.SentTime, groupChat.GroupChatID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// DeleteGroupChat removes a group chat message from the database by group_chat_id
+func (gcr *GroupChatRepository) DeleteGroupChat(groupChatID int) error {
+	query := "DELETE FROM group_chats WHERE group_chat_id = ?"
+	_, err := gcr.db.Exec(query, groupChatID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+
+
