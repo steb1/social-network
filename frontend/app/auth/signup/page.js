@@ -1,6 +1,6 @@
 import Link from "next/link";
-import React from "react";
-import Animation from "../../components/animation";
+import Animation from "@/app/components/animation";
+import SubmitAuth from "@/app/components/submitauth";
 import authAnimation from "../../../public/assets/animations/authAnimation.json";
 
 const SignupPage = () => {
@@ -15,23 +15,23 @@ const SignupPage = () => {
 					<div className="mt-5 w-full sm:mt-8">
 						<div className="mx-auto flex w-full flex-col gap-5 sm:max-w-md md:max-w-lg">
 							<div className="flex flex-col gap-3 sm:flex-row">
-								<input type="text" placeholder="First Name" className="input input-bordered input-primary w-full max-w-xs text-[#9BA3AF]" />
-								<input type="text" placeholder="Last Name" className="input input-bordered input-primary w-full max-w-xs text-[#9BA3AF]" />
+								<input type="text" placeholder="First Name" className="input input-bordered input-primary w-full max-w-xs text-[#9BA3AF]" required />
+								<input type="text" placeholder="Last Name" className="input input-bordered input-primary w-full max-w-xs text-[#9BA3AF]" required />
 								<input type="text" placeholder="Nickname" className="input input-bordered input-primary w-full max-w-xs text-[#9BA3AF]" />
 							</div>
 
-							<input type="email" placeholder="Email" className="input input-bordered input-primary w-full text-[#9BA3AF]" />
+							<input type="email" placeholder="Email" className="input input-bordered input-primary w-full text-[#9BA3AF]" required />
 
 							<label className="form-control w-full max-w-lg">
 								<div className="label">
 									<span className="label-text">Your birthdate</span>
 								</div>
-								<input type="date" className="input input-bordered input-primary w-full text-[#9BA3AF]" />
+								<input type="date" className="input input-bordered input-primary w-full text-[#9BA3AF]" required />
 							</label>
 
 							<div className="flex flex-col gap-3 sm:flex-row">
-								<input type="Password" placeholder="Enter Your Password" className="input input-bordered input-primary w-full text-[#9BA3AF]" />
-								<input type="Password" placeholder="Confirm Your Password" className="input input-bordered input-primary w-full text-[#9BA3AF]" />
+								<input type="Password" placeholder="Enter Your Password" className="input input-bordered input-primary w-full text-[#9BA3AF]" required />
+								<input type="Password" placeholder="Confirm Your Password" className="input input-bordered input-primary w-full text-[#9BA3AF]" required />
 							</div>
 
 							<hr />
