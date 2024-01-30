@@ -14,7 +14,7 @@ type User struct {
 	Password    string `json:"password"`
 	FirstName   string `json:"first_name"`
 	LastName    string `json:"last_name"`
-	DateOfBirth string `json:"date_of_birth"`
+	DateOfBirth string `json:"birthdate"`
 	Avatar      string `json:"avatar"`
 	Nickname    string `json:"nickname"`
 	AboutMe     string `json:"about_me"`
