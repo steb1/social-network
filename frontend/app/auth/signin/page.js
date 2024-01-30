@@ -1,5 +1,6 @@
 import Link from "next/link";
-import React from "react";
+// import { useRouter } from "next/router";
+// import React, { useEffect } from "react";
 import Animation from "../../components/animation";
 import authAnimation from "../../../public/assets/animations/authAnimation.json";
 
@@ -14,13 +15,13 @@ const SigninPage = () => {
 					<h1 className="bg-gradient-to-r from-pink-500   via-purple-500 to-indigo-500 bg-clip-text text-center font-instalogo text-5xl text-black ">The Social Network</h1>
 					<div className="mt-5 w-full sm:mt-8">
 						<div className="mx-auto flex w-full flex-col gap-5 sm:max-w-md md:max-w-lg">
-							<input type="email" placeholder="Email or Nickname" className="input input-bordered input-primary w-full text-[#9BA3AF]" />
+							<input type="email" placeholder="Email or Nickname" className="input input-bordered input-primary w-full text-[#9BA3AF]" required />
 
-							<input type="Password" placeholder="Password" className="input input-bordered input-primary w-full text-[#9BA3AF]" />
+							<input type="Password" placeholder="Password" className="input input-bordered input-primary w-full text-[#9BA3AF]" required />
 
 							<div className="flex items-center justify-start  gap-1.5 pl-2">
 								<h3 className="flex items-center whitespace-nowrap text-xs text-black">
-									Welcome to the social network ! Made with
+									Welcome back ! Made with
 									<span className="text-[#4A07DA]">&nbsp;Love ❤️</span>
 									&nbsp;and
 									<span className="text-[#4A07DA]">&nbsp;coffee ☕</span>.
