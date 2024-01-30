@@ -14,9 +14,7 @@ func HandleIndex() {
 	User.Password = "loml"
 	User.Nickname = "Bastian"
 
-
 	err := models.UserRepo.CreateUser(&User)
-
 	if err != nil {
 		fmt.Println(err)
 	}
