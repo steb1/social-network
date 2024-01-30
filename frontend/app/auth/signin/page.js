@@ -11,7 +11,7 @@ const SigninPage = () => {
 					<Animation animationData={authAnimation} />
 				</div>
 				<div className="mx-auto w-full flex flex-col justify-center lg:w-1/2">
-					<h1 className="bg-gradient-to-r from-pink-500   via-purple-500 to-indigo-500 bg-clip-text text-center font-instalogo text-5xl text-transparent ">The Social Network</h1>
+					<h1 className="bg-gradient-to-r from-pink-500   via-purple-500 to-indigo-500 bg-clip-text text-center font-instalogo text-5xl text-black ">The Social Network</h1>
 					<div className="mt-5 w-full sm:mt-8">
 						<div className="mx-auto flex w-full flex-col gap-5 sm:max-w-md md:max-w-lg">
 							<input type="email" placeholder="Email or Nickname" className="input input-bordered input-primary w-full text-[#9BA3AF]" />
