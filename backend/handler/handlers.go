@@ -22,7 +22,7 @@ const (
 
 var Routes = []Route{
 	{Path: "/api/signup", Handler: SignupHandler, Methods: []string{"POST"}},
-	{Path: "/api/signin", Handler: SignupHandler, Methods: []string{"POST"}},
+	{Path: "/api/signin", Handler: SigninHandler, Methods: []string{"POST"}},
 }
 
 func MiddlewareIsAuthenticated(handler http.HandlerFunc) http.HandlerFunc {

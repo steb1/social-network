@@ -24,7 +24,7 @@ type RegisterResponse struct {
 }
 
 type LoginRequest struct {
-	NicknameOrEmail string `json:"nicknameOrEmail"`
+	NicknameOrEmail string `json:"emailOrNickname"`
 	Password        string `json:"password"`
 }
 
@@ -201,9 +201,11 @@ func SigninHandler(w http.ResponseWriter, r *http.Request) {
 		WriteJSON(w, http.StatusBadRequest, apiError)
 		return
 	}
-
-	InitSession(w, r, user)
+	fmt.Println(ok)
+	fmt.Println(request.NicknameOrEmail)
+	fmt.Println(request.Password)
 	WriteJSON(w, http.StatusOK, SigninResponse{Message: "Valid login.", UserInfos: user})
+	InitSession(w, r, user)
 }
 
 func InitSession(w http.ResponseWriter, r *http.Request, user models.User) {

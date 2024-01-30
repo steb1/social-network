@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"net/http"
 	"server/handler"
 	"server/pkg/db/sqlite"
 )
@@ -16,7 +18,16 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	handler.HandleIndex()
+	for _, route := range handler.Routes {
+		http.HandleFunc(route.Path, handler.MiddlewareError(route.Path, route.Handler, route.Methods))
+	}
 
-	// Continue with your server initialization and other logic
+	/*******************/
+	log.Println("")
+	fmt.Println("\n\t\033[1;32m ∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞")
+	fmt.Print("\t| o Server started and listenning on port", handler.Port, "™®|\n")
+	fmt.Print("\t|\t   http://localhost"+handler.Port, "\t\t|")
+	fmt.Println("\n\t\033[1;32m ∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞")
+	log.Fatal(http.ListenAndServe(handler.Port, nil))
+
 }
