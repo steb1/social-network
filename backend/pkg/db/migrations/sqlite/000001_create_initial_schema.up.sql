@@ -42,15 +42,16 @@ CREATE TABLE IF NOT EXISTS "posts" (
 );
 
 -- Table for 'post_category'
-CREATE TABLE IF NOT EXISTS "post_category" (
+CREATE TABLE IF NOT EXISTS "post_categories" (
     id VARCHAR PRIMARY KEY,
     categoryID VARCHAR,
     postID VARCHAR,
     FOREIGN KEY (categoryID) REFERENCES category(category_id),
     FOREIGN KEY (postID) REFERENCES posts(post_id)
 );
+
 -- Table for 'category'
-CREATE TABLE IF NOT EXISTS "category" (
+CREATE TABLE IF NOT EXISTS "categories" (
     category_id VARCHAR PRIMARY KEY,
     name VARCHAR,
     createDate DATE,

@@ -111,45 +111,6 @@ func RenderPage(basePath, pagePath string, data any, res http.ResponseWriter) {
 	}
 }
 
-/* func UploadImage(req *http.Request) string {
-	image, header, err := req.FormFile("image")
-	if err != nil {
-		log.Println("❌ Request doesn't contain image", err)
-		return ""
-	}
-	defer image.Close()
-
-	if header.Size > maxSize {
-		log.Println("❌ File size exceeds limit")
-		return ""
-	}
-
-	if !isValidFileType(header.Header.Get("Content-Type")) {
-		log.Println("❌ Invalid file type")
-		return ""
-	}
-
-	uploads := "/uploads" // Use "uploads" without the leading slash
-	imageURL := filepath.Join(uploads, generateUniqueFilename(header.Filename))
-	filePath := filepath.Join(".", imageURL) // Use "." to denote the current directory
-	// if filePath[0] != '/' {
-	// 	filePath = "" + filePath
-	// }
-	file, err := os.Create(filePath)
-	if err != nil {
-		fmt.Println("❌ Error when creating the file", err)
-		return ""
-	}
-	defer file.Close()
-	_, err = io.Copy(file, image)
-	if err != nil {
-		fmt.Println("❌ Error when copying data", err)
-		return ""
-	}
-
-	return imageURL
-} */
-
 func UploadImage(req *http.Request) string {
 	image, header, err := req.FormFile("photo")
 	if err != nil {
