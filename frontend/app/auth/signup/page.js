@@ -22,18 +22,25 @@ const SignupPage = () => {
 
 							<input type="email" placeholder="Email" className="input input-bordered input-primary w-full text-[#9BA3AF]" />
 
-							<input type="date" className="input input-bordered input-primary w-full text-[#9BA3AF]" />
+							<label className="form-control w-full max-w-lg">
+								<div className="label">
+									<span className="label-text">Your birthdate</span>
+								</div>
+								<input type="date" className="input input-bordered input-primary w-full text-[#9BA3AF]" />
+							</label>
 
 							<div className="flex flex-col gap-3 sm:flex-row">
 								<input type="Password" placeholder="Enter Your Password" className="input input-bordered input-primary w-full text-[#9BA3AF]" />
 								<input type="Password" placeholder="Confirm Your Password" className="input input-bordered input-primary w-full text-[#9BA3AF]" />
 							</div>
 
-							<label className="form-control w-full max-w-xs">
+							<hr />
+
+							<label className="form-control w-full max-w-lg">
 								<div className="label">
 									<span className="label-text">Your avatar</span>
 								</div>
-								<input type="file" className="file-input file-input-bordered w-full max-w-lg" />
+								<input type="file" className="file-input file-input-bordered w-full max-w-lg text-[#9BA3AF]" />
 							</label>
 
 							<textarea className="textarea textarea-secondary text-[#9BA3AF]" placeholder="Bio"></textarea>
