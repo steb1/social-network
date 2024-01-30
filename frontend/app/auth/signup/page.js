@@ -5,29 +5,28 @@ import authAnimation from "../../../public/assets/animations/authAnimation.json"
 
 const SignupPage = () => {
 	return (
-		<div className="flex justify-center items-center w-full min-h-screen  px-5 py-5 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 p-10 text-white font-sans">
-			<div className="xl:max-w-7xl bg-white drop-shadow-xl border border-black/20 w-full rounded-md flex justify-between items-stretch px-5 xl:px-5 py-5">
-				<div className="sm:w-[60%] lg:w-[50%] bg-cover bg-center items-center justify-center hidden md:flex ">
-					// Add usericon image
+		<div className="flex min-h-screen w-full items-center justify-center  bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 p-10 px-5 py-5 font-sans text-white">
+			<div className="flex w-full items-stretch justify-between rounded-md border border-black/20 bg-white px-5 py-5 drop-shadow-xl xl:max-w-7xl xl:px-5">
+				<div className="hidden items-center justify-center bg-cover bg-center sm:w-[60%] md:flex lg:w-[50%] ">
 					<Animation animationData={authAnimation} />
 				</div>
-				<div className="mx-auto w-full lg:w-1/2 md:p-10 py-5 md:py-0">
-					<h1 className="text-center text-3xl font-sans  bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-transparent bg-clip-text">The Social Network</h1>
-					<div className="w-full mt-5 sm:mt-8">
-						<div className="mx-auto w-full sm:max-w-md md:max-w-lg flex flex-col gap-5">
-							<div className="flex flex-col sm:flex-row gap-3">
-								<input type="text" placeholder="First Name" className="input input-bordered input-primary w-full max-w-xs" />
-								<input type="text" placeholder="Last Name" className="input input-bordered input-primary w-full max-w-xs" />
-								<input type="text" placeholder="Nickname" className="input input-bordered input-primary w-full max-w-xs" />
+				<div className="mx-auto w-full py-5 md:p-10 md:py-0 lg:w-1/2">
+					<h1 className="bg-gradient-to-r from-pink-500  via-purple-500 to-indigo-500 bg-clip-text text-center font-instalogo text-5xl text-transparent ">The Social Network</h1>
+					<div className="mt-5 w-full sm:mt-8">
+						<div className="mx-auto flex w-full flex-col gap-5 sm:max-w-md md:max-w-lg">
+							<div className="flex flex-col gap-3 sm:flex-row">
+								<input type="text" placeholder="First Name" className="input input-bordered input-primary w-full max-w-xs text-[#9BA3AF]" />
+								<input type="text" placeholder="Last Name" className="input input-bordered input-primary w-full max-w-xs text-[#9BA3AF]" />
+								<input type="text" placeholder="Nickname" className="input input-bordered input-primary w-full max-w-xs text-[#9BA3AF]" />
 							</div>
 
-							<input type="email" placeholder="Email" className="input input-bordered input-primary w-full" />
+							<input type="email" placeholder="Email" className="input input-bordered input-primary w-full text-[#9BA3AF]" />
 
-							<input type="date" className="input input-bordered input-primary w-full" />
+							<input type="date" className="input input-bordered input-primary w-full text-[#9BA3AF]" />
 
-							<div className="flex flex-col sm:flex-row gap-3">
-								<input type="Password" placeholder="Enter Your Password" className="input input-bordered input-primary w-full" />
-								<input type="Password" placeholder="Confirm Your Password" className="input input-bordered input-primary w-full" />
+							<div className="flex flex-col gap-3 sm:flex-row">
+								<input type="Password" placeholder="Enter Your Password" className="input input-bordered input-primary w-full text-[#9BA3AF]" />
+								<input type="Password" placeholder="Confirm Your Password" className="input input-bordered input-primary w-full text-[#9BA3AF]" />
 							</div>
 
 							<label className="form-control w-full max-w-xs">
@@ -37,9 +36,9 @@ const SignupPage = () => {
 								<input type="file" className="file-input file-input-bordered w-full max-w-lg" />
 							</label>
 
-							<textarea className="textarea textarea-secondary" placeholder="Bio"></textarea>
+							<textarea className="textarea textarea-secondary text-[#9BA3AF]" placeholder="Bio"></textarea>
 
-							<div className="flex items-center gap-1.5  justify-start pl-2">
+							<div className="flex items-center justify-start  gap-1.5 pl-2">
 								<h3 className="flex items-center whitespace-nowrap text-xs text-black">
 									Welcome to the social network ! Made with
 									<span className="text-[#4A07DA]">&nbsp;Love ❤️</span>
@@ -48,8 +47,8 @@ const SignupPage = () => {
 								</h3>
 							</div>
 
-							<div className="flex flex-col md:flex-row gap-2 md:gap-4 justify-center items-center">
-								<Link href="/auth/signup" className="btn btn-active btn-primary btn-block max-w-[200px]">
+							<div className="flex flex-col items-center justify-center gap-2 md:flex-row md:gap-4">
+								<Link href="/auth/signup" className="btn btn-primary btn-active btn-block max-w-[200px]">
 									Sign Up
 								</Link>
 								<Link href="/auth/signin" className="btn btn-outline btn-primary btn-block max-w-[200px]">
