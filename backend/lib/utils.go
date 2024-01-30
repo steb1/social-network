@@ -3,6 +3,7 @@ package lib
 import (
 	"bufio"
 	"fmt"
+	"mime/multipart"
 	"unicode"
 
 	//"forum/data/models"
@@ -256,12 +257,120 @@ func VerifyPassword(password string) bool {
 	return num >= 8
 }
 
-func IsEmailValid(email string) bool {
-	// Expression régulière pour valider un email simple
-	emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
+func IsValidEmail(email string) bool {
+	pattern := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{1,}$`
+	regex := regexp.MustCompile(pattern)
+	return regex.MatchString(email)
+}
 
-	// Utilisation de la fonction MatchString de regexp pour vérifier la correspondance
-	match, _ := regexp.MatchString(emailRegex, email)
+func HandleError(err error, task string) {
+	if err != nil {
+		log.Printf("Error While %s | more=> %v\n", task, err)
+	}
+}
 
-	return match
+func SaveFile(file multipart.File, filePath string) error {
+	// Get the directory path from the filePath
+	dir := filepath.Dir(filePath)
+
+	// Create the directory and any parent directories if they don't exist
+	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
+		return err
+	}
+
+	// Open the destination file
+	destination, err := os.Create(filePath)
+	if err != nil {
+		return err
+	}
+	defer destination.Close()
+
+	// Copy the content of the uploaded file to the destination file
+	_, err = io.Copy(destination, file)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func IsBlank(s string) bool {
+	return strings.TrimSpace(s) == ""
+}
+
+func IsValidDate(dateString string) bool {
+	// Define the regex pattern for jj/mm/aaaa format
+	pattern := regexp.MustCompile(`^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/\d{4}$`)
+
+	// Check if the input string matches the pattern
+	if !pattern.MatchString(dateString) {
+		return false
+	}
+
+	// Extract day, month, and year from the input string
+	dateParts := pattern.FindStringSubmatch(dateString)
+	day, _ := strconv.Atoi(dateParts[1])
+	month, _ := strconv.Atoi(dateParts[2])
+	year, _ := strconv.Atoi(dateParts[3])
+
+	// Validate day, month, and year ranges
+	if day < 1 || day > 31 || month < 1 || month > 12 || year < 1000 || year > 9999 {
+		return false
+	}
+
+	// Additional validation based on specific rules if needed
+
+	return true
+}
+
+func IsExpired(expiry time.Time) bool {
+	return time.Now().After(expiry)
+}
+func IsValidName(name string) bool {
+	validNameRegex := regexp.MustCompile(`^[a-zA-Z]+(?:\s[a-zA-Z]+)?$`)
+	return validNameRegex.MatchString(name)
+}
+func IsValidDOB(dob string) bool {
+	// Regular expression to validate date format (jj/mm/aaaa)
+	validDOBRegex := regexp.MustCompile(`^\d{2}/\d{2}/\d{4}$`)
+
+	// Check if the date matches the regular expression
+	if !validDOBRegex.MatchString(dob) {
+		return false
+	}
+
+	// Parse the date string to a time.Time object
+	dateOfBirth, err := time.Parse("02/01/2006", dob)
+	if err != nil {
+		return false
+	}
+
+	// Optional: Check if the person is at least 18 years old
+	minimumAge := 13
+	maximumAge := 120
+	currentTime := time.Now()
+	age := currentTime.Year() - dateOfBirth.Year()
+
+	if currentTime.YearDay() < dateOfBirth.YearDay() {
+		age--
+	}
+
+	if age < minimumAge {
+		return false
+	}
+	if age > maximumAge {
+		return false
+	}
+
+	return true
+}
+
+func IsValidNickname(nickname string) bool {
+	// Regular expression to allow alphanumeric characters and specific special characters (excluding space)
+	validNicknameRegex := regexp.MustCompile(`^[a-zA-Z0-9!@#$%^&*()-_=+]+$`)
+
+	minLength := 3
+	maxLength := 15
+
+	return validNicknameRegex.MatchString(nickname) && len(nickname) >= minLength && len(nickname) <= maxLength
 }
