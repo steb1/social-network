@@ -1,6 +1,12 @@
 package models
 
-import "database/sql"
+import (
+	"database/sql"
+	"fmt"
+	"server/lib"
+
+	"golang.org/x/crypto/bcrypt"
+)
 
 type User struct {
 	UserID      int    `json:"user_id"`
@@ -79,118 +85,160 @@ func (ur *UserRepository) DeleteUser(userID int) error {
 
 // GetUserByEmail retrieves a user from the database based on their email
 func (ur *UserRepository) GetUserByEmail(email string) (*User, error) {
-    query := `
+	query := `
         SELECT * FROM users
         WHERE email = ?
     `
-    row := ur.db.QueryRow(query, email)
+	row := ur.db.QueryRow(query, email)
 
-    user := &User{}
-    err := row.Scan(
-        &user.UserID,
-        &user.Email,
-        &user.Password,
-        &user.FirstName,
-        &user.LastName,
-        &user.DateOfBirth,
-        &user.Avatar,
-        &user.Nickname,
-        &user.AboutMe,
-    )
-    if err != nil {
-        return nil, err
-    }
+	user := &User{}
+	err := row.Scan(
+		&user.UserID,
+		&user.Email,
+		&user.Password,
+		&user.FirstName,
+		&user.LastName,
+		&user.DateOfBirth,
+		&user.Avatar,
+		&user.Nickname,
+		&user.AboutMe,
+	)
+	if err != nil {
+		return nil, err
+	}
 
-    return user, nil
+	return user, nil
 }
 
 // GetUserByNickname retrieves a user from the database based on their nickname
 func (ur *UserRepository) GetUserByNickname(nickname string) (*User, error) {
-    query := `
+	query := `
         SELECT * FROM users
         WHERE nickname = ?
     `
-    row := ur.db.QueryRow(query, nickname)
+	row := ur.db.QueryRow(query, nickname)
 
-    user := &User{}
-    err := row.Scan(
-        &user.UserID,
-        &user.Email,
-        &user.Password,
-        &user.FirstName,
-        &user.LastName,
-        &user.DateOfBirth,
-        &user.Avatar,
-        &user.Nickname,
-        &user.AboutMe,
-    )
-    if err != nil {
-        return nil, err
-    }
+	user := &User{}
+	err := row.Scan(
+		&user.UserID,
+		&user.Email,
+		&user.Password,
+		&user.FirstName,
+		&user.LastName,
+		&user.DateOfBirth,
+		&user.Avatar,
+		&user.Nickname,
+		&user.AboutMe,
+	)
+	if err != nil {
+		return nil, err
+	}
 
-    return user, nil
+	return user, nil
+}
+
+// GetUserByNickname retrieves a user from the database based on their nickname
+func (ur *UserRepository) GetUserByNicknameOrEmail(login string) (User, error) {
+	query := `
+        SELECT * FROM users
+        WHERE nickname = ? OR email = ? 
+    `
+	row := ur.db.QueryRow(query, login, login)
+
+	var user User
+	err := row.Scan(
+		&user.UserID,
+		&user.Email,
+		&user.Password,
+		&user.FirstName,
+		&user.LastName,
+		&user.DateOfBirth,
+		&user.Avatar,
+		&user.Nickname,
+		&user.AboutMe,
+	)
+	if err != nil {
+		return user, err
+	}
+
+	return user, nil
 }
 
 // SelectAllUsers retrieves all users from the database
 func (ur *UserRepository) SelectAllUsers() ([]*User, error) {
-    query := `
+	query := `
         SELECT * FROM users
     `
-    rows, err := ur.db.Query(query)
-    if err != nil {
-        return nil, err
-    }
-    defer rows.Close()
+	rows, err := ur.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
 
-    var users []*User
+	var users []*User
 
-    for rows.Next() {
-        user := &User{}
-        err := rows.Scan(
-            &user.UserID,
-            &user.Email,
-            &user.Password,
-            &user.FirstName,
-            &user.LastName,
-            &user.DateOfBirth,
-            &user.Avatar,
-            &user.Nickname,
-            &user.AboutMe,
-        )
-        if err != nil {
-            return nil, err
-        }
-        users = append(users, user)
-    }
+	for rows.Next() {
+		user := &User{}
+		err := rows.Scan(
+			&user.UserID,
+			&user.Email,
+			&user.Password,
+			&user.FirstName,
+			&user.LastName,
+			&user.DateOfBirth,
+			&user.Avatar,
+			&user.Nickname,
+			&user.AboutMe,
+		)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
 
-    return users, nil
+	return users, nil
 }
 
 // GetUserByPostID retrieves a user from the database based on their post ID
 // Note: This assumes there is a posts table with a user_id column linking to the users table
 func (ur *UserRepository) GetUserByPostID(postID int) (*User, error) {
-    query := `
+	query := `
         SELECT users.* FROM users
         JOIN posts ON users.user_id = posts.user_id
         WHERE posts.post_id = ?
     `
-    row := ur.db.QueryRow(query, postID)
+	row := ur.db.QueryRow(query, postID)
 
-    user := &User{}
-    err := row.Scan(
-        &user.UserID,
-        &user.Email,
-        &user.Password,
-        &user.FirstName,
-        &user.LastName,
-        &user.DateOfBirth,
-        &user.Avatar,
-        &user.Nickname,
-        &user.AboutMe,
-    )
-    if err != nil {
-        return nil, err
-    }
+	user := &User{}
+	err := row.Scan(
+		&user.UserID,
+		&user.Email,
+		&user.Password,
+		&user.FirstName,
+		&user.LastName,
+		&user.DateOfBirth,
+		&user.Avatar,
+		&user.Nickname,
+		&user.AboutMe,
+	)
+	if err != nil {
+		return nil, err
+	}
 
-    return user, nil
+	return user, nil
+}
+
+func (ur *UserRepository) CheckCredentials(login, password string) (User, bool) {
+	user, err := UserRepo.GetUserByNicknameOrEmail(login)
+	fmt.Println(user)
+	if err != nil {
+		lib.HandleError(err, "Error getting user by Crendentials. User may not exists.")
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+
+	if err == nil {
+		return user, true
+	}
+
+	return user, false
 }
