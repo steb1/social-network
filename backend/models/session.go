@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"server/lib"
 	"sync"
 	"time"
 
@@ -15,10 +16,9 @@ var AllSessions sync.Map
 
 // Session structure represents the "sessions" table
 type Session struct {
-	Token  string `json:"token"`
+	Token  string    `json:"token"`
 	UserID string    `json:"user_id"`
 	Expiry time.Time `json:"expiry"`
-	
 }
 
 type SessionRepository struct {
@@ -54,6 +54,19 @@ func (sr *SessionRepository) GetSession(token string) (*Session, error) {
 		return nil, err
 	}
 	return &session, nil
+}
+func (sr *SessionRepository) SessionExists(token string) (Session, bool) {
+	var session Session
+
+	row := sr.db.QueryRow("SELECT * FROM sessions WHERE token = ?", token)
+
+	err := row.Scan(&session.Token, &session.UserID, &session.Expiry)
+	if err != nil {
+		lib.HandleError(err, "Scanning session token.")
+		return session, false
+	}
+
+	return session, true
 }
 
 // UpdateSession updates an existing session in the database
@@ -121,15 +134,20 @@ func deleteSessionIfExist(ID string) {
 	})
 }
 
-func CheckIfSessionExist(ID string) bool {
-	exist := false
-	AllSessions.Range(func(key, value interface{}) bool {
-		if ID == value.(Session).UserID {
-			exist = true
-		}
-		return true
-	})
-	return exist
+func (sr *SessionRepository) UserHasAlreadyASession(userID int) (Session, bool) {
+	var session Session
+
+	row := sr.db.QueryRow("SELECT * FROM sessions WHERE user_id = ?", userID)
+
+	err := row.Scan(&session.Token, &session.UserID, &session.Expiry)
+	if err != nil {
+		lib.HandleError(err, "Scanning session token.")
+		return session, false
+	}
+
+	db.Close()
+
+	return session, true
 }
 
 func (s Session) isExpired() bool {

@@ -7,8 +7,8 @@ import * as Yup from "yup";
 
 // Using Yup librairy schema to validate the form
 const validationSchema = Yup.object().shape({
-	firstname: Yup.string().required("Firstname is required"),
-	lastname: Yup.string().required("Lastname is required"),
+	first_name: Yup.string().required("Firstname is required"),
+	last_name: Yup.string().required("Lastname is required"),
 	nickname: Yup.string(),
 	email: Yup.string().required("Email is required").email("Invalid email"),
 	birthdate: Yup.date().required("Birthdate is required"),
@@ -19,26 +19,32 @@ const validationSchema = Yup.object().shape({
 		.required("Confirm your password")
 		.oneOf([Yup.ref("password"), null], "Passwords must match"),
 	avatar: Yup.mixed(),
-	bio: Yup.string(),
+	about_me: Yup.string(),
 });
 
 const SignupPage = () => {
 	const formik = useFormik({
 		initialValues: {
-			firstname: "",
-			lastname: "",
+			first_name: "",
+			last_name: "",
 			nickname: "",
 			email: "",
 			birthdate: "",
 			password: "",
 			cPassword: "",
 			avatar: null,
-			bio: "",
+			about_me: "",
 		},
 		validationSchema,
-		onSubmit: async ({ firstname, lastname, nickname, email, birthdate, password, cPassword, avatar, bio }) => {
-			console.log(firstname, lastname, nickname, email, birthdate, password, cPassword, avatar, bio);
-			// TODO: Make a request to your backend to store the data
+		onSubmit: async ({ first_name, last_name, nickname, email, birthdate, password, avatar, about_me }) => {
+			const response = await fetch("http://localhost:8080/api/signup", {
+				method: "POST",
+				body: JSON.stringify({ first_name, last_name, nickname, email, birthdate, password, avatar, about_me }),
+			});
+
+			// Handle response if necessary
+			const data = await response.json();
+			console.log(data);
 		},
 	});
 
@@ -56,18 +62,18 @@ const SignupPage = () => {
 						<form onSubmit={handleSubmit} className="mx-auto flex w-full flex-col gap-5 sm:max-w-md md:max-w-lg">
 							<div className="flex flex-col gap-3 sm:flex-row">
 								<input
-									value={values.firstname}
+									value={values.first_name}
 									onChange={handleChange}
 									type="text"
-									name="firstname"
+									name="first_name"
 									placeholder="First Name"
 									className="input input-bordered input-primary w-full max-w-xs text-[#9BA3AF]"
 								/>
 								<input
-									value={values.lastname}
+									value={values.last_name}
 									onChange={handleChange}
 									type="text"
-									name="lastname"
+									name="last_name"
 									placeholder="Last Name"
 									className="input input-bordered input-primary w-full max-w-xs text-[#9BA3AF]"
 								/>
@@ -81,8 +87,8 @@ const SignupPage = () => {
 								/>
 							</div>
 							<div className="flex flex-col gap-3 sm:flex-row">
-								{errors.firstname && touched.firstname && <span className="text-red-500 text-xs">{errors.firstname}</span>}
-								{errors.lastname && touched.lastname && <span className="text-red-500 text-xs ml-10">{errors.lastname}</span>}
+								{errors.first_name && touched.first_name && <span className="text-red-500 text-xs">{errors.first_name}</span>}
+								{errors.last_name && touched.last_name && <span className="text-red-500 text-xs ml-10">{errors.last_name}</span>}
 								{errors.nickname && touched.nickname && <span className="text-red-500 text-xs">{errors.nickname}</span>}
 							</div>
 
@@ -130,8 +136,8 @@ const SignupPage = () => {
 							</label>
 							{/* {errors.avatar && touched.avatar && <span className="text-red-500 text-xs">{errors.avatar}</span>} */}
 
-							<textarea value={values.bio} onChange={handleChange} name="bio" className="textarea textarea-secondary text-[#9BA3AF]" placeholder="Bio"></textarea>
-							{errors.bio && touched.bio && <span className="text-red-500 text-xs">{errors.bio}</span>}
+							<textarea value={values.about_me} onChange={handleChange} name="about_me" className="textarea textarea-secondary text-[#9BA3AF]" placeholder="about_me"></textarea>
+							{errors.about_me && touched.about_me && <span className="text-red-500 text-xs">{errors.about_me}</span>}
 
 							<div className="flex justify-center">
 								<button className="btn btn-primary btn-active btn-block max-w-[200px] text-white" type="submit">
