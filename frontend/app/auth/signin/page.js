@@ -20,8 +20,14 @@ const SigninPage = () => {
 		},
 		validationSchema,
 		onSubmit: async ({ emailOrNickname, password }) => {
-			console.log(emailOrNickname, password);
-			// TODO: Make a request to your backend to store the data
+			const response = await fetch("http://localhost:8080/api/signin", {
+				method: "POST",
+				body: JSON.stringify({ emailOrNickname, password }),
+			});
+
+			// Handle response if necessary
+			const data = await response.json();
+			console.log(data);
 		},
 	});
 
@@ -52,7 +58,7 @@ const SigninPage = () => {
 								value={values.password}
 								onChange={handleChange}
 								name="password"
-								type="password"
+								type="Password"
 								placeholder="Password"
 								className="input input-bordered input-primary w-full text-[#9BA3AF]"
 							/>
