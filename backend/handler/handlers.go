@@ -14,8 +14,7 @@ type Route struct {
 
 const (
 	Port               = ":8080"
-	sessionCookieName  = "social_network_token"
-	sessionDuration    = 3600 * time.Second // 60 minutes
+	sessionDuration    = 24 * time.Hour // 24 Heures
 	MAX_TITLE_LENGTH   = 150
 	MAX_CONTENT_LENGTH = 500
 )
@@ -23,6 +22,7 @@ const (
 var Routes = []Route{
 	{Path: "/api/signup", Handler: SignupHandler, Methods: []string{"POST"}},
 	{Path: "/api/signin", Handler: SigninHandler, Methods: []string{"POST"}},
+	{Path: "/api/logout", Handler: Logout, Methods: []string{"GET"}},
 }
 
 func MiddlewareIsAuthenticated(handler http.HandlerFunc) http.HandlerFunc {
