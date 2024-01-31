@@ -37,6 +37,7 @@ type UserInfos struct {
 type SigninResponse struct {
 	UserInfos models.User `json:"user"`
 	Message   string      `json:"message"`
+	Token     string      `json:"token"`
 }
 
 func SignupHandler(w http.ResponseWriter, r *http.Request) {
@@ -201,15 +202,12 @@ func SigninHandler(w http.ResponseWriter, r *http.Request) {
 		WriteJSON(w, http.StatusBadRequest, apiError)
 		return
 	}
-	fmt.Println(ok)
-	fmt.Println(request.NicknameOrEmail)
-	fmt.Println(request.Password)
-	WriteJSON(w, http.StatusOK, SigninResponse{Message: "Valid login.", UserInfos: user})
-	InitSession(w, r, user)
+	sessionToken := uuid.Must(uuid.NewV4()).String()
+	WriteJSON(w, http.StatusOK, SigninResponse{Message: "Valid login.", UserInfos: user, Token: sessionToken})
+	InitSession(w, r, user, sessionToken)
 }
 
-func InitSession(w http.ResponseWriter, r *http.Request, user models.User) {
-	sessionToken := uuid.Must(uuid.NewV4()).String()
+func InitSession(w http.ResponseWriter, r *http.Request, user models.User, sessionToken string) {
 	expiresAt := time.Now().Add(sessionDuration)
 
 	// Check if an user already have a session. If it is the case it deletes the ancient session and creates a new.
@@ -228,13 +226,6 @@ func InitSession(w http.ResponseWriter, r *http.Request, user models.User) {
 		session.Expiry = expiresAt
 		models.SessionRepo.CreateSession(&session)
 	}
-
-	http.SetCookie(w, &http.Cookie{
-		Name:    sessionCookieName,
-		Value:   sessionToken,
-		Path:    "/",
-		Expires: expiresAt,
-	})
 }
 
 func IsAuthenticated(r *http.Request) (models.Session, bool) {
