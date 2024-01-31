@@ -6,11 +6,12 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
-	"server/lib"
-	"server/models"
 	"strconv"
 	"strings"
 	"time"
+
+	"server/lib"
+	"server/models"
 
 	"github.com/gofrs/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -176,7 +177,7 @@ func SignupHandler(w http.ResponseWriter, r *http.Request) {
 
 func SigninHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, POST")
+	w.Header().Set("Access-Control-Allow-Methods", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "application/json")
 	request := new(LoginRequest)

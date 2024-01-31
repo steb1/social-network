@@ -2,13 +2,13 @@
 import Link from "next/link";
 import Animation from "../../components/animation";
 import authAnimation from "../../../public/assets/animations/authAnimation.json";
-
 import { useFormik } from "formik";
+import { useRouter } from "next/router";
 import * as Yup from "yup";
 
 // Using Yup librairy schema to validate the form
 const validationSchema = Yup.object().shape({
-	emailOrNickname: Yup.string().required("Email is required").email("Invalid email"),
+	emailOrNickname: Yup.string().required("Email or nickname is required"),
 	password: Yup.string().required("Password is required"),
 });
 
@@ -20,14 +20,27 @@ const SigninPage = () => {
 		},
 		validationSchema,
 		onSubmit: async ({ emailOrNickname, password }) => {
-			const response = await fetch("http://localhost:8080/api/signin", {
-				method: "POST",
-				body: JSON.stringify({ emailOrNickname, password }),
-			});
+			try {
+				const response = await fetch("http://localhost:8080/api/signin", {
+					method: "POST",
+					body: JSON.stringify({ emailOrNickname, password }),
+					headers: {
+						"Content-Type": "application/json",
+					},
+				});
 
-			// Handle response if necessary
-			const data = await response.json();
-			console.log(data);
+				if (response.ok) {
+					const data = await response.json();
+
+					document.cookie = `social-network=${data.token}; path=/; max-age=${3 * 60 * 60}`;
+
+					router.replace("/");
+				} else {
+					console.error("Authentication failed:", await response.text());
+				}
+			} catch (error) {
+				console.error("Error during authentication:", error);
+			}
 		},
 	});
 
@@ -48,7 +61,7 @@ const SigninPage = () => {
 								value={values.emailOrNickname}
 								onChange={handleChange}
 								name="emailOrNickname"
-								type="email"
+								type="text"
 								placeholder="Email or Nickname"
 								className="input input-bordered input-primary w-full text-[#9BA3AF]"
 							/>

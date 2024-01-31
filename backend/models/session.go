@@ -2,9 +2,10 @@ package models
 
 import (
 	"database/sql"
-	"server/lib"
 	"sync"
 	"time"
+
+	"server/lib"
 )
 
 var AllSessions sync.Map
@@ -50,6 +51,7 @@ func (sr *SessionRepository) GetSession(token string) (*Session, error) {
 	}
 	return &session, nil
 }
+
 func (sr *SessionRepository) SessionExists(token string) (Session, bool) {
 	var session Session
 
@@ -107,8 +109,6 @@ func (sr *SessionRepository) UserHasAlreadyASession(userID int) (Session, bool) 
 		lib.HandleError(err, "Scanning session token.")
 		return session, false
 	}
-
-	db.Close()
 
 	return session, true
 }
