@@ -2,14 +2,9 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
-	"log"
-	"net/http"
 	"server/lib"
 	"sync"
 	"time"
-
-	"github.com/gofrs/uuid"
 )
 
 var AllSessions sync.Map
@@ -93,38 +88,6 @@ func (sr *SessionRepository) DeleteSession(token string) error {
 	return nil
 }
 
-func GetUserFromSession(req *http.Request) *User {
-	user := User{}
-	cookie, err := req.Cookie("auth_session")
-	if err == nil {
-		if session, ok := AllSessions.Load(cookie.Value); ok {
-			_user, err := UserRepo.GetUser(session.(Session).UserID)
-			if err != nil {
-				log.Println("❌ ", err)
-			}
-			user = *_user
-		}
-	}
-	return &user
-}
-
-func NewSessionToken(res http.ResponseWriter, UserID string) {
-	sessionToken, err := uuid.NewV4()
-	if err != nil {
-		log.Fatalf("❌ Failed to generate UUID: %v", err)
-	}
-	deleteSessionIfExist(UserID)
-	ExpireAt := time.Now().Add(2 * time.Hour)
-	AllSessions.Store(sessionToken.String(), Session{UserID, UserID, ExpireAt})
-	http.SetCookie(res, &http.Cookie{
-		Name:     "auth_session",
-		Value:    sessionToken.String(),
-		HttpOnly: true,
-		Expires:  ExpireAt,
-	})
-	fmt.Println("session IN")
-}
-
 func deleteSessionIfExist(ID string) {
 	AllSessions.Range(func(key, value interface{}) bool {
 		if ID == value.(Session).UserID {
@@ -164,13 +127,4 @@ func DeleteExpiredSessions() {
 		})
 		time.Sleep(10 * time.Second)
 	}
-}
-
-func DeleteSession(req *http.Request) bool {
-	cookie, err := req.Cookie("auth_session")
-	if err != nil {
-		return false
-	}
-	AllSessions.Delete(cookie.Value)
-	return true
 }
