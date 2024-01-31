@@ -169,9 +169,11 @@ func SignupHandler(w http.ResponseWriter, r *http.Request) {
 		Message:   message,
 		UserInfos: UserInfos{LastName: user.LastName, Firstname: user.FirstName, Nickname: user.Nickname},
 	}
-	InitSession(w, r, *user)
+	sessionToken := uuid.Must(uuid.NewV4()).String()
+	InitSession(w, r, *user, sessionToken)
 	WriteJSON(w, http.StatusOK, response)
 }
+
 func SigninHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST")
@@ -228,10 +230,17 @@ func InitSession(w http.ResponseWriter, r *http.Request, user models.User, sessi
 	}
 }
 
+func Logout(w http.ResponseWriter, r *http.Request) {
+	sessionToken := r.Header.Get("Authorization")
+	if sessionToken != "" {
+		models.SessionRepo.DeleteSession(sessionToken)
+	}
+	WriteJSON(w, http.StatusOK, ApiSuccess{Message: "Deconnected."})
+}
+
 func IsAuthenticated(r *http.Request) (models.Session, bool) {
-	c, err := r.Cookie(sessionCookieName)
-	if err == nil {
-		sessionToken := c.Value
+	sessionToken := r.Header.Get("Authorization")
+	if sessionToken != "" {
 		userSession, exists := models.SessionRepo.SessionExists(sessionToken)
 		if exists && !lib.IsExpired(userSession.Expiry) {
 			return userSession, true
