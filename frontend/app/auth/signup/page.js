@@ -14,11 +14,11 @@ const validationSchema = Yup.object().shape({
 	birthdate: Yup.date().required("Birthdate is required"),
 	password: Yup.string()
 		.required("Password is required")
-		.matches(/^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*\d.*\d.*\d.*\d).*$/, "Password must contain at least one uppercase letter, one special character, and at least 4 digits"),
+		.matches(/^(?=.*\d)(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$/, "Password must contain at least 1 uppercase letter, 1 special char, 1 digit, and 8 char long"),
 	cPassword: Yup.string()
 		.required("Confirm your password")
 		.oneOf([Yup.ref("password"), null], "Passwords must match"),
-	avatar: Yup.mixed(),
+	avatar: Yup.mixed().test("fileSize", "File size is too large", (value) => (value ? value.size <= 5000000 : true)),
 	about_me: Yup.string(),
 });
 
