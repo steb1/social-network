@@ -74,7 +74,6 @@ const SignupPage = () => {
 								<input
 									value={values.nickname}
 									onChange={handleChange}
-									lastname
 									type="text"
 									name="nickname"
 									placeholder="Nickname"

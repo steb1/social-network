@@ -1,9 +1,10 @@
 "use client";
+import dynamic from "next/dynamic";
 import React from "react";
-import Lottie from "lottie-react";
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 const Animation = ({ animationData }) => {
-  return <Lottie loop animationData={animationData} play />;
+	return <Lottie loop animationData={animationData} play="true" />;
 };
 
 export default Animation;
