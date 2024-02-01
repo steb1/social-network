@@ -16,7 +16,7 @@ const authMiddleware = (handler, serverUrl) => async (req, res) => {
 	const response = await fetch(serverUrl, {
 		method: "POST",
 		headers: {
-			Authorization: `Bearer ${jwt}`,
+			Authorization: `Bearer ${token}`,
 			"Content-Type": "application/json",
 		},
 	});
