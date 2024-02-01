@@ -5,6 +5,7 @@ import authAnimation from "../../../public/assets/animations/authAnimation.json"
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import config from "@/config";
 import * as Yup from "yup";
 
 // Using Yup librairy schema to validate the form
@@ -25,7 +26,7 @@ const SigninPage = () => {
 		validationSchema,
 		onSubmit: async ({ emailOrNickname, password }) => {
 			try {
-				const response = await fetch("http://localhost:8080/api/signin", {
+				const response = await fetch(config.serverApiUrl + "signin", {
 					method: "POST",
 					body: JSON.stringify({ emailOrNickname, password }),
 					headers: {
@@ -36,7 +37,7 @@ const SigninPage = () => {
 				if (response.ok) {
 					const data = await response.json();
 					// Set cookie on the client side
-					document.cookie = `social-network=${data.token}; path=/; max-age=${3 * 60 * 60}`;
+					document.cookie = `${config.cookieName}=${data.token}; path=/; max-age=${3 * 60 * 60}`;
 					router.replace("/");
 				} else {
 					const errorResponse = await response.json();

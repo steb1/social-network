@@ -4,6 +4,7 @@ import Animation from "@/app/components/animation";
 import authAnimation from "../../../public/assets/animations/authAnimation.json";
 import { useRouter } from "next/navigation";
 import { useFormik } from "formik";
+import config from "@/config";
 import * as Yup from "yup";
 
 // Using Yup librairy schema to validate the form
@@ -39,7 +40,7 @@ const SignupPage = () => {
 		},
 		validationSchema,
 		onSubmit: async ({ first_name, last_name, nickname, email, birthdate, password, avatar, about_me }) => {
-			const response = await fetch("http://localhost:8080/api/signup", {
+			const response = await fetch(config.serverApiUrl + "signup", {
 				method: "POST",
 				body: JSON.stringify({ first_name, last_name, nickname, email, birthdate, password, avatar, about_me }),
 			});
