@@ -176,10 +176,16 @@ func SignupHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func SigninHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+
+	if r.Method == "OPTIONS" {
+		// Preflight request, respond with a 200 OK
+		return
+	}
 	request := new(LoginRequest)
 
 	if err := json.NewDecoder(r.Body).Decode(request); err != nil {
