@@ -208,7 +208,7 @@ func SigninHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := models.UserRepo.CheckCredentials(request.NicknameOrEmail, request.Password)
 	if !ok {
 		apiError := ApiError{Error: "Woops! Invalid credentials."}
-		WriteJSON(w, http.StatusBadRequest, apiError)
+		WriteJSON(w, http.StatusUnauthorized, apiError)
 		return
 	}
 	sessionToken := uuid.Must(uuid.NewV4()).String()
