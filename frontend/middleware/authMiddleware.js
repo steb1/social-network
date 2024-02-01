@@ -1,4 +1,5 @@
 // middleware/authMiddleware.js
+"use server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -15,9 +16,9 @@ const authMiddleware = (handler, serverUrl) => async (req, res) => {
 	const response = await fetch(serverUrl, {
 		method: "POST",
 		headers: {
+			Authorization: `Bearer ${jwt}`,
 			"Content-Type": "application/json",
 		},
-		body: JSON.stringify({ token }),
 	});
 
 	if (response.status === 200) {
