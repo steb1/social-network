@@ -3,7 +3,7 @@ import Link from "next/link";
 import Animation from "../../components/animation";
 import authAnimation from "../../../public/assets/animations/authAnimation.json";
 import { useFormik } from "formik";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import * as Yup from "yup";
 
 // Using Yup librairy schema to validate the form
@@ -13,6 +13,8 @@ const validationSchema = Yup.object().shape({
 });
 
 const SigninPage = () => {
+    const router = useRouter();
+
     const formik = useFormik({
         initialValues: {
             emailOrNickname: "",
@@ -32,6 +34,8 @@ const SigninPage = () => {
                 if (response.ok) {
                     const data = await response.json();
 
+                    document.cookie = `social-network=${data.token}; path=/; max-age=${3 * 60 * 60}`;
+                    // Set cookie on the client side
                     document.cookie = `social-network=${data.token}; path=/; max-age=${3 * 60 * 60}`;
 
                     router.replace("/");
