@@ -7,6 +7,9 @@ export default function Home() {
       <Link href="auth/signup" className="btn btn-primary ">
         Signup
       </Link>
+      <Link href="auth/signup" className="btn btn-primary ">
+       CreatePost
+      </Link>
     </main>
   );
 }
