@@ -11,7 +11,7 @@ import * as Yup from "yup";
 const validationSchema = Yup.object().shape({
 	first_name: Yup.string().required("Firstname is required"),
 	last_name: Yup.string().required("Lastname is required"),
-	nickname: Yup.string(),
+	nickname: Yup.string().max(20, "Nickname at most 20 char"),
 	email: Yup.string().required("Email is required").email("Invalid email"),
 	birthdate: Yup.date().required("Birthdate is required"),
 	password: Yup.string()
@@ -20,7 +20,9 @@ const validationSchema = Yup.object().shape({
 	cPassword: Yup.string()
 		.required("Confirm your password")
 		.oneOf([Yup.ref("password"), null], "Passwords must match"),
-	avatar: Yup.mixed().test("fileSize", "File size is too large", (value) => (value ? value.size <= 5000000 : true)),
+	avatar: Yup.mixed()
+		.nullable()
+		.test("fileSize", "File size is too large", (value) => (value ? value.size <= 5000000 : true)),
 	about_me: Yup.string(),
 });
 
@@ -39,20 +41,32 @@ const SignupPage = () => {
 			about_me: "",
 		},
 		validationSchema,
-		onSubmit: async ({ first_name, last_name, nickname, email, birthdate, password, avatar, about_me }) => {
-			const response = await fetch(config.serverApiUrl + "signup", {
-				method: "POST",
-				body: JSON.stringify({ first_name, last_name, nickname, email, birthdate, password, avatar, about_me }),
-			});
-
-			// Handle response if necessary
-			const data = await response.json();
-			console.log(data);
-		},
 	});
 
-	// Destructure the formik object
 	const { errors, touched, values, handleChange, handleSubmit } = formik;
+
+	async function onSubmit(event) {
+		event.preventDefault();
+		handleSubmit();
+
+		const formHasErrors = Object.values(errors).some((error) => !!error);
+
+		if (formHasErrors) {
+			console.log("Form has some errors i will no trigger the server.");
+			return;
+		}
+
+		const formData = new FormData(event.target);
+		const response = await fetch(config.serverApiUrl + "signup", {
+			method: "POST",
+			body: formData,
+		});
+
+		const data = await response.json();
+
+		console.log(data);
+	}
+
 	return (
 		<div className="flex min-h-screen w-full items-center justify-center   p-10 px-5 py-5 font-sans text-white">
 			<div className="flex w-full items-stretch justify-between rounded-md border border-black/20 bg-white px-5 py-5 drop-shadow-xl xl:max-w-7xl xl:px-5">
@@ -62,32 +76,11 @@ const SignupPage = () => {
 				<div className="mx-auto w-full py-5 md:p-10 md:py-0 lg:w-1/2">
 					<h1 className="bg-clip-text text-center font-instalogo text-5xl text-black ">The Social Network</h1>
 					<div className="mt-5 w-full sm:mt-8">
-						<form onSubmit={handleSubmit} className="mx-auto flex w-full flex-col gap-5 sm:max-w-md md:max-w-lg">
+						<form onSubmit={onSubmit} className="mx-auto flex w-full flex-col gap-5 sm:max-w-md md:max-w-lg">
 							<div className="flex flex-col gap-3 sm:flex-row">
-								<input
-									value={values.first_name}
-									onChange={handleChange}
-									type="text"
-									name="first_name"
-									placeholder="First Name"
-									className="input input-bordered input-primary w-full max-w-xs text-[#9BA3AF]"
-								/>
-								<input
-									value={values.last_name}
-									onChange={handleChange}
-									type="text"
-									name="last_name"
-									placeholder="Last Name"
-									className="input input-bordered input-primary w-full max-w-xs text-[#9BA3AF]"
-								/>
-								<input
-									value={values.nickname}
-									onChange={handleChange}
-									type="text"
-									name="nickname"
-									placeholder="Nickname"
-									className="input input-bordered input-primary w-full max-w-xs text-[#9BA3AF]"
-								/>
+								<input value={values.first_name} onChange={handleChange} type="text" name="first_name" placeholder="First Name" className="input input-bordered input-primary w-full max-w-xs text-[#9BA3AF]" />
+								<input value={values.last_name} onChange={handleChange} type="text" name="last_name" placeholder="Last Name" className="input input-bordered input-primary w-full max-w-xs text-[#9BA3AF]" />
+								<input value={values.nickname} onChange={handleChange} type="text" name="nickname" placeholder="Nickname" className="input input-bordered input-primary w-full max-w-xs text-[#9BA3AF]" />
 							</div>
 							<div className="flex flex-col gap-3 sm:flex-row">
 								{errors.first_name && touched.first_name && <span className="text-red-500 text-xs">{errors.first_name}</span>}
@@ -107,22 +100,8 @@ const SignupPage = () => {
 							{errors.birthdate && touched.birthdate && <span className="text-red-500 text-xs">{errors.birthdate}</span>}
 
 							<div className="flex flex-col gap-3 sm:flex-row">
-								<input
-									value={values.password}
-									onChange={handleChange}
-									type="Password"
-									name="password"
-									placeholder="Enter Your Password"
-									className="input input-bordered input-primary w-full text-[#9BA3AF]"
-								/>
-								<input
-									value={values.cPassword}
-									onChange={handleChange}
-									type="Password"
-									name="cPassword"
-									placeholder="Confirm Your Password"
-									className="input input-bordered input-primary w-full text-[#9BA3AF]"
-								/>
+								<input value={values.password} onChange={handleChange} type="Password" name="password" placeholder="Enter Your Password" className="input input-bordered input-primary w-full text-[#9BA3AF]" />
+								<input value={values.cPassword} onChange={handleChange} type="Password" name="cPassword" placeholder="Confirm Your Password" className="input input-bordered input-primary w-full text-[#9BA3AF]" />
 							</div>
 							<div className="flex flex-col gap-3 sm:flex-row">
 								{errors.password && touched.password && <span className="text-red-500 text-xs">{errors.password}</span>}
@@ -135,11 +114,11 @@ const SignupPage = () => {
 								<div className="label">
 									<span className="label-text">Your avatar</span>
 								</div>
-								<input type="file" name="avatar" className="file-input file-input-bordered w-full max-w-lg text-[#9BA3AF]" />
+								<input type="file" name="avatar" className="file-input file-input-bordered w-full max-w-lg text-[#9BA3AF] cursor-pointer" />
 							</label>
-							{/* {errors.avatar && touched.avatar && <span className="text-red-500 text-xs">{errors.avatar}</span>} */}
+							{errors.avatar && touched.avatar && <span className="text-red-500 text-xs">{errors.avatar}</span>}
 
-							<textarea value={values.about_me} onChange={handleChange} name="about_me" className="textarea textarea-secondary text-[#9BA3AF]" placeholder="about_me"></textarea>
+							<textarea value={values.about_me} onChange={handleChange} name="about_me" className="textarea textarea-secondary text-[#9BA3AF]" placeholder="About me"></textarea>
 							{errors.about_me && touched.about_me && <span className="text-red-500 text-xs">{errors.about_me}</span>}
 
 							<div className="flex justify-center">

@@ -143,7 +143,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 	email := r.FormValue("email")
 	birthdate := r.FormValue("birthdate")
-
+	fmt.Println(birthdate)
 	fmt.Println(r.FormValue("last_name"))
 
 	if !lib.IsValidName((firstname)) || !lib.IsValidName((lastname)) {
@@ -188,11 +188,11 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !lib.IsValidDOB(strings.TrimSpace(birthdate)) {
-		apiError.Error = "Provide a valid Date."
-		WriteJSON(w, http.StatusBadRequest, apiError)
-		return
-	}
+	// if !lib.IsValidDOB(strings.TrimSpace(birthdate)) {
+	// 	apiError.Error = "Provide a valid Date."
+	// 	WriteJSON(w, http.StatusBadRequest, apiError)
+	// 	return
+	// }
 
 	avatarFile, avatarHeader, err := r.FormFile("avatar")
 	if err != nil {
