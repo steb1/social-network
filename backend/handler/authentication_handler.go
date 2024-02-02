@@ -197,44 +197,47 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	avatarFile, avatarHeader, err := r.FormFile("avatar")
 	if err != nil {
 		if err != http.ErrMissingFile {
-			log.Println("Error while fetching files:", err)
+			avatarFile = nil
+		}
+	}
+	var avatarFilename string
+
+	if avatarFile != nil {
+		if avatarHeader.Size > 20*1024*1024 {
+			apiError.Error = "Cannot upload files bigger than 20MB."
+			WriteJSON(w, http.StatusBadRequest, apiError)
+			log.Println("Cannot upload files more than 20 MB")
 			return
 		}
-	}
-	defer avatarFile.Close()
-	if avatarHeader.Size > 20*1024*1024 {
-		apiError.Error = "Cannot upload files bigger than 20MB."
-		WriteJSON(w, http.StatusBadRequest, apiError)
-		log.Println("Cannot upload files more than 20 MB")
-		return
-	}
-	ext := filepath.Ext(avatarHeader.Filename)
-	ext = strings.ToLower(ext)
-	validExtensions := []string{".jpeg", ".jpg", ".gif", ".webp", ".png"}
-	allowed := false
-	for _, extension := range validExtensions {
-		if ext == extension {
-			allowed = true
+		ext := filepath.Ext(avatarHeader.Filename)
+		ext = strings.ToLower(ext)
+		validExtensions := []string{".jpeg", ".jpg", ".gif", ".webp", ".png"}
+		allowed := false
+		for _, extension := range validExtensions {
+			if ext == extension {
+				allowed = true
+			}
 		}
-	}
-	if !allowed {
-		fmt.Println("Extension not valid :", ext)
-		http.Error(w, "Extension de fichier non valide (JPEG, JPG, GIF, WEBP et PNG uniquement)", http.StatusBadRequest)
-		return
-	}
-	// Generate a unique filename for the avatar, e.g., using the user's email and a timestamp
-	avatarFilename := fmt.Sprintf("%s_%d%s", user.Email, time.Now().UnixNano(), filepath.Ext(avatarHeader.Filename))
+		if !allowed {
+			fmt.Println("Extension not valid :", ext)
+			http.Error(w, "Extension de fichier non valide (JPEG, JPG, GIF, WEBP et PNG uniquement)", http.StatusBadRequest)
+			return
+		}
+		// Generate a unique filename for the avatar, e.g., using the user's email and a timestamp
+		avatarFilename = fmt.Sprintf("%s_%d%s", user.Email, time.Now().UnixNano(), filepath.Ext(avatarHeader.Filename))
 
-	// Specify the path where the avatar will be saved
-	avatarPath := filepath.Join("./uploads/avatar", avatarFilename)
+		// Specify the path where the avatar will be saved
+		avatarPath := filepath.Join("./uploads/avatar", avatarFilename)
 
-	// Save the avatar to the specified path
-	avatarSaveErr := lib.SaveFile(avatarFile, avatarPath)
-	if avatarSaveErr != nil {
-		// Handle avatar save error
-		apiError.Error = "Error saving avatar."
-		WriteJSON(w, http.StatusInternalServerError, apiError)
-		return
+		// Save the avatar to the specified path
+		avatarSaveErr := lib.SaveFile(avatarFile, avatarPath)
+		if avatarSaveErr != nil {
+			// Handle avatar save error
+			apiError.Error = "Error saving avatar."
+			WriteJSON(w, http.StatusInternalServerError, apiError)
+			return
+		}
+
 	}
 
 	user.LastName = lastname
