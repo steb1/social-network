@@ -2,7 +2,9 @@
 import Link from "next/link";
 import Animation from "@/app/components/animation";
 import authAnimation from "../../../public/assets/animations/authAnimation.json";
+import { useRouter } from "next/navigation";
 import { useFormik } from "formik";
+import config from "@/config";
 import * as Yup from "yup";
 
 // Using Yup librairy schema to validate the form
@@ -23,6 +25,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const SignupPage = () => {
+	const router = useRouter();
 	const formik = useFormik({
 		initialValues: {
 			first_name: "",
@@ -37,7 +40,7 @@ const SignupPage = () => {
 		},
 		validationSchema,
 		onSubmit: async ({ first_name, last_name, nickname, email, birthdate, password, avatar, about_me }) => {
-			const response = await fetch("http://localhost:8080/api/signup", {
+			const response = await fetch(config.serverApiUrl + "signup", {
 				method: "POST",
 				body: JSON.stringify({ first_name, last_name, nickname, email, birthdate, password, avatar, about_me }),
 			});
@@ -147,10 +150,8 @@ const SignupPage = () => {
 
 							<h4 className="font-sans text-base text-black">
 								<span>Already have an account ?</span>
-								<span className="ml-2">
-									<Link href="/auth/signin">
-										<span className="text-[#4A07DA]">Sign in</span>
-									</Link>
+								<span onClick={() => router.replace("/auth/signin")} className="text-[#4A07DA] ml-2 cursor-pointer">
+									Sign in
 								</span>
 							</h4>
 
