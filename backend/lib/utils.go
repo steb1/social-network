@@ -327,8 +327,9 @@ func IsExpired(expiry time.Time) bool {
 	return time.Now().After(expiry)
 }
 func IsValidName(name string) bool {
+	toto := strings.TrimSpace(name)
 	validNameRegex := regexp.MustCompile(`^[a-zA-Z]+(?:\s[a-zA-Z]+)?$`)
-	return validNameRegex.MatchString(name)
+	return validNameRegex.MatchString(toto)
 }
 func IsValidDOB(dob string) bool {
 	// Regular expression to validate date format (jj/mm/aaaa)
