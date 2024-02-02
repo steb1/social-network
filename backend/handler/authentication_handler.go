@@ -278,3 +278,16 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	InitSession(w, r, *userCreated, sessionToken)
 	WriteJSON(w, http.StatusOK, response)
 }
+
+func HomeHandler(w http.ResponseWriter, r *http.Request) {
+	sessionToken := r.Header.Get("Authorization")
+	_, ok := models.SessionRepo.SessionExists(sessionToken)
+	if !ok {
+		var apiError ApiError
+		apiError.Error = "Unauthorized"
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	}
+
+	WriteJSON(w, http.StatusOK, ApiSuccess{Message: "Connected."})
+}
