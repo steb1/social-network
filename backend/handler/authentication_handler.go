@@ -41,140 +41,6 @@ type SigninResponse struct {
 	Token     string      `json:"token"`
 }
 
-func SignupHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, POST")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	w.Header().Set("Content-Type", "application/json")
-
-	userRequest := new(models.User)
-
-	if err := json.NewDecoder(r.Body).Decode(userRequest); err != nil {
-		return
-	}
-	var apiError ApiError
-
-	if lib.IsValidName(userRequest.FirstName) || lib.IsValidName((userRequest.LastName)) {
-		apiError.Error = "Firstname/Lastname cannot have numbers or to much spaces."
-		WriteJSON(w, http.StatusBadRequest, apiError)
-	}
-
-	if lib.IsBlank(userRequest.FirstName) {
-		apiError.Error = "Firstname cannot be empty."
-		WriteJSON(w, http.StatusBadRequest, apiError)
-		return
-	}
-	if len(userRequest.AboutMe) > MAX_LENGTH_ABOUT_ME {
-		apiError.Error = fmt.Sprintf("About me cannot exceed %d characters.", MAX_LENGTH_ABOUT_ME)
-		WriteJSON(w, http.StatusBadRequest, apiError)
-		return
-	}
-
-	if userRequest.Nickname != "" && !lib.IsValidNickname(userRequest.Nickname) {
-		apiError.Error = "Respect nickname specification. Only Numeric and special charactes but no space"
-		WriteJSON(w, http.StatusBadRequest, apiError)
-		return
-	}
-
-	if lib.IsBlank(userRequest.LastName) {
-		apiError.Error = "Lastname cannot be empty."
-		WriteJSON(w, http.StatusBadRequest, apiError)
-		return
-	}
-
-	if lib.IsBlank(userRequest.Password) {
-		apiError.Error = "Password cannot be empty."
-		WriteJSON(w, http.StatusBadRequest, apiError)
-		return
-	}
-
-	if !lib.IsValidEmail(userRequest.Email) {
-		apiError.Error = "Email not valid."
-		WriteJSON(w, http.StatusBadRequest, apiError)
-		return
-	}
-
-	if !lib.IsValidDOB(userRequest.DateOfBirth) {
-		apiError.Error = "Provide a valid Date."
-		WriteJSON(w, http.StatusBadRequest, apiError)
-		return
-	}
-	avatarFile, avatarHeader, err := r.FormFile("avatar")
-	if err != nil {
-		if err != http.ErrMissingFile {
-			log.Println("Error while fetching files:", err)
-			return
-		}
-	}
-
-	defer avatarFile.Close()
-	if avatarHeader.Size > 20*1024*1024 {
-		apiError.Error = "Cannot upload files bigger than 20MB."
-		WriteJSON(w, http.StatusBadRequest, apiError)
-		log.Println("Cannot upload files more than 20 MB")
-		return
-	}
-	ext := filepath.Ext(avatarHeader.Filename)
-	ext = strings.ToLower(ext)
-	validExtensions := []string{".jpeg", ".jpg", ".gif", ".webp", ".png"}
-	allowed := false
-	for _, extension := range validExtensions {
-		if ext == extension {
-			allowed = true
-		}
-	}
-	if !allowed {
-		fmt.Println("Extension not valid :", ext)
-		http.Error(w, "Extension de fichier non valide (JPEG, JPG, GIF, WEBP et PNG uniquement)", http.StatusBadRequest)
-		return
-	}
-	// Generate a unique filename for the avatar, e.g., using the user's email and a timestamp
-	avatarFilename := fmt.Sprintf("%s_%d%s", userRequest.Email, time.Now().UnixNano(), filepath.Ext(avatarHeader.Filename))
-
-	// Specify the path where the avatar will be saved
-	avatarPath := filepath.Join("./uploads/avatar", avatarFilename)
-
-	// Save the avatar to the specified path
-	avatarSaveErr := lib.SaveFile(avatarFile, avatarPath)
-	if avatarSaveErr != nil {
-		// Handle avatar save error
-		apiError.Error = "Error saving avatar."
-		WriteJSON(w, http.StatusInternalServerError, apiError)
-		return
-	}
-
-	userRequest.Avatar = avatarFilename
-
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userRequest.Password), bcrypt.DefaultCost)
-	if err != nil {
-		apiError.Error = "Error with your password."
-		WriteJSON(w, http.StatusBadRequest, apiError)
-		return
-	}
-	userRequest.Password = string(hashedPassword)
-
-	err = models.UserRepo.CreateUser(userRequest)
-	if err != nil {
-		success := ApiError{Error: "An error occurred. The username/Email may be taken."}
-		WriteJSON(w, http.StatusBadRequest, success)
-		return
-	}
-	user, err := models.UserRepo.GetUserByEmail(userRequest.Email)
-	if err != nil {
-		apiError.Error = "An error occurred."
-		WriteJSON(w, http.StatusBadRequest, apiError)
-		return
-	}
-	message := fmt.Sprintf("User %s %s successfully created.", user.FirstName, user.LastName)
-	response := RegisterResponse{
-		Message:   message,
-		UserInfos: UserInfos{LastName: user.LastName, Firstname: user.FirstName, Nickname: user.Nickname},
-	}
-	sessionToken := uuid.Must(uuid.NewV4()).String()
-	InitSession(w, r, *user, sessionToken)
-	WriteJSON(w, http.StatusOK, response)
-}
-
 func SigninHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
@@ -254,4 +120,158 @@ func IsAuthenticated(r *http.Request) (models.Session, bool) {
 		}
 	}
 	return models.Session{}, false
+}
+
+func RegisterHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Content-Type", "multipart/form-data")
+
+	var user models.User
+	var apiError ApiError
+	errs := r.ParseMultipartForm(10 << 20)
+	if errs != nil {
+		fmt.Println("An error occured")
+		return
+	}
+
+	firstname := r.FormValue("first_name")
+	lastname := r.FormValue("last_name")
+	about_me := r.FormValue("about_me")
+	nickname := r.FormValue(("nickname"))
+	password := r.FormValue("password")
+	email := r.FormValue("email")
+	birthdate := r.FormValue("birthdate")
+
+	fmt.Println(r.FormValue("last_name"))
+
+	if !lib.IsValidName((firstname)) || !lib.IsValidName((lastname)) {
+		apiError.Error = "Firstname/Lastname cannot have numbers or to much spaces."
+		WriteJSON(w, http.StatusBadRequest, apiError)
+		return
+	}
+
+	if lib.IsBlank(firstname) {
+		apiError.Error = "Firstname cannot be empty."
+		WriteJSON(w, http.StatusBadRequest, apiError)
+		return
+	}
+
+	if len(strings.TrimSpace(about_me)) > MAX_LENGTH_ABOUT_ME {
+		apiError.Error = fmt.Sprintf("About me cannot exceed %d characters.", MAX_LENGTH_ABOUT_ME)
+		WriteJSON(w, http.StatusBadRequest, apiError)
+		return
+	}
+
+	if strings.TrimSpace(nickname) != "" && !lib.IsValidNickname(strings.TrimSpace(nickname)) {
+		apiError.Error = "Respect nickname specification. Only Numeric and special charactes but no space"
+		WriteJSON(w, http.StatusBadRequest, apiError)
+		return
+	}
+
+	if lib.IsBlank(strings.TrimSpace(lastname)) {
+		apiError.Error = "Lastname cannot be empty."
+		WriteJSON(w, http.StatusBadRequest, apiError)
+		return
+	}
+
+	if lib.IsBlank(strings.TrimSpace(password)) {
+		apiError.Error = "Password cannot be empty."
+		WriteJSON(w, http.StatusBadRequest, apiError)
+		return
+	}
+
+	if !lib.IsValidEmail(strings.TrimSpace(email)) {
+		apiError.Error = "Email not valid."
+		WriteJSON(w, http.StatusBadRequest, apiError)
+		return
+	}
+
+	if !lib.IsValidDOB(strings.TrimSpace(birthdate)) {
+		apiError.Error = "Provide a valid Date."
+		WriteJSON(w, http.StatusBadRequest, apiError)
+		return
+	}
+
+	avatarFile, avatarHeader, err := r.FormFile("avatar")
+	if err != nil {
+		if err != http.ErrMissingFile {
+			log.Println("Error while fetching files:", err)
+			return
+		}
+	}
+	defer avatarFile.Close()
+	if avatarHeader.Size > 20*1024*1024 {
+		apiError.Error = "Cannot upload files bigger than 20MB."
+		WriteJSON(w, http.StatusBadRequest, apiError)
+		log.Println("Cannot upload files more than 20 MB")
+		return
+	}
+	ext := filepath.Ext(avatarHeader.Filename)
+	ext = strings.ToLower(ext)
+	validExtensions := []string{".jpeg", ".jpg", ".gif", ".webp", ".png"}
+	allowed := false
+	for _, extension := range validExtensions {
+		if ext == extension {
+			allowed = true
+		}
+	}
+	if !allowed {
+		fmt.Println("Extension not valid :", ext)
+		http.Error(w, "Extension de fichier non valide (JPEG, JPG, GIF, WEBP et PNG uniquement)", http.StatusBadRequest)
+		return
+	}
+	// Generate a unique filename for the avatar, e.g., using the user's email and a timestamp
+	avatarFilename := fmt.Sprintf("%s_%d%s", user.Email, time.Now().UnixNano(), filepath.Ext(avatarHeader.Filename))
+
+	// Specify the path where the avatar will be saved
+	avatarPath := filepath.Join("./uploads/avatar", avatarFilename)
+
+	// Save the avatar to the specified path
+	avatarSaveErr := lib.SaveFile(avatarFile, avatarPath)
+	if avatarSaveErr != nil {
+		// Handle avatar save error
+		apiError.Error = "Error saving avatar."
+		WriteJSON(w, http.StatusInternalServerError, apiError)
+		return
+	}
+
+	user.LastName = lastname
+	user.FirstName = firstname
+	user.Nickname = nickname
+	user.AboutMe = about_me
+	user.DateOfBirth = birthdate
+	user.Email = email
+	user.Avatar = avatarFilename
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		apiError.Error = "Error with your password."
+		WriteJSON(w, http.StatusBadRequest, apiError)
+		return
+	}
+	user.Password = string(hashedPassword)
+
+	err = models.UserRepo.CreateUser(&user)
+	if err != nil {
+		success := ApiError{Error: "An error occurred. The username/Email may be taken."}
+		WriteJSON(w, http.StatusBadRequest, success)
+		return
+	}
+	userCreated, err := models.UserRepo.GetUserByEmail(user.Email)
+	if err != nil {
+		apiError.Error = "An error occurred."
+		WriteJSON(w, http.StatusBadRequest, apiError)
+		return
+	}
+	message := fmt.Sprintf("User %s %s successfully created.", userCreated.FirstName, userCreated.LastName)
+	response := RegisterResponse{
+		Message:   message,
+		UserInfos: UserInfos{LastName: userCreated.LastName, Firstname: userCreated.FirstName, Nickname: userCreated.Nickname},
+	}
+	sessionToken := uuid.Must(uuid.NewV4()).String()
+	fmt.Println(userCreated)
+	InitSession(w, r, *userCreated, sessionToken)
+	WriteJSON(w, http.StatusOK, response)
 }

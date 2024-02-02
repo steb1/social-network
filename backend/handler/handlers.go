@@ -20,7 +20,7 @@ const (
 )
 
 var Routes = []Route{
-	{Path: "/api/signup", Handler: SignupHandler, Methods: []string{"POST", "OPTIONS"}},
+	{Path: "/api/signup", Handler: RegisterHandler, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/signin", Handler: SigninHandler, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/logout", Handler: Logout, Methods: []string{"GET"}},
 }
