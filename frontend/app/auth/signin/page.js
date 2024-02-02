@@ -78,7 +78,7 @@ const SigninPage = () => {
 								value={values.password}
 								onChange={handleChange}
 								name="password"
-								type="Password"
+								type="password"
 								placeholder="Password"
 								className="input input-bordered input-primary w-full text-[#9BA3AF]"
 							/>
