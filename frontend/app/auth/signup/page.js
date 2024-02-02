@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import { useState } from "react";
 import Animation from "@/app/components/animation";
 import authAnimation from "../../../public/assets/animations/authAnimation.json";
 import { useRouter } from "next/navigation";
@@ -28,6 +28,11 @@ const validationSchema = Yup.object().shape({
 
 const SignupPage = () => {
 	const router = useRouter();
+	const [serverLog, setServerLog] = useState({
+		message: null,
+		isErr: false,
+	});
+
 	const formik = useFormik({
 		initialValues: {
 			first_name: "",
@@ -41,30 +46,53 @@ const SignupPage = () => {
 			about_me: "",
 		},
 		validationSchema,
+		onSubmit: async () => {},
 	});
 
 	const { errors, touched, values, handleChange, handleSubmit } = formik;
 
 	async function onSubmit(event) {
-		event.preventDefault();
-		handleSubmit();
+		try {
+			event.preventDefault();
+			handleSubmit();
 
-		const formHasErrors = Object.values(errors).some((error) => !!error);
+			const formHasErrors = Object.values(errors).some((error) => !!error);
 
-		if (formHasErrors) {
-			console.log("Form has some errors i will no trigger the server.");
-			return;
+			if (formHasErrors) {
+				console.log("Form has some errors; will not trigger the server.");
+				return;
+			}
+
+			const formData = new FormData(event.target);
+			const response = await fetch(config.serverApiUrl + "signup", {
+				method: "POST",
+				body: formData,
+			});
+
+			if (response.ok) {
+				const data = await response.json();
+				setServerLog({
+					message: `${data.message}`,
+					isErr: false,
+				});
+				setTimeout(() => {
+					router.replace("/auth/signin");
+				}, 3000);
+			} else {
+				const errorResponse = await response.json();
+				const errorMessage = errorResponse.error || "An error occurred.";
+				setServerLog({
+					message: `${errorMessage}`,
+					isErr: true,
+				});
+			}
+		} catch (error) {
+			console.error("An error occurred:", error);
+			setServerLog({
+				message: "Error occurring",
+				isErr: true,
+			});
 		}
-
-		const formData = new FormData(event.target);
-		const response = await fetch(config.serverApiUrl + "signup", {
-			method: "POST",
-			body: formData,
-		});
-
-		const data = await response.json();
-
-		console.log(data);
 	}
 
 	return (
@@ -121,7 +149,8 @@ const SignupPage = () => {
 							<textarea value={values.about_me} onChange={handleChange} name="about_me" className="textarea textarea-secondary text-[#9BA3AF]" placeholder="About me"></textarea>
 							{errors.about_me && touched.about_me && <span className="text-red-500 text-xs">{errors.about_me}</span>}
 
-							<div className="flex justify-center">
+							<div className="flex  flex-col items-center justify-center">
+								{serverLog && <span className={serverLog.isErr ? "text-red-500 text-xs mb-2" : "text-green-500 text-xs mb-2"}>{serverLog.message}</span>}
 								<button className="btn btn-primary btn-active btn-block max-w-[200px] text-white" type="submit">
 									Sign up
 								</button>

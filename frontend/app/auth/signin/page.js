@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import Animation from "../../components/animation";
 import authAnimation from "../../../public/assets/animations/authAnimation.json";
 import { useFormik } from "formik";
@@ -64,24 +63,10 @@ const SigninPage = () => {
 					<h1 className="bg-gradient-to-r from-pink-500   via-purple-500 to-indigo-500 bg-clip-text text-center font-instalogo text-5xl text-black ">The Social Network</h1>
 					<div className="mt-5 w-full sm:mt-8">
 						<form onSubmit={handleSubmit} className="mx-auto flex w-full flex-col gap-5 sm:max-w-md md:max-w-lg">
-							<input
-								value={values.emailOrNickname}
-								onChange={handleChange}
-								name="emailOrNickname"
-								type="text"
-								placeholder="Email or Nickname"
-								className="input input-bordered input-primary w-full text-[#9BA3AF]"
-							/>
+							<input value={values.emailOrNickname} onChange={handleChange} name="emailOrNickname" type="text" placeholder="Email or Nickname" className="input input-bordered input-primary w-full text-[#9BA3AF]" />
 							{errors.emailOrNickname && touched.emailOrNickname && <span className="text-red-500 text-xs">{errors.emailOrNickname}</span>}
 
-							<input
-								value={values.password}
-								onChange={handleChange}
-								name="password"
-								type="password"
-								placeholder="Password"
-								className="input input-bordered input-primary w-full text-[#9BA3AF]"
-							/>
+							<input value={values.password} onChange={handleChange} name="password" type="password" placeholder="Password" className="input input-bordered input-primary w-full text-[#9BA3AF]" />
 							{errors.password && touched.password && <span className="text-red-500 text-xs">{errors.password}</span>}
 
 							<div className="flex flex-col items-center justify-center">
