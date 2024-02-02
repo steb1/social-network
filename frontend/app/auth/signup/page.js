@@ -71,27 +71,16 @@ const SignupPage = () => {
 
 			if (response.ok) {
 				const data = await response.json();
-				setServerLog({
-					message: `${data.message}`,
-					isErr: false,
-				});
-				setTimeout(() => {
-					router.replace("/auth/signin");
-				}, 3000);
+				setServerLog({ message: `${data.message}`, isErr: false });
+				setTimeout(() => router.replace("/auth/signin"), 3000);
 			} else {
 				const errorResponse = await response.json();
 				const errorMessage = errorResponse.error || "An error occurred.";
-				setServerLog({
-					message: `${errorMessage}`,
-					isErr: true,
-				});
+				setServerLog({ message: `${errorMessage}`, isErr: true });
 			}
 		} catch (error) {
 			console.error("An error occurred:", error);
-			setServerLog({
-				message: "Error occurring",
-				isErr: true,
-			});
+			setServerLog({ message: "Error occurring", isErr: true });
 		}
 	}
 
