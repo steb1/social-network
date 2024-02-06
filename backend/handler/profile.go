@@ -1,0 +1,63 @@
+package handler
+
+import (
+	"net/http"
+	"strconv"
+
+	"server/models"
+)
+
+type UserProfileResponse struct {
+	UserID      int            `json:userID`
+	FirstName   string         `json:"firstName"`
+	LastName    string         `json:"lastName"`
+	Nickname    string         `json:"nickname"`
+	Email       string         `json:"email"`
+	DateOfBirth string         `json:"dateOfBirth"`
+	Avatar      string         `json:"avatar"`
+	AboutMe     string         `json:"aboutMe"`
+	UserPosts   []*models.Post `json:"userPosts"`
+}
+
+func HandleGetProfile(w http.ResponseWriter, r *http.Request) {
+	idParam := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		var apiError ApiError
+		apiError.Error = "BadRequest"
+		WriteJSON(w, http.StatusBadRequest, apiError)
+		return
+	}
+
+	user, err := models.UserRepo.GetUserByID(id)
+	if err != nil || user == nil {
+		var apiError ApiError
+		apiError.Error = "Not found user"
+		WriteJSON(w, http.StatusNotFound, apiError)
+		return
+	}
+
+	postOwned, err := models.PostRepo.GetUserOwnPosts(user.UserID)
+	if err != nil {
+		var apiError ApiError
+		apiError.Error = "Not found post"
+		WriteJSON(w, http.StatusInternalServerError, apiError)
+		return
+	}
+
+	// Create a UserProfileResponse without the password field
+	userProfile := UserProfileResponse{
+		UserID:      user.UserID,
+		FirstName:   user.FirstName,
+		LastName:    user.LastName,
+		Nickname:    user.Nickname,
+		Email:       user.Email,
+		DateOfBirth: user.DateOfBirth,
+		Avatar:      user.Avatar,
+		AboutMe:     user.AboutMe,
+		UserPosts:   postOwned,
+	}
+
+	// Write the JSON response without the password field
+	WriteJSON(w, http.StatusOK, userProfile)
+}
