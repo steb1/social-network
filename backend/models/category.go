@@ -3,10 +3,11 @@ package models
 import (
 	"database/sql"
 	"fmt"
+	"log"
 )
 
 type Category struct {
-	CategoryID   string
+	CategoryID   int
 	Name         string
 	CreateDate   string
 	ModifiedDate string
@@ -46,14 +47,39 @@ func (cr *CategoryRepository) CreateCategory(category *Category) error {
 }
 
 // GetCategory retrieves a category from the database by category_id
-func (cr *CategoryRepository)  GetCategory(categoryID string) (*Category, error) {
-	query := "SELECT * FROM category WHERE category_id = ?"
+func (cr *CategoryRepository) GetCategory(categoryID string) (*Category, error) {
+	query := "SELECT * FROM categories WHERE category_id = ?"
 	var category Category
 	err := cr.db.QueryRow(query, categoryID).Scan(&category.CategoryID, &category.Name, &category.CreateDate, &category.ModifiedDate)
 	if err != nil {
 		return nil, err
 	}
 	return &category, nil
+}
+
+func (cr *CategoryRepository) GetAllCategories() ([]Category, error) {
+	var categories []Category
+	stmt, err := cr.db.Prepare("SELECT category_id, name FROM categories")
+
+	if err != nil {
+		return nil, err
+	}
+	rows, err := stmt.Query()
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var category Category
+		if err := rows.Scan(&category.CategoryID, &category.Name);
+		 err != nil {
+			log.Fatal(err)	
+		}
+		categories = append(categories, category)
+	}
+	return categories,nil
 }
 
 // UpdateCategory updates an existing category in the database
@@ -71,7 +97,7 @@ func (cr *CategoryRepository) UpdateCategory(category *Category) error {
 }
 
 // DeleteCategory removes a category from the database by category_id
-func (cr *CategoryRepository)  DeleteCategory(categoryID string) error {
+func (cr *CategoryRepository) DeleteCategory(categoryID string) error {
 	query := "DELETE FROM category WHERE category_id = ?"
 	_, err := cr.db.Exec(query, categoryID)
 	if err != nil {

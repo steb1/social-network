@@ -4,8 +4,6 @@ import (
 	"database/sql"
 	"sync"
 	"time"
-
-	"server/lib"
 )
 
 var AllSessions sync.Map
@@ -59,7 +57,6 @@ func (sr *SessionRepository) SessionExists(token string) (Session, bool) {
 
 	err := row.Scan(&session.Token, &session.UserID, &session.Expiry)
 	if err != nil {
-		lib.HandleError(err, "Scanning session token.")
 		return session, false
 	}
 
@@ -106,7 +103,6 @@ func (sr *SessionRepository) UserHasAlreadyASession(userID int) (Session, bool) 
 
 	err := row.Scan(&session.Token, &session.UserID, &session.Expiry)
 	if err != nil {
-		lib.HandleError(err, "Scanning session token.")
 		return session, false
 	}
 
