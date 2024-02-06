@@ -17,6 +17,7 @@ type User struct {
 	Avatar      string `json:"avatar"`
 	Nickname    string `json:"nickname"`
 	AboutMe     string `json:"about_me"`
+	AccountType string `json:"account_type"`
 }
 
 type UserRepository struct {
@@ -49,7 +50,7 @@ func (ur *UserRepository) GetUser(userID string) (*User, error) {
 	var user User
 	err := ur.db.QueryRow(query, userID).Scan(
 		&user.UserID, &user.Email, &user.Password, &user.FirstName,
-		&user.LastName, &user.DateOfBirth, &user.Avatar, &user.Nickname, &user.AboutMe)
+		&user.LastName, &user.DateOfBirth, &user.Avatar, &user.Nickname, &user.AboutMe, &user.AccountType)
 	if err != nil {
 		return nil, err
 	}
@@ -101,6 +102,7 @@ func (ur *UserRepository) GetUserByEmail(email string) (*User, error) {
 		&user.Avatar,
 		&user.Nickname,
 		&user.AboutMe,
+		&user.AccountType,
 	)
 	if err != nil {
 		return nil, err
@@ -128,6 +130,7 @@ func (ur *UserRepository) GetUserByNickname(nickname string) (*User, error) {
 		&user.Avatar,
 		&user.Nickname,
 		&user.AboutMe,
+		&user.AccountType,
 	)
 	if err != nil {
 		return nil, err
@@ -155,6 +158,7 @@ func (ur *UserRepository) GetUserByNicknameOrEmail(login string) (User, error) {
 		&user.Avatar,
 		&user.Nickname,
 		&user.AboutMe,
+		&user.AccountType,
 	)
 	if err != nil {
 		return user, err
@@ -188,11 +192,13 @@ func (ur *UserRepository) SelectAllUsers() ([]*User, error) {
 			&user.Avatar,
 			&user.Nickname,
 			&user.AboutMe,
+			&user.AccountType,
 		)
 		if err != nil {
 			return nil, err
 		}
 		users = append(users, user)
+
 	}
 
 	return users, nil
@@ -219,6 +225,7 @@ func (ur *UserRepository) GetUserByPostID(postID int) (*User, error) {
 		&user.Avatar,
 		&user.Nickname,
 		&user.AboutMe,
+		&user.AccountType,
 	)
 	if err != nil {
 		return nil, err
