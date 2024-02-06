@@ -225,7 +225,7 @@ func (ur *UserRepository) GetUserByPostID(postID int) (*User, error) {
 		&user.Avatar,
 		&user.Nickname,
 		&user.AboutMe,
-		&user.AccountType
+		&user.AccountType,
 	)
 	if err != nil {
 		return nil, err
