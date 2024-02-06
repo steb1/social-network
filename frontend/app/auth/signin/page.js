@@ -5,6 +5,7 @@ import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import config from "@/config";
+import authMiddleware from "@/middleware/authMiddleware";
 import * as Yup from "yup";
 
 // Using Yup librairy schema to validate the form
