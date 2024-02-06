@@ -388,17 +388,18 @@ export const Modal = () => {
             </div>
             <div className="p-5 flex justify-between items-center">
                 <select className="select select-bordered select-bordered w-26 max-w-xs">
-                    <option disabled selected>Audience</option>
-                    <option>Public</option>
-                    <option>Private</option>
-                    <option>Only friends</option>
+                    <option disabled defaultValue="option1">Audience</option>
+                    <option value="option1">Public</option>
+                    <option value="option2">Private</option>
+                    <option value="option3">Only friends</option>
                 </select>
 
-                <select class="select hidden select-bordered select-bordered w-26 max-w-xs">
-                    <option disabled selected>Select Friends</option>
-                    <option>Friend 1</option>
-                    <option>Friend 2</option>
-                    <option>Friend 3</option>
+
+                <select className="select hidden select-bordered select-bordered w-26 max-w-xs">
+                    <option disabled defaultValue="option1">Select Friends</option>
+                    <option value="option1">Friend 1</option>
+                    <option value="option2">Friend 2</option>
+                    <option value="option3">Friend 3</option>
                 </select>
                 <div className="flex items-center gap-2"> 
                 <button type="button" className="button bg-blue-500 text-white py-2 px-12 text-[14px]"> Create</button>
