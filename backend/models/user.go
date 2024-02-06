@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+
 	"server/lib"
 
 	"golang.org/x/crypto/bcrypt"
@@ -42,19 +43,6 @@ func (ur *UserRepository) CreateUser(user *User) error {
 	}
 
 	return nil
-}
-
-// GetUser retrieves a user from the database by user_id
-func (ur *UserRepository) GetUser(userID string) (*User, error) {
-	query := "SELECT * FROM users WHERE user_id = ?"
-	var user User
-	err := ur.db.QueryRow(query, userID).Scan(
-		&user.UserID, &user.Email, &user.Password, &user.FirstName,
-		&user.LastName, &user.DateOfBirth, &user.Avatar, &user.Nickname, &user.AboutMe, &user.AccountType)
-	if err != nil {
-		return nil, err
-	}
-	return &user, nil
 }
 
 // UpdateUser updates an existing user in the database
@@ -103,6 +91,33 @@ func (ur *UserRepository) GetUserByEmail(email string) (*User, error) {
 		&user.Nickname,
 		&user.AboutMe,
 		&user.AccountType,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+// GetUserByID retrieves a user from the database based on their ID
+func (ur *UserRepository) GetUserByID(userID int) (*User, error) {
+	query := `
+        SELECT * FROM users
+        WHERE userID = ?
+    `
+	row := ur.db.QueryRow(query, userID)
+
+	user := &User{}
+	err := row.Scan(
+		&user.UserID,
+		&user.Email,
+		&user.Password,
+		&user.FirstName,
+		&user.LastName,
+		&user.DateOfBirth,
+		&user.Avatar,
+		&user.Nickname,
+		&user.AboutMe,
 	)
 	if err != nil {
 		return nil, err
@@ -236,7 +251,6 @@ func (ur *UserRepository) GetUserByPostID(postID int) (*User, error) {
 
 func (ur *UserRepository) CheckCredentials(login, password string) (User, bool) {
 	user, err := UserRepo.GetUserByNicknameOrEmail(login)
-
 	if err != nil {
 		lib.HandleError(err, "Error getting user by Crendentials. User may not exists.")
 	}
