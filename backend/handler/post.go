@@ -1,0 +1,71 @@
+package handler
+
+import (
+	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"server/models"
+	"strings"
+	"time"
+)
+
+func HandleCreatePost(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	w.Header().Set("Access-Control-Allow-Methods", "POST,OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	var post models.Post
+	errs := r.ParseMultipartForm(10 << 20)
+	if errs != nil {
+		return
+	}
+	post.Content = strings.TrimSpace(r.FormValue("body"))
+	post.Title = strings.TrimSpace(r.FormValue("title"))
+	post.CreatedAt = time.Now()
+	_categories := r.Form["category"]
+	post.AuthorID = 2
+	post.Visibility = "public"
+	photo, _, _ := r.FormFile("media_post")
+	hasImage := map[bool]int{true: 1, false: 0}[photo != nil]
+	post.HasImage = hasImage
+	categories := []int{}
+	tabCategory, _ := models.CategoryRepo.GetAllCategories()
+	__categories := make(map[string]int)
+	for _, v := range tabCategory {
+		__categories[v.Name] = v.CategoryID
+	}
+	if len(_categories) == 0 {
+		categories = []int{6}
+	} else {
+		for _, v := range _categories {
+			if _, ok := __categories[v]; ok {
+				categories = append(categories, __categories[v])
+			}
+		}
+	}
+	errors := models.PostRepo.CreatePost(&post, photo, categories)
+	if errors != nil {
+		fmt.Println(errs)
+	}
+}
+
+func ImageHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+	var (
+		imageId = r.URL.Query().Get("id")
+	)
+	img, err := ioutil.ReadFile("imgPost/" + imageId + ".jpg")
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.Header().Set("Content-Type", "image/jpeg")
+	w.Write(img)
+
+}

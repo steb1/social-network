@@ -331,19 +331,21 @@ func IsValidName(name string) bool {
 	validNameRegex := regexp.MustCompile(`^[a-zA-Z]+(?:\s[a-zA-Z]+)?$`)
 	return validNameRegex.MatchString(toto)
 }
-func IsValidDOB(dob string) bool {
-	// Regular expression to validate date format (jj/mm/aaaa)
-	validDOBRegex := regexp.MustCompile(`^\d{2}/\d{2}/\d{4}$`)
+func IsValidDOB(dob string) (bool, string) {
+	// Regular expression to validate date format (yyyy-mm-dd)
+	validDOBRegex := regexp.MustCompile(`^\d{4}[-\/]\d{2}[-\/]\d{2}$`)
 
 	// Check if the date matches the regular expression
 	if !validDOBRegex.MatchString(dob) {
-		return false
+		return false, "Invalid format."
 	}
+	// Replace '/' with '-' for consistent parsing
+	dob = regexp.MustCompile(`-`).ReplaceAllString(dob, "/")
 
 	// Parse the date string to a time.Time object
-	dateOfBirth, err := time.Parse("02/01/2006", dob)
+	dateOfBirth, err := time.Parse("2006/01/02", dob)
 	if err != nil {
-		return false
+		return false, "Invalid Format"
 	}
 
 	// Optional: Check if the person is at least 18 years old
@@ -356,14 +358,11 @@ func IsValidDOB(dob string) bool {
 		age--
 	}
 
-	if age < minimumAge {
-		return false
-	}
-	if age > maximumAge {
-		return false
+	if age < minimumAge || age > maximumAge {
+		return false, "You must be 13 years old at least and 120 at most."
 	}
 
-	return true
+	return true, ""
 }
 
 func IsValidNickname(nickname string) bool {
