@@ -193,6 +193,7 @@ func (ur *UserRepository) SelectAllUsers() ([]*User, error) {
 			return nil, err
 		}
 		users = append(users, user)
+
 	}
 
 	return users, nil

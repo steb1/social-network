@@ -1,5 +1,12 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
+import "../public/assets/css/style.css"
+import "../public/assets/css/tailwind.css"
+import "../src/style.css"
+import "../public/assets/js/script.js"
+import "../public/assets/js/simplebar.js"
+import "../public/assets/js/uikit.min.js"
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -11,7 +18,19 @@ export const metadata = {
 export default function RootLayout({ children }) {
 	return (
 		<html lang="en">
-			<body className={inter.className}>{children}</body>
+			<head>
+				<script src="./assets/js/uikit.min.js"></script>
+				<script src="./assets/js/simplebar.js"></script>
+				{/* <!-- Ion icon --> */}
+				
+				<script noModule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+				<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    			
+			</head>
+			<body className={inter.className}>
+					{children}
+					
+			</body>
 		</html>
 	);
 }
