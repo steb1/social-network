@@ -87,15 +87,6 @@ func (sr *SessionRepository) DeleteSession(token string) error {
 	return nil
 }
 
-func deleteSessionIfExist(ID string) {
-	AllSessions.Range(func(key, value interface{}) bool {
-		if ID == value.(Session).UserID {
-			AllSessions.Delete(key)
-		}
-		return true
-	})
-}
-
 func (sr *SessionRepository) UserHasAlreadyASession(userID int) (Session, bool) {
 	var session Session
 

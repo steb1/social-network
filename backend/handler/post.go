@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"server/models"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -17,22 +18,37 @@ func HandleCreatePost(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	var post models.Post
+	var apiError ApiError
 	errs := r.ParseMultipartForm(10 << 20)
 	if errs != nil {
-		fmt.Println("loloooo", errs)
 		return
 	}
+
+	sessionToken := r.Header.Get("Authorization")
+	session, err := models.SessionRepo.GetSession(sessionToken)
+	if err != nil {
+		apiError.Error = "Go connect first !"
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	}
+
 	post.Content = strings.TrimSpace(r.FormValue("body"))
 	post.Title = strings.TrimSpace(r.FormValue("title"))
 	post.CreatedAt = time.Now()
 	_categories := r.Form["category"]
-	post.AuthorID=2
-	post.Visibility="public"
+	userId, err := strconv.Atoi(session.UserID)
+	if err != nil {
+		apiError.Error = "Error getting user."
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	}
+	post.AuthorID = userId
+	post.Visibility = "public"
 	photo, _, _ := r.FormFile("media_post")
 	hasImage := map[bool]int{true: 1, false: 0}[photo != nil]
 	post.HasImage = hasImage
 	categories := []int{}
-	tabCategory,_:=models.CategoryRepo.GetAllCategories()
+	tabCategory, _ := models.CategoryRepo.GetAllCategories()
 	__categories := make(map[string]int)
 	for _, v := range tabCategory {
 		__categories[v.Name] = v.CategoryID
@@ -46,12 +62,16 @@ func HandleCreatePost(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	errors := models.PostRepo.CreatePost(&post,photo,categories)
+	errors := models.PostRepo.CreatePost(&post, photo, categories)
 	if errors != nil {
 		fmt.Println(errs)
+		apiError.Error = "An error occured."
+		return
 	}
+	var sucess ApiSuccess
+	sucess.Message = "Post created ! "
+	WriteJSON(w, http.StatusOK, sucess)
 }
-
 
 func ImageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
@@ -61,7 +81,7 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 	var (
 		imageId = r.URL.Query().Get("id")
 	)
-	img, err := ioutil.ReadFile("imgPost/" + imageId + ".jpg") 
+	img, err := ioutil.ReadFile("imgPost/" + imageId + ".jpg")
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
