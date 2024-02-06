@@ -1,6 +1,9 @@
 package models
 
-import "database/sql"
+import (
+	"database/sql"
+	"log"
+)
 
 type PostCategory struct {
 	ID         string
@@ -18,18 +21,19 @@ func NewPostCategorieRepository(db *sql.DB) *PostCategorieRepository {
 	}
 }
 
-
 // CreatePostCategory adds a new post category to the database
-func (pc *PostCategorieRepository) CreatePostCategory(postCategory *PostCategory) error {
+func (pc *PostCategorieRepository) CreatePostCategory(post_id int, categories []int) error {
 	query := `
-		INSERT INTO post_categories (id, category_id, post_id)
-		VALUES (?, ?, ?)
+		INSERT INTO post_categories (categoryID, postID)
+		VALUES (?, ?)
 	`
-	_, err := pc.db.Exec(query, postCategory.ID, postCategory.CategoryID, postCategory.PostID)
-	if err != nil {
-		return err
-	}
+	for _, v := range categories {
+		_, err := pc.db.Exec(query, v, post_id)
 
+		if err != nil {
+			log.Println(err.Error())
+		}
+	}
 	return nil
 }
 
