@@ -2,7 +2,6 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
 	"server/lib"
 
 	"golang.org/x/crypto/bcrypt"
@@ -230,7 +229,7 @@ func (ur *UserRepository) GetUserByPostID(postID int) (*User, error) {
 
 func (ur *UserRepository) CheckCredentials(login, password string) (User, bool) {
 	user, err := UserRepo.GetUserByNicknameOrEmail(login)
-	fmt.Println(user)
+
 	if err != nil {
 		lib.HandleError(err, "Error getting user by Crendentials. User may not exists.")
 	}
