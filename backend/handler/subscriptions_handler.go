@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"server/models"
 	"strconv"
@@ -9,7 +10,7 @@ import (
 
 func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	w.Header().Set("Access-Control-Allow-Methods", "POST,OPTIONS")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -34,17 +35,28 @@ func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	followingUserId, ok := data["userId"].(int)
+	userId, exists := data["userId"]
+	if !exists {
+		apiError.Error = "Missing user id in data."
+		WriteJSON(w, http.StatusBadRequest, apiError)
+		return
+	}
+	id, ok := userId.(float64)
+	fmt.Println(ok)
+	fmt.Printf("%T", userId)
+	followingUserId := int(id)
+	fmt.Println(followingUserId)
+	fmt.Println(ok)
 
 	if !ok {
-		apiError.Error = "Invalid or missing user id."
+		apiError.Error = "Invalid or missing user id destructure."
 		WriteJSON(w, http.StatusBadRequest, apiError)
 		return
 	}
 
 	ok, _ = models.UserRepo.UserExists(strconv.Itoa(followingUserId))
 	if !ok {
-		apiError.Error = "Invalid or missing user id."
+		apiError.Error = "Invalid or missing user id bdd."
 		WriteJSON(w, http.StatusBadRequest, apiError)
 		return
 	}
