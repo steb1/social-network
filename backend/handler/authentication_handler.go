@@ -247,7 +247,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	user.Email = email
 	user.Avatar = avatarFilename
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		apiError.Error = "Error with your password."
 		WriteJSON(w, http.StatusBadRequest, apiError)
