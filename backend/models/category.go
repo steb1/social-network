@@ -7,10 +7,8 @@ import (
 )
 
 type Category struct {
-	CategoryID   int
-	Name         string
-	CreateDate   string
-	ModifiedDate string
+	CategoryID int
+	Name       string
 }
 
 type CategoryRepository struct {
@@ -26,10 +24,10 @@ func NewCategoryRepository(db *sql.DB) *CategoryRepository {
 // CreateCategory adds a new category to the database
 func (cr *CategoryRepository) CreateCategory(category *Category) error {
 	query := `
-		INSERT INTO category (category_id, name, createDate, modifiedDate)
-		VALUES (?, ?, ?, ?)
+		INSERT INTO category (category_id, name)
+		VALUES (?, ?)
 	`
-	result, err := cr.db.Exec(query, category.CategoryID, category.Name, category.CreateDate, category.ModifiedDate)
+	result, err := cr.db.Exec(query, category.CategoryID, category.Name)
 	if err != nil {
 		return err
 	}
@@ -50,7 +48,7 @@ func (cr *CategoryRepository) CreateCategory(category *Category) error {
 func (cr *CategoryRepository) GetCategory(categoryID string) (*Category, error) {
 	query := "SELECT * FROM categories WHERE category_id = ?"
 	var category Category
-	err := cr.db.QueryRow(query, categoryID).Scan(&category.CategoryID, &category.Name, &category.CreateDate, &category.ModifiedDate)
+	err := cr.db.QueryRow(query, categoryID).Scan(&category.CategoryID, &category.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -73,13 +71,12 @@ func (cr *CategoryRepository) GetAllCategories() ([]Category, error) {
 
 	for rows.Next() {
 		var category Category
-		if err := rows.Scan(&category.CategoryID, &category.Name);
-		 err != nil {
-			log.Fatal(err)	
+		if err := rows.Scan(&category.CategoryID, &category.Name); err != nil {
+			log.Fatal(err)
 		}
 		categories = append(categories, category)
 	}
-	return categories,nil
+	return categories, nil
 }
 
 // UpdateCategory updates an existing category in the database
@@ -89,7 +86,7 @@ func (cr *CategoryRepository) UpdateCategory(category *Category) error {
 		SET name = ?, createDate = ?, modifiedDate = ?
 		WHERE category_id = ?
 	`
-	_, err := cr.db.Exec(query, category.Name, category.CreateDate, category.ModifiedDate, category.CategoryID)
+	_, err := cr.db.Exec(query, category.Name, category.CategoryID)
 	if err != nil {
 		return err
 	}
