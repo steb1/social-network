@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"fmt"
 	"server/lib"
 
 	"golang.org/x/crypto/bcrypt"
@@ -58,7 +59,9 @@ func (ur *UserRepository) GetUser(userID string) (*User, error) {
 func (ur *UserRepository) UserExists(userID string) (bool, error) {
 	query := "SELECT COUNT(*) as total FROM users WHERE user_id = ?"
 	var total int
-	err := ur.db.QueryRow(query, userID).Scan(total)
+	err := ur.db.QueryRow(query, userID).Scan(&total)
+	fmt.Println(err)
+	fmt.Println(total)
 	if err != nil {
 		return false, err
 	}
