@@ -55,6 +55,18 @@ func (ur *UserRepository) GetUser(userID string) (*User, error) {
 	}
 	return &user, nil
 }
+func (ur *UserRepository) UserExists(userID string) (bool, error) {
+	query := "SELECT COUNT(*) as total FROM users WHERE user_id = ?"
+	var total int
+	err := ur.db.QueryRow(query, userID).Scan(total)
+	if err != nil {
+		return false, err
+	}
+	if total == 0 {
+		return false, err
+	}
+	return true, nil
+}
 
 // UpdateUser updates an existing user in the database
 func (ur *UserRepository) UpdateUser(user *User) error {

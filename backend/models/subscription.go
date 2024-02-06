@@ -13,7 +13,7 @@ type SubscriptionRepository struct {
 	db *sql.DB
 }
 
-func NewSubscriptionRepository (db *sql.DB) *SubscriptionRepository {
+func NewSubscriptionRepository(db *sql.DB) *SubscriptionRepository {
 	return &SubscriptionRepository{
 		db: db,
 	}
@@ -67,5 +67,3 @@ func (sr *SubscriptionRepository) DeleteSubscription(subscriptionID int) error {
 	}
 	return nil
 }
-
-
