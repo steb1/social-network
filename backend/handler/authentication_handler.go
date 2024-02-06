@@ -54,11 +54,12 @@ func SigninHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	request := new(LoginRequest)
 
+	var apiError ApiError
 	if err := json.NewDecoder(r.Body).Decode(request); err != nil {
+		apiError.Error = "Cannot Decode your JSON. Check the your data format"
+		WriteJSON(w, http.StatusBadRequest, apiError)
 		return
 	}
-
-	var apiError ApiError
 
 	if lib.IsBlank(request.NicknameOrEmail) {
 		apiError.Error = "Username/Email cannot be empty."
@@ -187,12 +188,12 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		WriteJSON(w, http.StatusBadRequest, apiError)
 		return
 	}
-
-	// if !lib.IsValidDOB(strings.TrimSpace(birthdate)) {
-	// 	apiError.Error = "Provide a valid Date."
-	// 	WriteJSON(w, http.StatusBadRequest, apiError)
-	// 	return
-	// }
+	ok, msgerr := lib.IsValidDOB(strings.TrimSpace(birthdate))
+	if !ok {
+		apiError.Error = msgerr
+		WriteJSON(w, http.StatusBadRequest, apiError)
+		return
+	}
 
 	avatarFile, avatarHeader, err := r.FormFile("avatar")
 	if err != nil {
@@ -274,7 +275,6 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		UserInfos: UserInfos{LastName: userCreated.LastName, Firstname: userCreated.FirstName, Nickname: userCreated.Nickname},
 	}
 	sessionToken := uuid.Must(uuid.NewV4()).String()
-	fmt.Println(userCreated)
 	InitSession(w, r, *userCreated, sessionToken)
 	WriteJSON(w, http.StatusOK, response)
 }
