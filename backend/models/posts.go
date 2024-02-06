@@ -6,6 +6,7 @@ import (
 	"io"
 	"mime/multipart"
 	"os"
+	"server/lib"
 	"strconv"
 	"time"
 )
@@ -28,7 +29,7 @@ type PostItems struct {
 type Post struct {
 	PostID     int       `json:"post_id"`
 	Title      string    `json:"title"`
-	Category   []string    `json:"category"`
+	Category   []string  `json:"category"`
 	Content    string    `json:"content"`
 	CreatedAt  time.Time `json:"created_at"`
 	AuthorID   int       `json:"author_id"`
@@ -48,12 +49,12 @@ func NewPostRepository(db *sql.DB) *PostRepository {
 }
 
 // CreatePost adds a new post to the database
-func (pr *PostRepository) CreatePost(post *Post, photo multipart.File,categories []int) error {
+func (pr *PostRepository) CreatePost(post *Post, photo multipart.File, categories []int) error {
 	query := `
-	INSERT INTO posts (title, content, createdAt, author_id, has_image, visibility)
+	INSERT INTO posts (title, content, created_at, author_id, has_image, visibility)
 	VALUES (?, ?, ?, ?, ?, ?)
 	`
-	imageUrl:=strconv.Itoa(post.HasImage)
+	imageUrl := strconv.Itoa(post.HasImage)
 	result, err := pr.db.Exec(query, post.Title, post.Content, post.CreatedAt, post.AuthorID, imageUrl, post.Visibility)
 	if err != nil {
 		fmt.Println(err)
@@ -64,12 +65,15 @@ func (pr *PostRepository) CreatePost(post *Post, photo multipart.File,categories
 		return err
 	}
 	post.PostID = int(lastInsertID)
-	err=PostCategoryRepo.CreatePostCategory(post.PostID,categories)
+	_ = PostCategoryRepo.CreatePostCategory(post.PostID, categories)
 	if post.HasImage == 0 {
 		return nil
 	}
 	defer photo.Close()
 	fichierSortie, err := os.Create(fmt.Sprintf("imgPost/%d.jpg", post.PostID))
+	if err != nil {
+		lib.HandleError(err, "Creating post image.")
+	}
 	defer fichierSortie.Close()
 	_, err = io.Copy(fichierSortie, photo)
 	if err != nil {
@@ -89,7 +93,6 @@ func (pr *PostRepository) GetPost(postID int) (*Post, error) {
 	}
 	return &post, nil
 }
-
 
 // GetUserOwnPosts retrieves posts owned by a specific user from the database
 func (pr *PostRepository) GetUserOwnPosts(userID int) ([]*Post, error) {

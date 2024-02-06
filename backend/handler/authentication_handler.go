@@ -144,8 +144,6 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 	email := r.FormValue("email")
 	birthdate := r.FormValue("birthdate")
-	fmt.Println(birthdate)
-	fmt.Println(r.FormValue("last_name"))
 
 	if !lib.IsValidName((firstname)) || !lib.IsValidName((lastname)) {
 		apiError.Error = "Firstname/Lastname cannot have numbers or to much spaces."
@@ -282,7 +280,6 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	sessionToken := r.Header.Get("Authorization")
 	_, ok := models.SessionRepo.SessionExists(sessionToken)
-	fmt.Println("the token", sessionToken)
 	if !ok {
 		var apiError ApiError
 		apiError.Error = "Unauthorized"
@@ -290,8 +287,6 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("no exist")
 		return
 	}
-
-	fmt.Println("sesion exist")
 
 	WriteJSON(w, http.StatusOK, ApiSuccess{Message: "Connected."})
 }

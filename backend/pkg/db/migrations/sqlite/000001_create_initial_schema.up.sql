@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS "users" (
   "last_name" text NOT NULL,
   "date_of_birth" date NOT NULL,
   "avatar" text,
-  "nickname" text,
+  "nickname" text UNIQUE,
   "about_me" text
 );
 
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS "memberships" (
   "membership_id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
   "user_id" integer NOT NULL,
   "group_id" integer NOT NULL,
-  "joinedAt" datetime NOT NULL,
+  "joined_at" datetime NOT NULL,
   "invitation_status" text NOT NULL,
   "membership_status" text NOT NULL,
   FOREIGN KEY (user_id) REFERENCES "users" (user_id),
@@ -32,31 +32,31 @@ CREATE TABLE IF NOT EXISTS "memberships" (
 CREATE TABLE IF NOT EXISTS "posts" (
   "post_id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
   "title" text NOT NULL,
-  "category" text NOT NULL,
   "content" text NOT NULL,
-  "createdAt" datetime NOT NULL DEFAULT(CURRENT_TIMESTAMP),
+  "created_at" datetime NOT NULL DEFAULT(CURRENT_TIMESTAMP),
   "author_id" integer NOT NULL,
-  "imageURL" text,
+  "image_url" text,
   "visibility" text NOT NULL,
+  "has_image" INTEGER NOT NULL,
   FOREIGN KEY (author_id) REFERENCES "users" (user_id)
+);
+
+CREATE TABLE IF NOT EXISTS "categories" (
+    "category_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR NOT NULL
 );
 
 -- Table for 'post_category'
 CREATE TABLE IF NOT EXISTS "post_categories" (
-    id VARCHAR PRIMARY KEY,
-    categoryID VARCHAR,
-    postID VARCHAR,
-    FOREIGN KEY (categoryID) REFERENCES category(category_id),
-    FOREIGN KEY (postID) REFERENCES posts(post_id)
+    "post_categories_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "category_id" INTEGER,
+    "post_id" VARCHAR,
+    FOREIGN KEY (category_id) REFERENCES categories(category_id),
+    FOREIGN KEY (post_id) REFERENCES posts(post_id)
 );
 
 -- Table for 'category'
-CREATE TABLE IF NOT EXISTS "categories" (
-    category_id VARCHAR PRIMARY KEY,
-    name VARCHAR,
-    createDate DATE,
-    modifiedDate DATE
-);
+
 
 CREATE TABLE IF NOT EXISTS "post_visibilities" (
   "post_visibility_id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -127,7 +127,7 @@ CREATE TABLE IF NOT EXISTS "notifications" (
   "user_id" integer NOT NULL,
   "type" text NOT NULL,
   "status" text NOT NULL,
-  "createdAt" datetime NOT NULL DEFAULT(CURRENT_TIMESTAMP),
+  "created_at" datetime NOT NULL DEFAULT(CURRENT_TIMESTAMP),
   FOREIGN KEY (user_id) REFERENCES "users" (user_id)
 );
 
