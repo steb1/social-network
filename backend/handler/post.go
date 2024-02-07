@@ -91,3 +91,7 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(img)
 
 }
+
+func HandleGetAllPosts(w http.ResponseWriter, r *http.Request) {
+	
+}
