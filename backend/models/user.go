@@ -103,7 +103,7 @@ func (ur *UserRepository) GetUserByEmail(email string) (*User, error) {
 func (ur *UserRepository) GetUserByID(userID int) (*User, error) {
 	query := `
         SELECT * FROM users
-        WHERE userID = ?
+        WHERE user_id = ?
     `
 	row := ur.db.QueryRow(query, userID)
 

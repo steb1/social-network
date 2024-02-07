@@ -43,6 +43,7 @@ var Routes = []Route{
 	{Path: "/api/checkAuth", Handler: CheckAutheHandler, Methods: []string{"GET", "OPTIONS", "POST"}},
 	{Path: "/api/createPost", Handler: HandleCreatePost, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/imgPost", Handler: ImageHandler, Methods: []string{"GET"}},
+	{Path: "/api/profile", Handler: HandleGetProfile, Methods: []string{"GET", "POST", "OPTIONS"}},
 }
 
 func MiddlewareIsAuthenticated(handler http.HandlerFunc) http.HandlerFunc {
