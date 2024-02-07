@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 	"time"
@@ -19,13 +20,29 @@ const (
 	MAX_CONTENT_LENGTH = 500
 )
 
+type ApiError struct {
+	Error string `json:"error"`
+}
+type ApiSuccess struct {
+	Message string `json:"message"`
+}
+type SignupResponse struct {
+	Message string `json:"message"`
+}
+
+func WriteJSON(w http.ResponseWriter, status int, v any) error {
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(status)
+	return json.NewEncoder(w).Encode(v)
+}
+
 var Routes = []Route{
 	{Path: "/api/signup", Handler: RegisterHandler, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/signin", Handler: SigninHandler, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/logout", Handler: Logout, Methods: []string{"GET"}},
-	{Path: "/api/home", Handler: HomeHandler, Methods: []string{"GET", "OPTIONS", "POST"}},
-	{Path: "/api/createPost", Handler: HandleCreatePost, Methods: []string{"POST","OPTIONS"}},
-	{Path: "/imgPost", Handler:  ImageHandler, Methods: []string{"GET"}},
+	{Path: "/api/checkAuth", Handler: CheckAutheHandler, Methods: []string{"GET", "OPTIONS", "POST"}},
+	{Path: "/api/createPost", Handler: HandleCreatePost, Methods: []string{"POST", "OPTIONS"}},
+	{Path: "/imgPost", Handler: ImageHandler, Methods: []string{"GET"}},
 }
 
 func MiddlewareIsAuthenticated(handler http.HandlerFunc) http.HandlerFunc {
