@@ -10,13 +10,13 @@ import (
 
 type User struct {
 	UserID      int    `json:"user_id"`
-	Email       string `json:"email"`
-	Password    string `json:"password"`
 	FirstName   string `json:"first_name"`
 	LastName    string `json:"last_name"`
+	Nickname    string `json:"nickname"`
+	Email       string `json:"email"`
+	Password    string `json:"password"`
 	DateOfBirth string `json:"birthdate"`
 	Avatar      string `json:"avatar"`
-	Nickname    string `json:"nickname"`
 	AboutMe     string `json:"about_me"`
 	AccountType string `json:"account_type"`
 }
@@ -118,6 +118,7 @@ func (ur *UserRepository) GetUserByID(userID int) (*User, error) {
 		&user.Avatar,
 		&user.Nickname,
 		&user.AboutMe,
+		&user.AccountType,
 	)
 	if err != nil {
 		return nil, err

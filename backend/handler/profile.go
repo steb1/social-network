@@ -8,7 +8,7 @@ import (
 )
 
 type UserProfileResponse struct {
-	UserID      int            `json:userID`
+	UserID      int            `json:"user_id"`
 	FirstName   string         `json:"firstName"`
 	LastName    string         `json:"lastName"`
 	Nickname    string         `json:"nickname"`
@@ -16,7 +16,10 @@ type UserProfileResponse struct {
 	DateOfBirth string         `json:"dateOfBirth"`
 	Avatar      string         `json:"avatar"`
 	AboutMe     string         `json:"aboutMe"`
+	AccountType string         `json:"accountType"`
 	UserPosts   []*models.Post `json:"userPosts"`
+	Followers   []*models.User `json:"followers"`
+	Followings  []*models.User `json:"followings"`
 }
 
 func HandleGetProfile(w http.ResponseWriter, r *http.Request) {
@@ -45,6 +48,22 @@ func HandleGetProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	followers, err := models.SubscriptionRepo.GetFollowers(user.UserID)
+	if err != nil {
+		var apiError ApiError
+		apiError.Error = "Not found followers"
+		WriteJSON(w, http.StatusInternalServerError, apiError)
+		return
+	}
+
+	followings, err := models.SubscriptionRepo.GetFollowing(user.UserID)
+	if err != nil {
+		var apiError ApiError
+		apiError.Error = "Not found followings"
+		WriteJSON(w, http.StatusInternalServerError, apiError)
+		return
+	}
+
 	// Create a UserProfileResponse without the password field
 	userProfile := UserProfileResponse{
 		UserID:      user.UserID,
@@ -55,9 +74,11 @@ func HandleGetProfile(w http.ResponseWriter, r *http.Request) {
 		DateOfBirth: user.DateOfBirth,
 		Avatar:      user.Avatar,
 		AboutMe:     user.AboutMe,
+		AccountType: user.AccountType,
 		UserPosts:   postOwned,
+		Followers:   followers,
+		Followings:  followings,
 	}
 
-	// Write the JSON response without the password field
 	WriteJSON(w, http.StatusOK, userProfile)
 }
