@@ -1,6 +1,8 @@
 package models
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
 // Subscription structure represents the "subscriptions" table
 type Subscription struct {
@@ -13,7 +15,7 @@ type SubscriptionRepository struct {
 	db *sql.DB
 }
 
-func NewSubscriptionRepository (db *sql.DB) *SubscriptionRepository {
+func NewSubscriptionRepository(db *sql.DB) *SubscriptionRepository {
 	return &SubscriptionRepository{
 		db: db,
 	}
@@ -68,4 +70,64 @@ func (sr *SubscriptionRepository) DeleteSubscription(subscriptionID int) error {
 	return nil
 }
 
+func (sr *SubscriptionRepository) GetFollowers(userId int) ([]*User, error) {
+	query := ` 
+        SELECT u.user_id, u.email, u.first_name, u.last_name, u.date_of_birth, u.avatar, u.nickname, u.about_me
+        FROM subscriptions s
+        JOIN users u ON s.follower_user_id = u.user_id
+        WHERE s.following_user_id = ?;
+    `
+	rows, err := sr.db.Query(query, userId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
 
+	var followers []*User
+
+	for rows.Next() {
+		var follower User
+		err := rows.Scan(&follower.UserID, &follower.Email, &follower.FirstName, &follower.LastName, &follower.DateOfBirth, &follower.Avatar, &follower.Nickname, &follower.AboutMe)
+		if err != nil {
+			return nil, err
+		}
+		followers = append(followers, &follower)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return followers, nil
+}
+
+func (sr *SubscriptionRepository) GetFollowing(userId int) ([]*User, error) {
+	query := ` 
+        SELECT u.user_id, u.email, u.first_name, u.last_name, u.date_of_birth, u.avatar, u.nickname, u.about_me
+        FROM subscriptions s
+        JOIN users u ON s.following_user_id = u.user_id
+        WHERE s.follower_user_id = ?;
+    `
+	rows, err := sr.db.Query(query, userId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var following []*User
+
+	for rows.Next() {
+		var followee User
+		err := rows.Scan(&followee.UserID, &followee.Email, &followee.FirstName, &followee.LastName, &followee.DateOfBirth, &followee.Avatar, &followee.Nickname, &followee.AboutMe)
+		if err != nil {
+			return nil, err
+		}
+		following = append(following, &followee)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return following, nil
+}
