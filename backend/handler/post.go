@@ -93,5 +93,19 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleGetAllPosts(w http.ResponseWriter, r *http.Request) {
-	
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+
+	posts, err := models.PostRepo.GetAllPosts()
+	if err != nil {
+		fmt.Println(err)
+		var apiError ApiError
+		apiError.Error = "Something went wrong while getting all"
+		WriteJSON(w, http.StatusInternalServerError, apiError)
+	}
+
+	WriteJSON(w, http.StatusOK, posts)
 }

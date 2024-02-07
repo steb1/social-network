@@ -35,7 +35,8 @@ type Post struct {
 	AuthorID   int       `json:"author_id"`
 	ImageURL   string    `json:"image_url"`
 	Visibility string    `json:"visibility"`
-	HasImage   int
+	HasImage   int       `json:"has_image"`
+	User       *User      
 }
 
 type PostRepository struct {
@@ -92,6 +93,28 @@ func (pr *PostRepository) GetPost(postID int) (*Post, error) {
 		return nil, err
 	}
 	return &post, nil
+}
+
+// GetAllPosts retrieves all posts from the database
+func (pr *PostRepository) GetAllPosts() ([]*Post, error) {
+	rows, err := pr.db.Query("SELECT post_id, title, content, created_at, visibility, has_image, nickname, first_name, last_name, email FROM posts, users WHERE posts.author_id=users.user_id ORDER BY created_at DESC")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	
+	var posts []*Post
+	for rows.Next() {
+		var post Post
+		post.User = &User{}
+		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.HasImage, &post.User.Nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email); err != nil {
+			return nil, err
+		}
+		// post.CreatedAt = lib.FormatTimestamp(post.CreatedAt)
+		// post.Categories = GetCategoryPost(w, r, post.ID)
+		posts = append(posts, &post)
+	}
+	return posts, nil
 }
 
 // GetUserOwnPosts retrieves posts owned by a specific user from the database

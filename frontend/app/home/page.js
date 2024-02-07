@@ -1,20 +1,47 @@
+"use client"
+import React, { useEffect, useState } from "react";
 import Header from "../components/header";
 import Sidebar from "../components/sidebar";
 import AddStory from "../components/addStory";
-import { PostImage, PostText, PostImageSlider, PostPlaceholder } from "../components/posts";
+import { PostText, PostPlaceholder } from "../components/posts";
 import { Modal } from "../components/modal";
 import { Rightbar } from "../components/rightbar";
 import "../../public/assets/js/script.js";
 import "../../public/assets/js/simplebar.js";
+import config from "@/config";
+
+const fetchAllPosts = async (setPosts, setServerError) => {
+  try {
+    const response = await fetch(config.serverApiUrl + "getAllPosts", {
+      method: "GET",
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      setPosts(data);
+    } else {
+      const errorResponse = await response.json();
+      const errorMessage = errorResponse.error || "An error occurred.";
+      console.error("No posts retrieved:", errorMessage);
+      setServerError(`No posts retrieved: ${errorMessage}`);
+    }
+  } catch (error) {
+    console.error("Error while fetching posts:", error);
+  }
+};
 
 const HomePage = () => {
+  const [posts, setPosts] = useState([]);
+  const [serverError, setServerError] = useState(null);
 
- 
+  useEffect(() => {
+    fetchAllPosts(setPosts, setServerError);
+  }, []); // Empty dependency array ensures this runs only once after the initial render
+
   return (
     <div id="wrapper" className="pt-15 space-x-2">
       {/* Header */}
       <Header />
-
       <div className="flex mt-5">
         {/* Fixed Sidebar */}
         <div className="fixed mt-2 h-auto left-0 top-12 max-sm:hidden max-md:hidden max-lg:hidden  overflow-y-visible touch-none h-full">
@@ -27,12 +54,13 @@ const HomePage = () => {
           <AddStory />
 
           {/* Posts Section */}
-          <PostImage/>
-          <PostImageSlider />
-          <PostText />
+          {/* <PostImage/>*/}
+          {posts.map((post) => (
+            <PostText key={post.post_id} post={post} />
+          ))}
+          {serverError && <div>Error: {serverError}</div>}
           <PostPlaceholder />
           {/* Modal */}
-
         </div>
 
         {/* Fixed Rightbar */}
@@ -40,7 +68,6 @@ const HomePage = () => {
           <Rightbar />
         </div>
       </div>
-
     </div>
   );
 };
