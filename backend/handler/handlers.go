@@ -24,8 +24,9 @@ var Routes = []Route{
 	{Path: "/api/signin", Handler: SigninHandler, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/logout", Handler: Logout, Methods: []string{"GET"}},
 	{Path: "/api/home", Handler: HomeHandler, Methods: []string{"GET", "OPTIONS", "POST"}},
-	{Path: "/api/createPost", Handler: HandleCreatePost, Methods: []string{"POST","OPTIONS"}},
-	{Path: "/imgPost", Handler:  ImageHandler, Methods: []string{"GET"}},
+	{Path: "/api/createPost", Handler: HandleCreatePost, Methods: []string{"POST", "OPTIONS"}},
+	{Path: "/imgPost", Handler: ImageHandler, Methods: []string{"GET"}},
+	{Path: "/api/getAllPosts", Handler: HandleGetAllPosts, Methods: []string{"GET", "OPTIONS"}},
 }
 
 func MiddlewareIsAuthenticated(handler http.HandlerFunc) http.HandlerFunc {
