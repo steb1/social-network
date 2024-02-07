@@ -4,9 +4,7 @@ import config from "@/config";
 import HomePage from "./home/page";
 
 function Home() {
-	return (
-		<HomePage />
-	);
+	return <HomePage />;
 }
 
-export default authMiddleware(Home, config.serverApiUrl + "home");
+export default authMiddleware(Home, config.serverApiUrl + "checkAuth");

@@ -277,7 +277,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	WriteJSON(w, http.StatusOK, response)
 }
 
-func HomeHandler(w http.ResponseWriter, r *http.Request) {
+func CheckAutheHandler(w http.ResponseWriter, r *http.Request) {
 	sessionToken := r.Header.Get("Authorization")
 	_, ok := models.SessionRepo.SessionExists(sessionToken)
 	if !ok {
