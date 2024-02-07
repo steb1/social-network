@@ -6,9 +6,10 @@ import (
 	"io"
 	"mime/multipart"
 	"os"
-	"server/lib"
 	"strconv"
 	"time"
+
+	"server/lib"
 )
 
 type PostItems struct {
@@ -96,7 +97,7 @@ func (pr *PostRepository) GetPost(postID int) (*Post, error) {
 
 // GetUserOwnPosts retrieves posts owned by a specific user from the database
 func (pr *PostRepository) GetUserOwnPosts(userID int) ([]*Post, error) {
-	rows, err := pr.db.Query("SELECT post_id, title, category, content, created_at, author_id, image_url, visibility FROM post WHERE author_id = ?", userID)
+	rows, err := pr.db.Query("SELECT post_id, title,  content, created_at, author_id, image_url, visibility FROM posts WHERE author_id = ?", userID)
 	if err != nil {
 		return nil, err
 	}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
 	"server/handler"
 	"server/pkg/db/sqlite"
 )
@@ -22,6 +23,8 @@ func main() {
 		http.HandleFunc(route.Path, handler.MiddlewareError(route.Path, route.Handler, route.Methods))
 	}
 
+	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("./uploads/avatar/"))))
+
 	/*******************/
 	log.Println("")
 	fmt.Println("\n\t\033[1;32m ∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞")
@@ -29,5 +32,4 @@ func main() {
 	fmt.Print("\t|\t   http://localhost"+handler.Port, "\t\t|")
 	fmt.Println("\n\t\033[1;32m ∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞")
 	log.Fatal(http.ListenAndServe(handler.Port, nil))
-
 }
