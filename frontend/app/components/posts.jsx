@@ -192,6 +192,12 @@ export const PostText = ({ post }) => {
                 </div>
                 <div className="sm:px-4 p-2.5 pt-0">
                 <p className="font-normal"> {post.content}</p>
+                 {/* categories */}
+                 <div className="flex gap-1 text-xs font-semibold">
+                    {post.category.map((category, index) => (
+                        <span key={index} className="text-blue-500">#{category}</span>
+                    ))}
+                </div>
                 </div> 
                 {/* post icons */}
                 <div className="sm:p-4 p-2.5 flex items-center gap-4 text-xs font-semibold">

@@ -31,7 +31,7 @@ type Post struct {
 	Title      string    `json:"title"`
 	Category   []string  `json:"category"`
 	Content    string    `json:"content"`
-	CreatedAt  time.Time `json:"created_at"`
+	CreatedAt  string `json:"created_at"`
 	AuthorID   int       `json:"author_id"`
 	ImageURL   string    `json:"image_url"`
 	Visibility string    `json:"visibility"`
@@ -50,13 +50,13 @@ func NewPostRepository(db *sql.DB) *PostRepository {
 }
 
 // CreatePost adds a new post to the database
-func (pr *PostRepository) CreatePost(post *Post, photo multipart.File, categories []int) error {
+func (pr *PostRepository) CreatePost(post *Post, photo multipart.File, categories []int, createdAt time.Time) error {
 	query := `
 	INSERT INTO posts (title, content, created_at, author_id, has_image, visibility)
 	VALUES (?, ?, ?, ?, ?, ?)
 	`
 	imageUrl := strconv.Itoa(post.HasImage)
-	result, err := pr.db.Exec(query, post.Title, post.Content, post.CreatedAt, post.AuthorID, imageUrl, post.Visibility)
+	result, err := pr.db.Exec(query, post.Title, post.Content, createdAt, post.AuthorID, imageUrl, post.Visibility)
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -110,7 +110,7 @@ func (pr *PostRepository) GetAllPosts() ([]*Post, error) {
 		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.HasImage, &post.User.Nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email); err != nil {
 			return nil, err
 		}
-		// post.CreatedAt = lib.FormatTimestamp(post.CreatedAt)
+		post.CreatedAt = lib.FormatDateDB(post.CreatedAt)
 		post.Category = PostCategoryRepo.GetPostCategory(post.PostID)
 		posts = append(posts, &post)
 	}
