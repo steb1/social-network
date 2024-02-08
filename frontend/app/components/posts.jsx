@@ -210,7 +210,7 @@ export const PostText = ({ post }) => {
                 </div>
                 <div className="flex items-center gap-3">
                     <button type="button" className="button-icon bg-slate-200/70 dark:bg-slate-700"> <ion-icon className="text-lg" name="chatbubble-ellipses" /> </button>
-                    <span>260</span>
+                    <span>{post.Comments.length}</span>
                 </div>
                 <button type="button" className="button-icon ml-auto"> <ion-icon className="text-xl" name="paper-plane-outline" /> </button>
                 <button type="button" className="button-icon"> <ion-icon className="text-xl" name="share-outline" /> </button>
