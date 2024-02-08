@@ -103,7 +103,7 @@ func HandleGetAllPosts(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 		var apiError ApiError
-		apiError.Error = "Something went wrong while getting all"
+		apiError.Error = "Something went wrong while getting all posts"
 		WriteJSON(w, http.StatusInternalServerError, apiError)
 	}
 
