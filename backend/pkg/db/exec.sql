@@ -4,3 +4,11 @@
 -- ('Title  2', 'This is another long body text for post  2. It can also contain multiple sentences and paragraphs. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ac ultricies justo. Phasellus eget libero id dui feugiat congue. Donec eget euismod justo. Sed at purus a nunc congue venenatis. In hac habitasse platea dictumst. Fusce vestibulum vel nunc in sagittis. Sed nec libero et libero sagittis luctus vel a tellus. Sed nec posuere erat. Fusce auctor fringilla nulla, sit amet varius ligula. Maecenas et convallis odio. Sed ut tincidunt urna. Proin et dapibus turpis. Sed tincidunt libero nec neque efficitur, in tincidunt justo tristique.', '2', '2023-09-03  15:00:00', 'public', '0'),
 -- ('Title  3', 'This is a third long body text for post  3. It can contain even more content. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ac ultricies justo. Phasellus eget libero id dui feugiat congue. Donec eget euismod justo. Sed at purus a nunc congue venenatis. In hac habitasse platea dictumst. Fusce vestibulum vel nunc in sagittis. Sed nec libero et libero sagittis luctus vel a tellus. Sed nec posuere erat. Fusce auctor fringilla nulla, sit amet varius ligula. Maecenas et convallis odio. Sed ut tincidunt urna. Proin et dapibus turpis. Sed tincidunt libero nec neque efficitur, in tincidunt justo tristique.', '3', '2023-09-03  15:30:00', 'public', '0');
 -- DELETE FROM posts
+
+-- INSERT INTO post_categories (category_id, post_id)
+-- VALUES
+--     ('1', '12'),
+--     ('2', '12'),
+--     ('6', '12'),
+--     ('2', '13'),
+--     ('6', '14');

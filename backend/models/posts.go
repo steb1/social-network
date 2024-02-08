@@ -36,7 +36,7 @@ type Post struct {
 	ImageURL   string    `json:"image_url"`
 	Visibility string    `json:"visibility"`
 	HasImage   int       `json:"has_image"`
-	User       *User      
+	User       *User
 }
 
 type PostRepository struct {
@@ -102,7 +102,7 @@ func (pr *PostRepository) GetAllPosts() ([]*Post, error) {
 		return nil, err
 	}
 	defer rows.Close()
-	
+
 	var posts []*Post
 	for rows.Next() {
 		var post Post
@@ -111,7 +111,7 @@ func (pr *PostRepository) GetAllPosts() ([]*Post, error) {
 			return nil, err
 		}
 		// post.CreatedAt = lib.FormatTimestamp(post.CreatedAt)
-		// post.Categories = GetCategoryPost(w, r, post.ID)
+		post.Category = PostCategoryRepo.GetPostCategory(post.PostID)
 		posts = append(posts, &post)
 	}
 	return posts, nil
