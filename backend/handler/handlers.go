@@ -25,7 +25,7 @@ var Routes = []Route{
 	{Path: "/api/logout", Handler: Logout, Methods: []string{"GET"}},
 	{Path: "/api/home", Handler: HomeHandler, Methods: []string{"GET", "OPTIONS", "POST"}},
 	{Path: "/api/createPost", Handler: HandleCreatePost, Methods: []string{"POST", "OPTIONS"}},
-	{Path: "/imgPost", Handler: ImageHandler, Methods: []string{"GET"}},
+	{Path: "/imgPost", Handler: ImageHandler, Methods: []string{"GET", "OPTIONS"}},
 	{Path: "/api/getAllPosts", Handler: HandleGetAllPosts, Methods: []string{"GET", "OPTIONS"}},
 }
 

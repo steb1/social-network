@@ -13,9 +13,8 @@ import (
 
 func HandleCreatePost(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	w.Header().Set("Access-Control-Allow-Methods", "POST,OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	var post models.Post
 	var apiError ApiError
@@ -33,7 +32,7 @@ func HandleCreatePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	post.Content = strings.TrimSpace(r.FormValue("body"))
-	post.Title = strings.TrimSpace(r.FormValue("title"))
+	post.Title = "no title"
 	createdAt := time.Now()
 	_categories := r.Form["category"]
 	userId, err := strconv.Atoi(session.UserID)
@@ -43,7 +42,7 @@ func HandleCreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	post.AuthorID = userId
-	post.Visibility = "public"
+	post.Visibility = strings.TrimSpace(r.FormValue("visibility"))
 	photo, _, _ := r.FormFile("media_post")
 	hasImage := map[bool]int{true: 1, false: 0}[photo != nil]
 	post.HasImage = hasImage
@@ -114,7 +113,7 @@ func HandleGetAllPosts(w http.ResponseWriter, r *http.Request) {
 			apiError.Error = "Something went wrong while getting comments inside posts"
 			WriteJSON(w, http.StatusInternalServerError, apiError)
 		}
-		
+
 		posts[i].Comments = comments
 	}
 
