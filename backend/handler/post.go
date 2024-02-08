@@ -34,7 +34,7 @@ func HandleCreatePost(w http.ResponseWriter, r *http.Request) {
 
 	post.Content = strings.TrimSpace(r.FormValue("body"))
 	post.Title = strings.TrimSpace(r.FormValue("title"))
-	post.CreatedAt = time.Now()
+	createdAt := time.Now()
 	_categories := r.Form["category"]
 	userId, err := strconv.Atoi(session.UserID)
 	if err != nil {
@@ -62,7 +62,7 @@ func HandleCreatePost(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	errors := models.PostRepo.CreatePost(&post, photo, categories)
+	errors := models.PostRepo.CreatePost(&post, photo, categories, createdAt)
 	if errors != nil {
 		fmt.Println(errs)
 		apiError.Error = "An error occured."
