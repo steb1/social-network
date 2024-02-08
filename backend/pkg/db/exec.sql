@@ -12,3 +12,12 @@
 --     ('6', '12'),
 --     ('2', '13'),
 --     ('6', '14');
+
+-- INSERT INTO comments (content, author_id, createdAt, post_id)
+-- VALUES 
+--     ('This is a little comment text for post 3', '6', '2024-02-07 14:30:00', '12'),
+--     ('I love taking photos of nature and animals. 🌳🐶', '4', '2024-02-07 14:40:00', '12'),
+--     ('I enjoy people and emotions. 😊😢 ', '4', '2024-02-07 14:50:00', '12'),
+--     ('This is a little comment text for post yoows', '5', '2024-02-06 14:30:00', '14'),
+--     ('I love taking photos of nature and animals.', '1', '2024-02-06 14:40:00', '14'),
+--     ('Just a comment for the yayediop post I love taking photos of nature and animals.', '5', '2024-02-06 14:40:00', '13');

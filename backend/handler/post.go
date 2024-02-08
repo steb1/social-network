@@ -99,12 +99,23 @@ func HandleGetAllPosts(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
+	var apiError ApiError
 	posts, err := models.PostRepo.GetAllPosts()
 	if err != nil {
 		fmt.Println(err)
-		var apiError ApiError
 		apiError.Error = "Something went wrong while getting all posts"
 		WriteJSON(w, http.StatusInternalServerError, apiError)
+	}
+	for i := range posts {
+		postIDStr := strconv.Itoa(posts[i].PostID)
+		comments, err := models.CommentRepo.GetCommentsByPostID(postIDStr)
+		if err != nil {
+			fmt.Println(err)
+			apiError.Error = "Something went wrong while getting comments inside posts"
+			WriteJSON(w, http.StatusInternalServerError, apiError)
+		}
+		
+		posts[i].Comments = comments
 	}
 
 	WriteJSON(w, http.StatusOK, posts)

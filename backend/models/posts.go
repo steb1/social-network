@@ -37,6 +37,7 @@ type Post struct {
 	Visibility string    `json:"visibility"`
 	HasImage   int       `json:"has_image"`
 	User       *User
+	Comments   []*Comment
 }
 
 type PostRepository struct {
