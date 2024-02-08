@@ -173,7 +173,7 @@ export const PostText = ({ post }) => {
                 <div className="flex gap-3 sm:p-4 p-2.5 text-sm font-medium">
                 <a href="timeline.html"> <img src="assets/images/avatars/avatar-5.jpg"  className="w-9 h-9 rounded-full" /> </a> 
                 <div className="flex-1">
-                    <a href="timeline.html"> <h4 className="text-black dark:text-white"> {post.User.first_name} {post.User.last_name} </h4> </a> 
+                    <a href="timeline.html"> <h4 className="text-black dark:text-white"> {post.User.first_name} {post.User.last_name} ({post.User.nickname}) </h4> </a> 
                     <div className="text-xs text-gray-500 dark:text-white/80"> {post.created_at}</div>
                 </div>
                 <div className="-mr-1">
@@ -217,27 +217,15 @@ export const PostText = ({ post }) => {
                 </div>
                 {/* comments */}
                 <div className="sm:p-4 p-2.5 border-t border-gray-100 font-normal space-y-3 relative dark:border-slate-700/40"> 
-                <div className="flex items-start gap-3 relative">
-                    <a href="timeline.html"> <img src="assets/images/avatars/avatar-2.jpg"  className="w-6 h-6 mt-1 rounded-full" /> </a>
-                    <div className="flex-1">
-                    <a href="timeline.html" className="text-black font-medium inline-block dark:text-white"> Steeve </a>
-                    <p className="mt-0.5"> I love taking photos of nature and animals. 🌳🐶</p>
-                    </div>
-                </div>
-                <div className="flex items-start gap-3 relative">
-                    <a href="timeline.html"> <img src="assets/images/avatars/avatar-3.jpg"  className="w-6 h-6 mt-1 rounded-full" /> </a>
-                    <div className="flex-1">
-                    <a href="timeline.html" className="text-black font-medium inline-block dark:text-white"> Monroe </a>
-                    <p className="mt-0.5">  I enjoy people and emotions. 😊😢 </p>
-                    </div>
-                </div> 
-                <div className="flex items-start gap-3 relative">
-                    <a href="timeline.html"> <img src="assets/images/avatars/avatar-5.jpg"  className="w-6 h-6 mt-1 rounded-full" /> </a>
-                    <div className="flex-1">
-                    <a href="timeline.html" className="text-black font-medium inline-block dark:text-white"> Jesse </a>
-                    <p className="mt-0.5">  Photography is my passion. 🎨📸 </p>
-                    </div>
-                </div>
+                    {post.Comments.map(comment => (
+                        <div  key={comment.comment_id} className="flex items-start gap-3 relative">
+                            <a href="timeline.html"> <img src="assets/images/avatars/avatar-2.jpg"  className="w-6 h-6 mt-1 rounded-full" /> </a>
+                            <div className="flex-1">
+                            <a href="timeline.html" className="text-black font-medium inline-block dark:text-white"> {comment.User.first_name} {comment.User.last_name}</a>
+                            <p className="mt-0.5">{comment.content}</p>
+                            </div>
+                        </div>
+                    ))}
                 </div>
                 {/* add comment */}
                 <div className="sm:px-4 sm:py-3 p-2.5 border-t border-gray-100 flex items-center gap-1 dark:border-slate-700/40">
