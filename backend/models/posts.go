@@ -72,6 +72,10 @@ func (pr *PostRepository) CreatePost(post *Post, photo multipart.File, categorie
 		return nil
 	}
 	defer photo.Close()
+	if err := os.MkdirAll("imgPost", os.ModePerm); err != nil {
+        fmt.Println("Error creating imgPost directory:", err)
+        return nil
+    }
 	fichierSortie, err := os.Create(fmt.Sprintf("imgPost/%d.jpg", post.PostID))
 	if err != nil {
 		lib.HandleError(err, "Creating post image.")
