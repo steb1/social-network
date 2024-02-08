@@ -2,10 +2,14 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
 	"server/lib"
 
 	"golang.org/x/crypto/bcrypt"
+)
+
+const (
+	TypePublic  = "public"
+	TypePrivate = "private"
 )
 
 type User struct {
@@ -60,8 +64,7 @@ func (ur *UserRepository) UserExists(userID string) (bool, error) {
 	query := "SELECT COUNT(*) as total FROM users WHERE user_id = ?"
 	var total int
 	err := ur.db.QueryRow(query, userID).Scan(&total)
-	fmt.Println(err)
-	fmt.Println(total)
+
 	if err != nil {
 		return false, err
 	}
@@ -255,4 +258,21 @@ func (ur *UserRepository) CheckCredentials(login, password string) (User, bool) 
 	}
 
 	return user, false
+}
+
+func (ur *UserRepository) GetAccountType(userId int) (string, error) {
+	var accountType string
+	query := `
+       SELECT account_type FROM users 
+	   WHERE user_id = ? 
+    `
+	row := ur.db.QueryRow(query, userId)
+	err := row.Scan(
+		&accountType,
+	)
+	if err != nil {
+		return accountType, err
+	}
+
+	return accountType, nil
 }

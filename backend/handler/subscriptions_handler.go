@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"server/models"
 	"strconv"
@@ -15,7 +16,7 @@ func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	var apiError ApiError
-
+	var apiSuccess ApiSuccess
 	sessionToken := r.Header.Get("Authorization")
 	session, err := models.SessionRepo.GetSession(sessionToken)
 	if err != nil {
@@ -42,11 +43,8 @@ func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	id, ok := userId.(float64)
-	fmt.Println(ok)
-	fmt.Printf("%T", userId)
+
 	followingUserId := int(id)
-	fmt.Println(followingUserId)
-	fmt.Println(ok)
 
 	if !ok {
 		apiError.Error = "Invalid or missing user id destructure."
@@ -61,9 +59,68 @@ func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var subcription models.Subscription
-	subcription.FollowerUserID = followerUserID
-	subcription.FollowingUserID = followingUserId
-	models.SubscriptionRepo.CreateSubscription(&subcription)
+	ok, err = models.SubscriptionRepo.UserAlreadyFollow(followerUserID, followingUserId)
+	if err != nil {
+		apiSuccess.Message = "An error occurred."
+		WriteJSON(w, http.StatusOK, apiSuccess)
+		return
+	}
+	if ok {
+		err = models.SubscriptionRepo.DeleteSubscription(followerUserID, followingUserId)
+		if err != nil {
+			apiError.Error = "An error occurred"
+			WriteJSON(w, http.StatusBadRequest, apiSuccess)
+			return
+		}
+		apiSuccess.Message = fmt.Sprintf("User id %d, unfollowed.", followingUserId)
+		WriteJSON(w, http.StatusOK, apiSuccess)
+		return
+	}
 
+	// We check if the account Type is public and we bypass the Request mechanism
+	accountType, err := models.UserRepo.GetAccountType(followingUserId)
+	if err != nil {
+		apiError.Error = "The ID may be incorrect"
+	}
+
+	if accountType == models.TypePublic {
+		var subcription models.Subscription
+		subcription.FollowerUserID = followerUserID
+		subcription.FollowingUserID = followingUserId
+		err = models.SubscriptionRepo.CreateSubscription(&subcription)
+		if err != nil {
+			// If we fail to create a subscription it will be because it won't respect constraint on the database, the user is
+			// already following the user so we delete de subscription
+			err = models.SubscriptionRepo.DeleteSubscription(subcription.FollowerUserID, subcription.FollowingUserID)
+			if err != nil {
+				apiSuccess.Message = fmt.Sprintf("User id %d, unfollowed.", followingUserId)
+				WriteJSON(w, http.StatusOK, apiSuccess)
+				return
+			}
+			log.Printf("%s", err.Error())
+			apiError.Error = "Error following user."
+			WriteJSON(w, http.StatusBadRequest, apiError)
+			return
+		}
+		apiSuccess.Message = "User well followed."
+		WriteJSON(w, http.StatusOK, apiSuccess)
+		return
+	}
+	// If the account is private
+	var followResquest models.FollowRequest
+	followResquest.FollowerUserID = followerUserID
+	followResquest.FollowingUserID = followingUserId
+	followResquest.Status = models.StatusPending
+
+	err = models.FollowRequestRepo.CreateFollowRequest(&followResquest)
+	if err != nil {
+		fmt.Println("coucou")
+		log.Printf("%s", err.Error())
+		apiError.Error = "Error making following request to the user."
+		WriteJSON(w, http.StatusBadRequest, apiError)
+		return
+	}
+
+	apiSuccess.Message = "Following request well received."
+	WriteJSON(w, http.StatusOK, apiSuccess)
 }

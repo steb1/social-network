@@ -59,11 +59,55 @@ func (sr *SubscriptionRepository) UpdateSubscription(subscription *Subscription)
 }
 
 // DeleteSubscription removes a subscription from the database by subscription_id
-func (sr *SubscriptionRepository) DeleteSubscription(subscriptionID int) error {
-	query := "DELETE FROM subscriptions WHERE subscription_id = ?"
-	_, err := sr.db.Exec(query, subscriptionID)
+func (sr *SubscriptionRepository) DeleteSubscription(followeUserId, followingUserId int) error {
+	query := "DELETE FROM subscriptions WHERE follower_user_id = ? AND following_user_id = ? "
+	_, err := sr.db.Exec(query, followeUserId, followingUserId)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+// DeleteSubscription removes a subscription from the database by subscription_id
+func (sr *SubscriptionRepository) GetFollowers(userId int) error {
+	query := ` 
+	SELECT u.user_id, u.email, u.first_name, u.last_name, u.date_of_birth, u.avatar, u.nickname, u.about_me
+		FROM subscriptions s
+		JOIN users u ON s.follower_user_id = u.user_id
+		WHERE s.following_user_id = ?;
+	`
+	_, err := sr.db.Exec(query, userId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// DeleteSubscription removes a subscription from the database by subscription_id
+func (sr *SubscriptionRepository) GetFollowing(userId int) error {
+	query := ` 
+	SELECT u.user_id, u.email, u.first_name, u.last_name, u.date_of_birth, u.avatar, u.nickname, u.about_me
+		FROM subscriptions s
+		JOIN users u ON s.following_user_id = u.user_id
+		WHERE s.follower_user_id = ?;
+	`
+	_, err := sr.db.Exec(query, userId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func (sr *SubscriptionRepository) UserAlreadyFollow(followerUserId, followingUserId int) (bool, error) {
+	query := "SELECT COUNT(*) as total FROM subscriptions WHERE follower_user_id = ? AND following_user_id = ?"
+	var total int
+
+	err := sr.db.QueryRow(query, followerUserId, followingUserId).Scan(&total)
+	if err != nil {
+		return false, err
+	}
+	if total == 0 {
+		return false, nil
+	}
+
+	return true, nil
 }
