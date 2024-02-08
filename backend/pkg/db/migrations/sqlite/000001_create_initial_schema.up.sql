@@ -32,7 +32,6 @@ CREATE TABLE IF NOT EXISTS "memberships" (
 CREATE TABLE IF NOT EXISTS "posts" (
   "post_id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
   "title" text NOT NULL,
-  "category" text NOT NULL,
   "content" text NOT NULL,
   "createdAt" datetime NOT NULL DEFAULT(CURRENT_TIMESTAMP),
   "author_id" integer NOT NULL,
@@ -43,16 +42,16 @@ CREATE TABLE IF NOT EXISTS "posts" (
 
 -- Table for 'post_category'
 CREATE TABLE IF NOT EXISTS "post_categories" (
-    id VARCHAR PRIMARY KEY,
-    categoryID VARCHAR,
-    postID VARCHAR,
-    FOREIGN KEY (categoryID) REFERENCES category(category_id),
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    categoryID INTEGER,
+    postID INTEGER,
+    FOREIGN KEY (categoryID) REFERENCES categories(category_id),
     FOREIGN KEY (postID) REFERENCES posts(post_id)
 );
 
 -- Table for 'category'
 CREATE TABLE IF NOT EXISTS "categories" (
-    category_id VARCHAR PRIMARY KEY,
+    category_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     name VARCHAR,
     createDate DATE,
     modifiedDate DATE

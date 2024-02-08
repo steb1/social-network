@@ -13,6 +13,7 @@ var (
 	AttendanceRepo     *AttendanceRepository
 	UserRepo           *UserRepository
 	PostRepo           *PostRepository
+	PostCategoryRepo   *PostCategorieRepository
 	CommentRepo        *CommentRepository
 	CategoryRepo       *CategoryRepository
 	NotifRepo          *NotificationRepository
@@ -51,6 +52,7 @@ func init() {
 	UserRepo = NewUserRepository(db)
 	NotifRepo = NewNotificationRepository(db)
 	PostRepo = NewPostRepository(db)
+	PostCategoryRepo = NewPostCategorieRepository(db)
 	CommentRepo = NewCommentRepository(db)
 	CategoryRepo = NewCategoryRepository(db)
 	AttendanceRepo = NewAttendanceRepository(db)
