@@ -20,7 +20,8 @@ const authMiddleware = (handler, serverUrl) => async (req, res) => {
 		const isSignInOrSignUpPage = req.url === "/auth/signin" || req.url === "/auth/signup";
 
 		if (isSignInOrSignUpPage) {
-			redirect("/");
+			console.log(req.url);
+			// redirect("/");
 		}
 
 		return handler(req, res);

@@ -2,9 +2,9 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"os"
+
 	"server/lib"
 )
 
@@ -66,8 +66,6 @@ func init() {
 	PostVisibilityRepo = NewPostVisibilityRepository(db)
 	SessionRepo = NewSessionRepository(db)
 	SubscriptionRepo = NewSubscriptionRepository(db)
-
-	fmt.Println("isGood")
 
 	log.Println("✅ Database init with success")
 }

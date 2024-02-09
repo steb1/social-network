@@ -35,7 +35,7 @@ func HandleGetProfile(w http.ResponseWriter, r *http.Request) {
 
 	user, err := models.UserRepo.GetUserByID(id)
 	if err != nil {
-		log.Println(err)
+		log.Println("🚀 ~ funcHandleGetProfile ~ err:", err)
 		var apiError ApiError
 		apiError.Error = "Not found user"
 		WriteJSON(w, http.StatusNotFound, apiError)
@@ -44,7 +44,7 @@ func HandleGetProfile(w http.ResponseWriter, r *http.Request) {
 
 	postOwned, err := models.PostRepo.GetUserOwnPosts(user.UserID)
 	if err != nil {
-		log.Println(err)
+		log.Println("🚀 ~ funcHandleGetProfile ~ err:", err)
 		var apiError ApiError
 		apiError.Error = "Not found post"
 		WriteJSON(w, http.StatusInternalServerError, apiError)
@@ -53,6 +53,7 @@ func HandleGetProfile(w http.ResponseWriter, r *http.Request) {
 
 	followers, err := models.SubscriptionRepo.GetFollowers(user.UserID)
 	if err != nil {
+		log.Println("🚀 ~ funcHandleGetProfile ~ err:", err)
 		var apiError ApiError
 		apiError.Error = "Not found followers"
 		WriteJSON(w, http.StatusInternalServerError, apiError)
@@ -61,6 +62,7 @@ func HandleGetProfile(w http.ResponseWriter, r *http.Request) {
 
 	followings, err := models.SubscriptionRepo.GetFollowing(user.UserID)
 	if err != nil {
+		log.Println("🚀 ~ funcHandleGetProfile ~ err:", err)
 		var apiError ApiError
 		apiError.Error = "Not found followings"
 		WriteJSON(w, http.StatusInternalServerError, apiError)
