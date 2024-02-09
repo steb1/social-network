@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"server/lib"
+	"time"
 )
 
 // Comment structure represents the "comments" table
@@ -27,12 +28,12 @@ func NewCommentRepository(db *sql.DB) *CommentRepository {
 }
 
 // CreateComment adds a new comment to the database
-func (cc *CommentRepository) CreateComment(comment *Comment) error {
+func (cc *CommentRepository) CreateComment(comment *Comment, createdAt time.Time) error {
 	query := `
-		INSERT INTO comment (content, author_id, post_id, created_at)
+		INSERT INTO comments (content, author_id, post_id, createdAt)
 		VALUES (?, ?, ?, ?)
 	`
-	result, err := cc.db.Exec(query, comment.Content, comment.AuthorID, comment.PostID, comment.CreatedAt)
+	result, err := cc.db.Exec(query, comment.Content, comment.AuthorID, comment.PostID, createdAt)
 	if err != nil {
 		return err
 	}
