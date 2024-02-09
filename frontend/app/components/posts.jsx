@@ -172,21 +172,26 @@ export const PostText = ({ post }) => {
         e.preventDefault();
        
         let  token= document.cookie.split("=")[1]
-        const form = document.getElementById('create-comment-form')
-        const NewformData = new FormData(form)
-        NewformData.append('post_id', post.post_id);
+
+        const formId = `create-comment-form-${post.post_id}`;
+        const form = document.getElementById(formId);
+        const formDataJson = new FormData(form);
+        formDataJson.append('post_id', post.post_id);
 
         const response = await fetch(config.serverApiUrl + "createComment", {
             method: 'POST',
             headers: {
                 'Authorization': token ,
             },
-            body: NewformData,
+            body: formDataJson,
         })
         try {
             const jsonData = await response.json();
             if (response.ok) {
                 console.log('comment sent');
+                form.reset();
+            } else {
+                console.error('Failed to submit comment:', jsonData);
             }
         } catch (error) {
             console.error("Erreur lors de la lecture de la réponse comment JSON :", error);
@@ -257,10 +262,10 @@ export const PostText = ({ post }) => {
                 {/* add comment */}
                 <div className="sm:px-4 sm:py-3 p-2.5 border-t border-gray-100 flex items-center gap-1 dark:border-slate-700/40">
                 <img src="assets/images/avatars/avatar-7.jpg"  className="w-6 h-6 rounded-full" />
-                <form onSubmit={handleSubmit} id="create-comment-form" className="flex-1 relative overflow-hidden h-10">
+                <form onSubmit={handleSubmit} id={`create-comment-form-${post.post_id}`}  className="flex-1 relative overflow-hidden h-10 create-comment-form">
                     <textarea placeholder="Add Comment...." name="comment_body" rows={1} className="w-full resize-none !bg-transparent px-4 py-2 focus:!border-transparent focus:!ring-transparent" aria-haspopup="true" aria-expanded="false" defaultValue={""}/>
                 </form>
-                <button onClick={handleSubmit} className="text-sm rounded-full py-1.5 px-3.5 bg-secondery">
+                <button onClick={handleSubmit}  className="text-sm rounded-full py-1.5 px-3.5 bg-secondery">
                     Send
                 </button>
             </div>
