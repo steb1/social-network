@@ -5,6 +5,7 @@ import Header from "@/app/components/header";
 import Sidebar from "@/app/components/sidebar";
 import MainProfile from "@/app/components/mainProfile";
 import { cookies } from "next/headers";
+import { notFound } from "next/navigation";
 
 const Profile = async ({ params: { id } }) => {
 	const cookieStore = cookies();
@@ -24,14 +25,16 @@ const Profile = async ({ params: { id } }) => {
 		} else {
 			const errorText = await response.text();
 			console.error("Profile not fetched successfully:", errorText);
+			return notFound();
 		}
 	} catch (error) {
 		console.error("Error during fetching profile:", error);
+		return notFound();
 	}
 
 	if (profileData.accountType === "private") {
 		profileData.accountType =
-			profileData.id_requester === profileData.user_id
+			profileData.id_requester == profileData.user_id
 				? "public"
 				: // Check if followers array exists and is not null
 					profileData.followers && Array.isArray(profileData.followers) && profileData.followers.length > 0
@@ -40,8 +43,6 @@ const Profile = async ({ params: { id } }) => {
 						: "private"
 					: "private";
 	}
-
-	console.log(profileData);
 
 	return (
 		<div id="wrapper" className="pt-15 space-x-2">
@@ -54,7 +55,7 @@ const Profile = async ({ params: { id } }) => {
 					<Sidebar />
 				</div>
 
-				<MainProfile />
+				<MainProfile props={profileData} />
 			</div>
 		</div>
 	);

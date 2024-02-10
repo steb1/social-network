@@ -1,7 +1,8 @@
 import "../../public/assets/js/script.js";
 import "../../public/assets/js/simplebar.js";
+import PrivateAccountUI from "./privateaccount.jsx";
 
-const MainProfile = () => {
+const MainProfile = ({ props }) => {
 	return (
 		<main id="site__main" className="2xl:ml-[--w-side]  xl:ml-[--w-side-sm] p-2.5 h-[calc(100vh-var(--m-top))] mt-[--m-top]">
 			<div className="max-w-[1065px] mx-auto max-lg:-m-2.5">
@@ -20,11 +21,11 @@ const MainProfile = () => {
 								</div>
 							</div>
 
-							<h3 className="md:text-3xl text-base font-bold text-black dark:text-white"> Fistname Lastname </h3>
+							<h3 className="md:text-3xl text-base font-bold text-black dark:text-white"> {`${props.firstName} ${props.lastName.toUpperCase()}`} </h3>
 
-							<p className="mt-2 text-gray-500 dark:text-white/80">NicknameOrEmail</p>
+							<p className="mt-2 text-gray-500 dark:text-white/80">{props.nickname ? props.nickname : props.email}</p>
 
-							<p className="mt-2 max-w-xl text-sm md:font-normal font-light text-center hidden"> I love beauty and emotion. 🥰 I’m passionate about photography and learning. 📚 I explore genres and styles. 🌈 I think photography is storytelling. 😊</p>
+							<p className="mt-2 max-w-xl text-sm md:font-normal font-light text-center">{props.aboutMe}</p>
 						</div>
 					</div>
 
@@ -56,30 +57,33 @@ const MainProfile = () => {
 
 				<div className="flex 2xl:gap-12 gap-10 mt-8 max-lg:flex-col" id="js-oversized">
 					<div className="flex-1 xl:space-y-6 space-y-3">
-						<div className="bg-white rounded-xl shadow-sm p-4 space-y-4 text-sm font-medium border1 dark:bg-dark2">
-							<div className="flex items-center gap-3">
-								<div className="flex-1 bg-slate-100 hover:bg-opacity-80 transition-all rounded-lg cursor-pointer dark:bg-dark3" uk-toggle="target: #create-status">
-									<div className="py-2.5 text-center dark:text-white"> What do you have in mind? </div>
-								</div>
-								<div className="cursor-pointer hover:bg-opacity-80 p-1 px-1.5 rounded-lg transition-all bg-pink-100/60 hover:bg-pink-100" uk-toggle="target: #create-status">
-									<svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 stroke-pink-600 fill-pink-200/70" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#2c3e50" fill="none" strokeLinecap="round" strokeLinejoin="round">
-										<path stroke="none" d="M0 0h24v24H0z" fill="none" />
-										<path d="M15 8h.01" />
-										<path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z" />
-										<path d="M3.5 15.5l4.5 -4.5c.928 -.893 2.072 -.893 3 0l5 5" />
-										<path d="M14 14l1 -1c.928 -.893 2.072 -.893 3 0l2.5 2.5" />
-									</svg>
-								</div>
-								<div className="cursor-pointer hover:bg-opacity-80 p-1 px-1.5 rounded-lg transition-all bg-sky-100/60 hover:bg-sky-100" uk-toggle="target: #create-status">
-									<svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 stroke-sky-600 fill-sky-200/70 " viewBox="0 0 24 24" strokeWidth="1.5" stroke="#2c3e50" fill="none" strokeLinecap="round" strokeLinejoin="round">
-										<path stroke="none" d="M0 0h24v24H0z" fill="none" />
-										<path d="M15 10l4.553 -2.276a1 1 0 0 1 1.447 .894v6.764a1 1 0 0 1 -1.447 .894l-4.553 -2.276v-4z" />
-										<path d="M3 6m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z" />
-									</svg>
+						{props.id_requester == props.user_id ? (
+							<div className="bg-white rounded-xl shadow-sm p-4 space-y-4 text-sm font-medium border1 dark:bg-dark2">
+								<div className="flex items-center gap-3">
+									<div className="flex-1 bg-slate-100 hover:bg-opacity-80 transition-all rounded-lg cursor-pointer dark:bg-dark3" uk-toggle="target: #create-status">
+										<div className="py-2.5 text-center dark:text-white"> What do you have in mind? </div>
+									</div>
+									<div className="cursor-pointer hover:bg-opacity-80 p-1 px-1.5 rounded-lg transition-all bg-pink-100/60 hover:bg-pink-100" uk-toggle="target: #create-status">
+										<svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 stroke-pink-600 fill-pink-200/70" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#2c3e50" fill="none" strokeLinecap="round" strokeLinejoin="round">
+											<path stroke="none" d="M0 0h24v24H0z" fill="none" />
+											<path d="M15 8h.01" />
+											<path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z" />
+											<path d="M3.5 15.5l4.5 -4.5c.928 -.893 2.072 -.893 3 0l5 5" />
+											<path d="M14 14l1 -1c.928 -.893 2.072 -.893 3 0l2.5 2.5" />
+										</svg>
+									</div>
+									<div className="cursor-pointer hover:bg-opacity-80 p-1 px-1.5 rounded-lg transition-all bg-sky-100/60 hover:bg-sky-100" uk-toggle="target: #create-status">
+										<svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 stroke-sky-600 fill-sky-200/70 " viewBox="0 0 24 24" strokeWidth="1.5" stroke="#2c3e50" fill="none" strokeLinecap="round" strokeLinejoin="round">
+											<path stroke="none" d="M0 0h24v24H0z" fill="none" />
+											<path d="M15 10l4.553 -2.276a1 1 0 0 1 1.447 .894v6.764a1 1 0 0 1 -1.447 .894l-4.553 -2.276v-4z" />
+											<path d="M3 6m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z" />
+										</svg>
+									</div>
 								</div>
 							</div>
-						</div>
+						) : null}
 
+						{props.accountType === "private" ? <PrivateAccountUI /> : <div>{/* Votre contenu ici */}</div>}
 						<div className="bg-white rounded-xl shadow-sm text-sm font-medium border1 dark:bg-dark2">
 							<div className="flex gap-3 sm:p-4 p-2.5 text-sm font-medium">
 								<a href="timeline.html">
@@ -206,7 +210,6 @@ const MainProfile = () => {
 								</button>
 							</div>
 						</div>
-
 						<div className="bg-white rounded-xl shadow-sm text-sm font-medium border1 dark:bg-dark2">
 							<div className="flex gap-3 sm:p-4 p-2.5 text-sm font-medium">
 								<a href="timeline.html">
@@ -378,63 +381,50 @@ const MainProfile = () => {
 					<div className="lg:w-[400px]">
 						<div className="lg:space-y-4 lg:pb-8 max-lg:grid sm:grid-cols-2 max-lg:gap-6" uk-sticky="media: 1024; end: #js-oversized; offset: 80">
 							<div className="box p-5 px-6">
-								<ul className="text-gray-700 space-y-4 mt-4 text-sm dark:text-white/80">
-									<li className="flex items-center gap-3">
-										<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
-											<path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-										</svg>
-										<div>Le lorem ipsum est, en imprimerie, une suite de mots sans signification utilisée à titre provisoire pour calibrer une mise en page, le texte définitif venant remplacer le faux-texte dès qu'il est prêt ou que la mise en page est achevée. Généralement, on utilise un texte en faux latin, le Lorem ipsum ou Lipsum.</div>
-									</li>
-								</ul>
+								<div className="flex items-ce justify-between text-black dark:text-white">
+									<h3 className="font-bold text-lg">
+										{" "}
+										Friends
+										<span className="block text-sm text-gray-500 mt-0. font-normal dark:text-white">3489 Friends </span>
+									</h3>
+								</div>
 
-								<br />
-
-								<div className="box p-5 px-6">
-									<div className="flex items-ce justify-between text-black dark:text-white">
-										<h3 className="font-bold text-lg">
-											{" "}
-											Friends
-											<span className="block text-sm text-gray-500 mt-0. font-normal dark:text-white">3489 Friends </span>
-										</h3>
+								<div className="grid grid-cols-3 gap-2 gap-y-5 text-center text-sm mt-4 mb-2">
+									<div>
+										<div className="relative w-full aspect-square rounded-lg overflow-hidden">
+											<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
+										</div>
+										<div className="mt-2 line-clamp-1"> Jesse Steeve </div>
 									</div>
-
-									<div className="grid grid-cols-3 gap-2 gap-y-5 text-center text-sm mt-4 mb-2">
-										<div>
-											<div className="relative w-full aspect-square rounded-lg overflow-hidden">
-												<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
-											</div>
-											<div className="mt-2 line-clamp-1"> Jesse Steeve </div>
+									<div>
+										<div className="relative w-full aspect-square rounded-lg overflow-hidden">
+											<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
 										</div>
-										<div>
-											<div className="relative w-full aspect-square rounded-lg overflow-hidden">
-												<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
-											</div>
-											<div className="mt-2 line-clamp-1"> John Michael </div>
+										<div className="mt-2 line-clamp-1"> John Michael </div>
+									</div>
+									<div>
+										<div className="relative w-full aspect-square rounded-lg overflow-hidden">
+											<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
 										</div>
-										<div>
-											<div className="relative w-full aspect-square rounded-lg overflow-hidden">
-												<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
-											</div>
-											<div className="mt-2 line-clamp-1"> Monroe Parker </div>
+										<div className="mt-2 line-clamp-1"> Monroe Parker </div>
+									</div>
+									<div>
+										<div className="relative w-full aspect-square rounded-lg overflow-hidden">
+											<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
 										</div>
-										<div>
-											<div className="relative w-full aspect-square rounded-lg overflow-hidden">
-												<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
-											</div>
-											<div className="mt-2 line-clamp-1"> Martin Gray </div>
+										<div className="mt-2 line-clamp-1"> Martin Gray </div>
+									</div>
+									<div>
+										<div className="relative w-full aspect-square rounded-lg overflow-hidden">
+											<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
 										</div>
-										<div>
-											<div className="relative w-full aspect-square rounded-lg overflow-hidden">
-												<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
-											</div>
-											<div className="mt-2 line-clamp-1"> James Lewis </div>
+										<div className="mt-2 line-clamp-1"> James Lewis </div>
+									</div>
+									<div>
+										<div className="relative w-full aspect-square rounded-lg overflow-hidden">
+											<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
 										</div>
-										<div>
-											<div className="relative w-full aspect-square rounded-lg overflow-hidden">
-												<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
-											</div>
-											<div className="mt-2 line-clamp-1"> Alexa stella </div>
-										</div>
+										<div className="mt-2 line-clamp-1"> Alexa stella </div>
 									</div>
 								</div>
 							</div>

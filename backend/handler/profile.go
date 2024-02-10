@@ -79,6 +79,9 @@ func HandleGetProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if user.Avatar {
+	}
+
 	// Create a UserProfileResponse without the password field
 	userProfile := UserProfileResponse{
 		IDRequester: session.UserID,
