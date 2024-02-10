@@ -5,7 +5,7 @@ import Link from "next/link";
 import ButtonTogglePrivacy from "./buttonTogglePrivacy.jsx";
 import { cookies } from "next/headers";
 
-const MainProfile = ({ props }) => {
+const MainProfile = ({ props, Visibility }) => {
 	const cookieStore = cookies();
 	return (
 		<main id="site__main" className="2xl:ml-[--w-side]  xl:ml-[--w-side-sm] p-2.5 h-[calc(100vh-var(--m-top))] mt-[--m-top]">
@@ -93,7 +93,7 @@ const MainProfile = ({ props }) => {
 							</div>
 						) : null}
 
-						{props.accountType === "Private" ? (
+						{Visibility === "Private" ? (
 							<PrivateAccountUI />
 						) : (
 							<>
@@ -377,7 +377,7 @@ const MainProfile = ({ props }) => {
 						)}
 					</div>
 
-					{props.accountType !== "Private" ? (
+					{Visibility !== "Private" ? (
 						<>
 							<div className="lg:w-[400px]">
 								<div className="lg:space-y-4 lg:pb-8 max-lg:grid sm:grid-cols-2 max-lg:gap-6" uk-sticky="media: 1024; end: #js-oversized; offset: 80">

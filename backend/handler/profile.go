@@ -120,6 +120,7 @@ func ToggleProfilePrivacy(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ParamPrivacy := r.URL.Query().Get("type")
+	log.Println("🚀 ~ funcToggleProfilePrivacy ~ ParamPrivacy:", ParamPrivacy)
 	if ParamPrivacy != "Private" && ParamPrivacy != "Public" {
 		var apiError ApiError
 		apiError.Error = "BadRequest"

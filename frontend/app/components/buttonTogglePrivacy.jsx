@@ -1,5 +1,4 @@
 "use client";
-import React from "react";
 import config from "@/config";
 import { useRouter } from "next/navigation";
 
@@ -17,8 +16,6 @@ const ButtonTogglePrivacy = ({ accountType, cookie }) => {
 			});
 
 			if (response.ok) {
-				alert("Profile changed");
-				router.push("/profile/1");
 			} else {
 				const errorText = await response.text();
 				console.error("Profile not changed successfully:", errorText);
