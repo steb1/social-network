@@ -3,15 +3,19 @@ import authMiddleware from "@/middleware/authMiddleware";
 import config from "@/config";
 import Header from "@/app/components/header";
 import Sidebar from "@/app/components/sidebar";
-import { Rightbar } from "@/app/components/rightbar";
 import MainProfile from "@/app/components/mainProfile";
+import { cookies } from "next/headers";
 
 const Profile = async ({ params: { id } }) => {
+	const cookieStore = cookies();
 	let profileData = null;
 	console.log("🚀 ~ Profile ~ profileData:", profileData);
 	try {
 		const response = await fetch(`${config.serverApiUrl}profile?id=${id}`, {
 			method: "GET",
+			headers: {
+				Authorization: cookieStore.get("social-network").value,
+			},
 		});
 
 		if (response.ok) {
@@ -25,10 +29,19 @@ const Profile = async ({ params: { id } }) => {
 		console.error("Error during fetching profile:", error);
 	}
 
-	const myStyles = {
-		marginRight: "1em",
-		// Add more style properties as needed
-	};
+	if (profileData.accountType === "private") {
+		profileData.accountType =
+			profileData.id_requester === profileData.user_id
+				? "public"
+				: // Check if followers array exists and is not null
+					profileData.followers && Array.isArray(profileData.followers) && profileData.followers.length > 0
+					? profileData.followers.some((user) => user.UserID === profileData.id_requester)
+						? "public"
+						: "private"
+					: "private";
+	}
+
+	console.log(profileData);
 
 	return (
 		<div id="wrapper" className="pt-15 space-x-2">

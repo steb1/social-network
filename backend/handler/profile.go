@@ -9,6 +9,7 @@ import (
 )
 
 type UserProfileResponse struct {
+	IDRequester string         `json:"id_requester"`
 	UserID      int            `json:"user_id"`
 	FirstName   string         `json:"firstName"`
 	LastName    string         `json:"lastName"`
@@ -24,6 +25,15 @@ type UserProfileResponse struct {
 }
 
 func HandleGetProfile(w http.ResponseWriter, r *http.Request) {
+	session, ok := IsAuthenticated(r)
+
+	if !ok {
+		var apiError ApiError
+		apiError.Error = "StatusUnauthorized"
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	}
+
 	idParam := r.URL.Query().Get("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
@@ -71,6 +81,7 @@ func HandleGetProfile(w http.ResponseWriter, r *http.Request) {
 
 	// Create a UserProfileResponse without the password field
 	userProfile := UserProfileResponse{
+		IDRequester: session.UserID,
 		UserID:      user.UserID,
 		FirstName:   user.FirstName,
 		LastName:    user.LastName,

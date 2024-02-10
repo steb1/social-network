@@ -62,7 +62,7 @@ const MainProfile = () => {
 									<div className="py-2.5 text-center dark:text-white"> What do you have in mind? </div>
 								</div>
 								<div className="cursor-pointer hover:bg-opacity-80 p-1 px-1.5 rounded-lg transition-all bg-pink-100/60 hover:bg-pink-100" uk-toggle="target: #create-status">
-									<svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 stroke-pink-600 fill-pink-200/70" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+									<svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 stroke-pink-600 fill-pink-200/70" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#2c3e50" fill="none" strokeLinecap="round" strokeLinejoin="round">
 										<path stroke="none" d="M0 0h24v24H0z" fill="none" />
 										<path d="M15 8h.01" />
 										<path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z" />
@@ -71,7 +71,7 @@ const MainProfile = () => {
 									</svg>
 								</div>
 								<div className="cursor-pointer hover:bg-opacity-80 p-1 px-1.5 rounded-lg transition-all bg-sky-100/60 hover:bg-sky-100" uk-toggle="target: #create-status">
-									<svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 stroke-sky-600 fill-sky-200/70 " viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+									<svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 stroke-sky-600 fill-sky-200/70 " viewBox="0 0 24 24" strokeWidth="1.5" stroke="#2c3e50" fill="none" strokeLinecap="round" strokeLinejoin="round">
 										<path stroke="none" d="M0 0h24v24H0z" fill="none" />
 										<path d="M15 10l4.553 -2.276a1 1 0 0 1 1.447 .894v6.764a1 1 0 0 1 -1.447 .894l-4.553 -2.276v-4z" />
 										<path d="M3 6m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z" />
@@ -189,9 +189,9 @@ const MainProfile = () => {
 										<div className="flex items-center gap-2" uk-scrollspy="target: > svg; cls: uk-animation-slide-right-small; delay: 100 ;repeat: true">
 											<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 fill-sky-600">
 												<path
-													fill-rule="evenodd"
+													fillRule="evenodd"
 													d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z"
-													clip-rule="evenodd"
+													clipRule="evenodd"
 												/>
 											</svg>
 											<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 fill-pink-600">
@@ -223,30 +223,30 @@ const MainProfile = () => {
 								<div className="-mr-1">
 									<button type="button" className="button__ico w-8 h-8" aria-haspopup="true" aria-expanded="false">
 										{" "}
-										<ion-icon className="text-xl md hydrated" name="ellipsis-horizontal" role="img" aria-label="ellipsis horizontal"></ion-icon>{" "}
+										<ion-icon className="text-xl md hydrated" name="ellipsis-horizontal"></ion-icon>{" "}
 									</button>
 									<div className="w-[245px] uk-dropdown" uk-dropdown="pos: bottom-right; animation: uk-animation-scale-up uk-transform-origin-top-right; animate-out: true; mode: click">
 										<nav>
 											<a href="#">
 												{" "}
-												<ion-icon className="text-xl shrink-0 md hydrated" name="bookmark-outline" role="img" aria-label="bookmark outline"></ion-icon> Add to favorites{" "}
+												<ion-icon className="text-xl shrink-0 md hydrated" name="bookmark-outline"></ion-icon> Add to favorites{" "}
 											</a>
 											<a href="#">
 												{" "}
-												<ion-icon className="text-xl shrink-0 md hydrated" name="notifications-off-outline" role="img" aria-label="notifications off outline"></ion-icon> Mute Notification
+												<ion-icon className="text-xl shrink-0 md hydrated" name="notifications-off-outline"></ion-icon> Mute Notification
 											</a>
 											<a href="#">
 												{" "}
-												<ion-icon className="text-xl shrink-0 md hydrated" name="flag-outline" role="img" aria-label="flag outline"></ion-icon>
+												<ion-icon className="text-xl shrink-0 md hydrated" name="flag-outline"></ion-icon>
 												Report this post{" "}
 											</a>
 											<a href="#">
 												{" "}
-												<ion-icon className="text-xl shrink-0 md hydrated" name="share-outline" role="img" aria-label="share outline"></ion-icon> Share your profile{" "}
+												<ion-icon className="text-xl shrink-0 md hydrated" name="share-outline"></ion-icon> Share your profile{" "}
 											</a>
 											<hr />
 											<a href="#" className="text-red-400 hover:!bg-red-50 dark:hover:!bg-red-500/50">
-												<ion-icon className="text-xl shrink-0 md hydrated" name="stop-circle-outline" role="img" aria-label="stop circle outline"></ion-icon> Unfollow{" "}
+												<ion-icon className="text-xl shrink-0 md hydrated" name="stop-circle-outline"></ion-icon> Unfollow{" "}
 											</a>
 										</nav>
 									</div>
@@ -356,9 +356,9 @@ const MainProfile = () => {
 										<div className="flex items-center gap-2" uk-scrollspy="target: > svg; cls: uk-animation-slide-right-small; delay: 100 ;repeat: true">
 											<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 fill-sky-600" style={{ opacity: 0 }}>
 												<path
-													fill-rule="evenodd"
+													fillRule="evenodd"
 													d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z"
-													clip-rule="evenodd"
+													clipRule="evenodd"
 												></path>
 											</svg>
 											<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 fill-pink-600" style={{ opacity: 0 }}>
@@ -380,8 +380,8 @@ const MainProfile = () => {
 							<div className="box p-5 px-6">
 								<ul className="text-gray-700 space-y-4 mt-4 text-sm dark:text-white/80">
 									<li className="flex items-center gap-3">
-										<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
-											<path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+										<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+											<path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
 										</svg>
 										<div>Le lorem ipsum est, en imprimerie, une suite de mots sans signification utilisée à titre provisoire pour calibrer une mise en page, le texte définitif venant remplacer le faux-texte dès qu'il est prêt ou que la mise en page est achevée. Généralement, on utilise un texte en faux latin, le Lorem ipsum ou Lipsum.</div>
 									</li>
