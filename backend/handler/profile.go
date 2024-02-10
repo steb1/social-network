@@ -120,7 +120,6 @@ func ToggleProfilePrivacy(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ParamPrivacy := r.URL.Query().Get("type")
-	log.Println("🚀 ~ funcToggleProfilePrivacy ~ ParamPrivacy:", ParamPrivacy)
 	if ParamPrivacy != "Private" && ParamPrivacy != "Public" {
 		var apiError ApiError
 		apiError.Error = "BadRequest"
@@ -132,7 +131,7 @@ func ToggleProfilePrivacy(w http.ResponseWriter, r *http.Request) {
 
 	err := models.UserRepo.UpdateUserProfilePrivacy(userId, ParamPrivacy)
 	if err != nil {
-		log.Printf("Error updating user profile", err)
+		log.Println("Error updating user profile", err)
 		var apiError ApiError
 		apiError.Error = "StatusInternalServerError"
 		WriteJSON(w, http.StatusInternalServerError, apiError)
