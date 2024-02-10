@@ -36,7 +36,7 @@ type Post struct {
 	AuthorID   int       `json:"author_id"`
 	ImageURL   string    `json:"image_url"`
 	Visibility string    `json:"visibility"`
-	HasImage   int
+	HasImage   int       `json:"hasImage"`
 }
 
 type PostRepository struct {
