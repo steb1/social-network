@@ -1,9 +1,9 @@
 // On page load or when changing themes, best to add inline in `head` to avoid FOUC
-if (typeof localStorage !== "undefined" && (localStorage.theme === "dark" || (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches))) {
+if (typeof localStorage !== "undefined" && (localStorage.theme === "dark" || (!("theme" in localStorage) && window.matchMedia("( )").matches))) {
 	// Check if running in a browser environment
 	if (typeof window !== "undefined" && typeof document !== "undefined") {
 		// On page load or when changing themes, best to add inline in `head` to avoid FOUC
-		if (typeof localStorage !== "undefined" && (localStorage.theme === "dark" || (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches))) {
+		if (typeof localStorage !== "undefined" && (localStorage.theme === "dark" || (!("theme" in localStorage) && window.matchMedia("( )").matches))) {
 			document.documentElement.classList.add("dark");
 		} else {
 			document.documentElement.classList.remove("dark");

@@ -32,16 +32,16 @@ const Profile = async ({ params: { id } }) => {
 		return notFound();
 	}
 
-	if (profileData.accountType === "private") {
+	if (profileData.accountType === "Private") {
 		profileData.accountType =
 			profileData.id_requester == profileData.user_id
-				? "public"
+				? "Public"
 				: // Check if followers array exists and is not null
 					profileData.followers && Array.isArray(profileData.followers) && profileData.followers.length > 0
 					? profileData.followers.some((user) => user.UserID === profileData.id_requester)
-						? "public"
-						: "private"
-					: "private";
+						? "Public"
+						: "Private"
+					: "Private";
 	}
 
 	return (
