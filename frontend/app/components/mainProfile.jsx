@@ -1,8 +1,12 @@
 import "../../public/assets/js/script.js";
 import "../../public/assets/js/simplebar.js";
 import PrivateAccountUI from "./Privateaccount.jsx";
+import Link from "next/link";
+import ButtonTogglePrivacy from "./buttonTogglePrivacy.jsx";
+import { cookies } from "next/headers";
 
 const MainProfile = ({ props }) => {
+	const cookieStore = cookies();
 	return (
 		<main id="site__main" className="2xl:ml-[--w-side]  xl:ml-[--w-side-sm] p-2.5 h-[calc(100vh-var(--m-top))] mt-[--m-top]">
 			<div className="max-w-[1065px] mx-auto max-lg:-m-2.5">
@@ -30,16 +34,22 @@ const MainProfile = ({ props }) => {
 					</div>
 
 					<div className="flex items-center justify-between mt-3 border-t border-gray-100 px-2 max-lg:flex-col dark:border-slate-700" uk-sticky="offset:50; cls-active: bg-white/80 shadow rounded-b-2xl z-50 backdrop-blur-xl dark:!bg-slate-700/80; animation:uk-animation-slide-top ; media: 992">
-						<div className="flex items-center gap-2 text-sm py-2 pr-1 max-md:w-full lg:order-2">
-							<button className="button bg-primary flex items-center gap-2 text-white py-2 px-3.5 max-md:flex-1">
-								<ion-icon name="add-circle" className="text-xl"></ion-icon>
-								<span className="text-sm"> Follow</span>
-							</button>
-							<button className="button bg-primary flex items-center gap-2 text-white py-2 px-3.5 max-md:flex-1">
-								<ion-icon name="add-circle" className="text-xl"></ion-icon>
-								<span className="text-sm"> Contact </span>
-							</button>
-						</div>
+						{props.id_requester == props.user_id ? (
+							<div className="flex items-center gap-2 text-sm py-2 pr-1 max-md:w-full lg:order-2">
+								<ButtonTogglePrivacy accountType={props.accountType} cookie={cookieStore.get("social-network").value} />
+							</div>
+						) : (
+							<div className="flex items-center gap-2 text-sm py-2 pr-1 max-md:w-full lg:order-2">
+								<button className="button bg-primary flex items-center gap-2 text-white py-2 px-3.5 max-md:flex-1">
+									<ion-icon name="add-circle" className="text-xl"></ion-icon>
+									<span className="text-sm"> Follow</span>
+								</button>
+								<button className="button bg-primary flex items-center gap-2 text-white py-2 px-3.5 max-md:flex-1">
+									<ion-icon name="add-circle" className="text-xl"></ion-icon>
+									<span className="text-sm"> Contact </span>
+								</button>
+							</div>
+						)}
 
 						<nav className="flex gap-0.5 rounded-xl -mb-px text-gray-600 font-medium text-[15px]  dark:text-white max-md:w-full max-md:overflow-x-auto">
 							<a href="#" className="inline-block  py-3 leading-8 px-3.5 cursor-text">
@@ -376,47 +386,22 @@ const MainProfile = ({ props }) => {
 											<h3 className="font-bold text-lg">
 												{" "}
 												Friends
-												<span className="block text-sm text-gray-500 mt-0. font-normal dark:text-white">3489 Friends </span>
+												<span className="block text-sm text-black mt-0. font-bold dark:text-white">{props.followers ? props.followers.length : 0}</span>
 											</h3>
 										</div>
 
 										<div className="grid grid-cols-3 gap-2 gap-y-5 text-center text-sm mt-4 mb-2">
-											<div>
-												<div className="relative w-full aspect-square rounded-lg overflow-hidden">
-													<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
-												</div>
-												<div className="mt-2 line-clamp-1"> Jesse Steeve </div>
-											</div>
-											<div>
-												<div className="relative w-full aspect-square rounded-lg overflow-hidden">
-													<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
-												</div>
-												<div className="mt-2 line-clamp-1"> John Michael </div>
-											</div>
-											<div>
-												<div className="relative w-full aspect-square rounded-lg overflow-hidden">
-													<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
-												</div>
-												<div className="mt-2 line-clamp-1"> Monroe Parker </div>
-											</div>
-											<div>
-												<div className="relative w-full aspect-square rounded-lg overflow-hidden">
-													<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
-												</div>
-												<div className="mt-2 line-clamp-1"> Martin Gray </div>
-											</div>
-											<div>
-												<div className="relative w-full aspect-square rounded-lg overflow-hidden">
-													<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
-												</div>
-												<div className="mt-2 line-clamp-1"> James Lewis </div>
-											</div>
-											<div>
-												<div className="relative w-full aspect-square rounded-lg overflow-hidden">
-													<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
-												</div>
-												<div className="mt-2 line-clamp-1"> Alexa stella </div>
-											</div>
+											{props.followers &&
+												props.followers.slice(0, 6).map((follower) => (
+													<Link href={`/profile/${follower.user_id}`} key={follower.user_id}>
+														<div>
+															<div className="relative w-full aspect-square rounded-lg overflow-hidden">
+																<img src={`http://localhost:8080/img/${follower.avatar}`} alt="" className="object-cover w-full h-full inset-0" />
+															</div>
+															<div className="mt-2 line-clamp-1">{`${follower.first_name} ${follower.last_name}`}</div>
+														</div>
+													</Link>
+												))}
 										</div>
 									</div>
 								</div>

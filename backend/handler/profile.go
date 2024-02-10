@@ -79,9 +79,6 @@ func HandleGetProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if user.Avatar {
-	}
-
 	// Create a UserProfileResponse without the password field
 	userProfile := UserProfileResponse{
 		IDRequester: session.UserID,
@@ -100,4 +97,44 @@ func HandleGetProfile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	WriteJSON(w, http.StatusOK, userProfile)
+}
+
+func ToggleProfilePrivacy(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	session, ok := IsAuthenticated(r)
+	if !ok {
+		var apiError ApiError
+		apiError.Error = "StatusUnauthorized"
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	}
+
+	ParamPrivacy := r.URL.Query().Get("type")
+	if ParamPrivacy != "Private" && ParamPrivacy != "Public" {
+		var apiError ApiError
+		apiError.Error = "BadRequest"
+		WriteJSON(w, http.StatusBadRequest, apiError)
+		return
+	}
+
+	userId, _ := strconv.Atoi(session.UserID)
+
+	err := models.UserRepo.UpdateUserProfilePrivacy(userId, ParamPrivacy)
+	if err != nil {
+		log.Printf("Error updating user profile", err)
+		var apiError ApiError
+		apiError.Error = "StatusInternalServerError"
+		WriteJSON(w, http.StatusInternalServerError, apiError)
+		return
+	}
 }

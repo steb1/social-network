@@ -61,6 +61,20 @@ func (ur *UserRepository) UpdateUser(user *User) error {
 	return nil
 }
 
+// UpdateUser updates an existing user in the database
+func (ur *UserRepository) UpdateUserProfilePrivacy(userID int, mode string) error {
+	query := `
+		UPDATE users
+		SET account_type = ?
+		WHERE user_id = ?
+	`
+	_, err := ur.db.Exec(query, mode, userID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // DeleteUser removes a user from the database by user_id
 func (ur *UserRepository) DeleteUser(userID int) error {
 	query := "DELETE FROM users WHERE user_id = ?"
