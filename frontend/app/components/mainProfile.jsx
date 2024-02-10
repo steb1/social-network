@@ -8,7 +8,7 @@ const MainProfile = ({ props }) => {
 			<div className="max-w-[1065px] mx-auto max-lg:-m-2.5">
 				<div className="bg-white shadow lg:rounded-b-2xl lg:-mt-10 dark:bg-dark2">
 					<div className="relative overflow-hidden w-full lg:h-72 h-48">
-						<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="h-full w-full object-cover inset-0" />
+						<img src={`http://localhost:8080/img/${props.avatar}`} alt="" className="h-full w-full object-cover inset-0" />
 
 						<div className="w-full bottom-0 absolute left-0 bg-gradient-to-t from-black/60 pt-20 z-10"></div>
 					</div>
@@ -17,7 +17,7 @@ const MainProfile = ({ props }) => {
 						<div className="flex flex-col justify-center md:items-center lg:-mt-48 -mt-28">
 							<div className="relative lg:h-48 lg:w-48 w-28 h-28 mb-4 z-10">
 								<div className="relative overflow-hidden rounded-full md:border-[6px] border-gray-100 shrink-0 dark:border-slate-900 shadow">
-									<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="h-full w-full object-cover inset-0" />
+									<img src={`http://localhost:8080/img/${props.avatar}`} alt="" className="h-full w-full object-cover inset-0" />
 								</div>
 							</div>
 
@@ -115,27 +115,6 @@ const MainProfile = ({ props }) => {
 													<ion-icon className="text-lg" name="heart"></ion-icon>{" "}
 												</button>
 												<a href="#">1,300</a>
-											</div>
-											<div className="p-1 px-2 bg-white rounded-full drop-shadow-md w-[212px] dark:bg-slate-700 text-2xl" uk-drop="offset:10;pos: top-left; animate-out: true; animation: uk-animation-scale-up uk-transform-origin-bottom-left">
-												<div className="flex gap-2" uk-scrollspy="target: > button; cls: uk-animation-scale-up; delay: 100 ;repeat: true">
-													<button type="button" className="text-red-600 hover:scale-125 duration-300">
-														<span> 👍 </span>
-													</button>
-													<button type="button" className="text-red-600 hover:scale-125 duration-300">
-														<span> ❤️ </span>
-													</button>
-													<button type="button" className="text-red-600 hover:scale-125 duration-300">
-														<span> 😂 </span>
-													</button>
-													<button type="button" className="text-red-600 hover:scale-125 duration-300">
-														<span> 😯 </span>
-													</button>
-													<button type="button" className="text-red-600 hover:scale-125 duration-300">
-														<span> 😢 </span>
-													</button>
-												</div>
-
-												<div className="w-2.5 h-2.5 absolute -bottom-1 left-3 bg-white rotate-45 hidden"></div>
 											</div>
 										</div>
 										<div className="flex items-center gap-3">
@@ -388,58 +367,62 @@ const MainProfile = ({ props }) => {
 						)}
 					</div>
 
-					<div className="lg:w-[400px]">
-						<div className="lg:space-y-4 lg:pb-8 max-lg:grid sm:grid-cols-2 max-lg:gap-6" uk-sticky="media: 1024; end: #js-oversized; offset: 80">
-							<div className="box p-5 px-6">
-								<div className="flex items-ce justify-between text-black dark:text-white">
-									<h3 className="font-bold text-lg">
-										{" "}
-										Friends
-										<span className="block text-sm text-gray-500 mt-0. font-normal dark:text-white">3489 Friends </span>
-									</h3>
-								</div>
+					{props.accountType !== "Private" ? (
+						<>
+							<div className="lg:w-[400px]">
+								<div className="lg:space-y-4 lg:pb-8 max-lg:grid sm:grid-cols-2 max-lg:gap-6" uk-sticky="media: 1024; end: #js-oversized; offset: 80">
+									<div className="box p-5 px-6">
+										<div className="flex items-ce justify-between text-black dark:text-white">
+											<h3 className="font-bold text-lg">
+												{" "}
+												Friends
+												<span className="block text-sm text-gray-500 mt-0. font-normal dark:text-white">3489 Friends </span>
+											</h3>
+										</div>
 
-								<div className="grid grid-cols-3 gap-2 gap-y-5 text-center text-sm mt-4 mb-2">
-									<div>
-										<div className="relative w-full aspect-square rounded-lg overflow-hidden">
-											<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
+										<div className="grid grid-cols-3 gap-2 gap-y-5 text-center text-sm mt-4 mb-2">
+											<div>
+												<div className="relative w-full aspect-square rounded-lg overflow-hidden">
+													<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
+												</div>
+												<div className="mt-2 line-clamp-1"> Jesse Steeve </div>
+											</div>
+											<div>
+												<div className="relative w-full aspect-square rounded-lg overflow-hidden">
+													<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
+												</div>
+												<div className="mt-2 line-clamp-1"> John Michael </div>
+											</div>
+											<div>
+												<div className="relative w-full aspect-square rounded-lg overflow-hidden">
+													<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
+												</div>
+												<div className="mt-2 line-clamp-1"> Monroe Parker </div>
+											</div>
+											<div>
+												<div className="relative w-full aspect-square rounded-lg overflow-hidden">
+													<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
+												</div>
+												<div className="mt-2 line-clamp-1"> Martin Gray </div>
+											</div>
+											<div>
+												<div className="relative w-full aspect-square rounded-lg overflow-hidden">
+													<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
+												</div>
+												<div className="mt-2 line-clamp-1"> James Lewis </div>
+											</div>
+											<div>
+												<div className="relative w-full aspect-square rounded-lg overflow-hidden">
+													<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
+												</div>
+												<div className="mt-2 line-clamp-1"> Alexa stella </div>
+											</div>
 										</div>
-										<div className="mt-2 line-clamp-1"> Jesse Steeve </div>
-									</div>
-									<div>
-										<div className="relative w-full aspect-square rounded-lg overflow-hidden">
-											<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
-										</div>
-										<div className="mt-2 line-clamp-1"> John Michael </div>
-									</div>
-									<div>
-										<div className="relative w-full aspect-square rounded-lg overflow-hidden">
-											<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
-										</div>
-										<div className="mt-2 line-clamp-1"> Monroe Parker </div>
-									</div>
-									<div>
-										<div className="relative w-full aspect-square rounded-lg overflow-hidden">
-											<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
-										</div>
-										<div className="mt-2 line-clamp-1"> Martin Gray </div>
-									</div>
-									<div>
-										<div className="relative w-full aspect-square rounded-lg overflow-hidden">
-											<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
-										</div>
-										<div className="mt-2 line-clamp-1"> James Lewis </div>
-									</div>
-									<div>
-										<div className="relative w-full aspect-square rounded-lg overflow-hidden">
-											<img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="" className="object-cover w-full h-full inset-0" />
-										</div>
-										<div className="mt-2 line-clamp-1"> Alexa stella </div>
 									</div>
 								</div>
 							</div>
-						</div>
-					</div>
+						</>
+					) : null}
 				</div>
 			</div>
 		</main>
