@@ -32,8 +32,10 @@ const Profile = async ({ params: { id } }) => {
 		return notFound();
 	}
 
+	let Visibility = "";
+
 	if (profileData.accountType === "Private") {
-		profileData.accountType =
+		Visibility =
 			profileData.id_requester == profileData.user_id
 				? "Public"
 				: // if followers array exists and is not null
@@ -43,6 +45,9 @@ const Profile = async ({ params: { id } }) => {
 						: "Private"
 					: "Private";
 	}
+
+	console.log("🚀 ~ Profile ~ profileData:", profileData);
+	console.log("🚀 ~ Profile ~ Visibility:", Visibility);
 
 	return (
 		<div id="wrapper" className="pt-15 space-x-2">
@@ -55,7 +60,7 @@ const Profile = async ({ params: { id } }) => {
 					<Sidebar />
 				</div>
 
-				<MainProfile props={profileData} />
+				<MainProfile props={profileData} Visibility={Visibility} />
 			</div>
 		</div>
 	);
