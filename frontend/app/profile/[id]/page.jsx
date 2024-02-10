@@ -46,9 +46,6 @@ const Profile = async ({ params: { id } }) => {
 					: "Private";
 	}
 
-	console.log("🚀 ~ Profile ~ profileData:", profileData);
-	console.log("🚀 ~ Profile ~ Visibility:", Visibility);
-
 	return (
 		<div id="wrapper" className="pt-15 space-x-2">
 			{/* Header */}
