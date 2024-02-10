@@ -10,7 +10,7 @@ import { notFound } from "next/navigation";
 const Profile = async ({ params: { id } }) => {
 	const cookieStore = cookies();
 	let profileData = null;
-	// console.log("🚀 ~ Profile ~ profileData:", profileData);
+
 	try {
 		const response = await fetch(`${config.serverApiUrl}profile?id=${id}`, {
 			method: "GET",
@@ -21,7 +21,6 @@ const Profile = async ({ params: { id } }) => {
 
 		if (response.ok) {
 			profileData = await response.json();
-			// console.log("Profile fetched successfully:", profileData);
 		} else {
 			const errorText = await response.text();
 			console.error("Profile not fetched successfully:", errorText);
