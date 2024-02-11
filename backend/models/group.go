@@ -100,10 +100,7 @@ func (gr *GroupRepository) GetAllGroup() []Group {
 		log.Fatal(err)
 	}
 
-	// // Print or process the retrieved groups
-	// for _, group := range groups {
-	// 	fmt.Printf("GroupID: %d, Title: %s, Description: %s, CreatorID: %d\n", group.GroupID, group.Title, group.Description, group.CreatorID)
-	// }
-
 	return groups
 }
+
+
