@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const SeeFollowersFollowees = ({ followersFollowees, visibility, text, modalId }) => {
 	const handleClick = () => {
-		if (visibility !== "Private" && followersFollowees.length > 0) {
+		if (visibility !== "Private" && followersFollowees && followersFollowees.length > 0) {
 			document.getElementById(modalId).showModal();
 		}
 	};

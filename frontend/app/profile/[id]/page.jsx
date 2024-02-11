@@ -22,12 +22,9 @@ const Profile = async ({ params: { id } }) => {
 		if (response.ok) {
 			profileData = await response.json();
 		} else {
-			const errorText = await response.text();
-			console.error("Profile not fetched successfully:", errorText);
 			return notFound();
 		}
-	} catch (error) {
-		console.error("Error during fetching profile:", error);
+	} catch {
 		return notFound();
 	}
 

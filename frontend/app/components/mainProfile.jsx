@@ -11,7 +11,7 @@ import DisplayPostWithoutImage from "./DisplayPostWithoutImage.jsx";
 const MainProfile = ({ props, Visibility }) => {
 	const cookieStore = cookies();
 	return (
-		<main id="site__main" className="2xl:ml-[--w-side]  xl:ml-[--w-side-sm] p-2.5 h-[calc(100vh-var(--m-top))] mt-[--m-top]">
+		<main id="site__main" className="2xl:ml-[--w-side]  xl:ml-[--w-side-sm] p-2.5 h-0 mt-0">
 			<div className="max-w-[1065px] mx-auto max-lg:-m-2.5">
 				<div className="bg-white shadow lg:rounded-b-2xl lg:-mt-10 dark:bg-dark2">
 					<div className="relative overflow-hidden w-full lg:h-72 h-48">
@@ -30,7 +30,7 @@ const MainProfile = ({ props, Visibility }) => {
 
 							<h3 className="md:text-3xl text-base font-bold text-black dark:text-white"> {`${props.firstName} ${props.lastName.toUpperCase()}`} </h3>
 
-							<p className="mt-2 text-gray-500 dark:text-white/80">@{props.nickname ? props.nickname : props.email}</p>
+							<p className="mt-2 text-gray-500 dark:text-white/80">{props.nickname ? `@${props.nickname}` : props.email}</p>
 
 							<p className="mt-2 max-w-xl text-sm md:font-normal font-light text-center">{props.aboutMe}</p>
 						</div>
