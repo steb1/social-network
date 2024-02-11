@@ -1,23 +1,25 @@
 import config from "@/config";
+import { fetchAllGroups } from "../groups/page";
 
-export const GroupOption = ( {group} ) => {
+export const GroupOption = ( {group , setGroups , setServerError}) => {
 
     return (
-        <div id={group.group_id} className="card card-compact w-36 bg-base-100 shadow-xl">
+        <div id={group.group_id} className="card card-compact w-96 bg-base-100 shadow-xl carousel-item w-96 h-96">
             <figure><img src="https://i0.wp.com/www.iedunote.com/img/28051/reference-groups.jpg?fit=1080%2C720&quality=100&ssl=1" alt="Shoes" /></figure>
             <div className="card-body">
                 <h2 className="card-title">{group.title}</h2>
                 <p>{group.description}</p>
                 <div className="card-actions justify-end">
-                <button onClick={() => handleGroupRequest(group.group_id)} className="btn btn-primary">Join</button>
+                <button onClick={() => handleGroupRequest(group.group_id, setGroups, setServerError)} className="btn btn-primary ">Join</button>
                 </div>
             </div>
         </div>
     )
 }
 
-async function  handleGroupRequest  (groupid) {
+async function  handleGroupRequest  (groupid, setGroups, setServerError) {
     console.log("clicked");
+
     let  token = document.cookie.split("=")[1]
       
     if (token) {
@@ -38,7 +40,7 @@ async function  handleGroupRequest  (groupid) {
       });
 
       if (response.ok) {
-        console.log("ooooooooook");
+        fetchAllGroups(setGroups, setServerError)
       }
     } catch (error) {
         console.error("Error while fetching groups:", error);

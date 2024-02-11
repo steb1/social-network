@@ -78,8 +78,8 @@ func (gr *GroupRepository) DeleteGroup(groupID int) error {
 	return nil
 }
 
-func (gr *GroupRepository) GetAllGroup() []Group {
-	rows, err := gr.db.Query("SELECT * FROM groups")
+func (gr *GroupRepository) GetAllPublicGroup(userid int) []Group {
+	rows, err := gr.db.Query("SELECT * FROM groups WHERE creator_id != ?", userid)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -93,7 +93,12 @@ func (gr *GroupRepository) GetAllGroup() []Group {
 		if err != nil {
 			log.Fatal(err)
 		}
-		groups = append(groups, group)
+
+		exist := MembershipRepo.CheckIfMembershispExist(userid, group.GroupID)
+
+		if !exist {
+			groups = append(groups, group)
+		}
 	}
 
 	if err := rows.Err(); err != nil {
@@ -104,3 +109,29 @@ func (gr *GroupRepository) GetAllGroup() []Group {
 }
 
 
+func (gr *GroupRepository) GetUserOwnGroups (userid int) []Group {
+	rows, err := gr.db.Query("SELECT * FROM groups WHERE creator_id = ?", userid)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	var groups []Group
+
+	for rows.Next() {
+		var group Group
+		err := rows.Scan(&group.GroupID, &group.Title, &group.Description, &group.CreatorID)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+
+		groups = append(groups, group)
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	return groups
+}
