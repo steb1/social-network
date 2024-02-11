@@ -4,6 +4,7 @@ import PrivateAccountUI from "./Privateaccount.jsx";
 import Link from "next/link";
 import ButtonTogglePrivacy from "./buttonTogglePrivacy.jsx";
 import { cookies } from "next/headers";
+import SeeFollowers from "./seeFollowers.jsx";
 
 const MainProfile = ({ props, Visibility }) => {
 	const cookieStore = cookies();
@@ -52,13 +53,13 @@ const MainProfile = ({ props, Visibility }) => {
 						)}
 
 						<nav className="flex gap-0.5 rounded-xl -mb-px text-gray-600 font-medium text-[15px]  dark:text-white max-md:w-full max-md:overflow-x-auto">
-							<a href="#" className="inline-block  py-3 leading-8 px-3.5 cursor-text">
+							<a href="" className="inline-block  py-3 leading-8 px-3.5 cursor-text">
 								Posts <span className="text-black text-sm pl-2 font-bold lg:inline-block hidden">{props.userPosts ? props.userPosts.length : 0}</span>
 							</a>
-							<a href="#" className="inline-block py-3 leading-8 px-3.5">
-								Follower(s) <span className="text-black text-sm pl-2 font-bold  lg:inline-block hidden">{props.followers ? props.followers.length : 0}</span>
-							</a>
-							<a href="#" className="inline-block py-3 leading-8 px-3.5">
+							<div className="inline-block py-3 leading-8 px-3.5">
+								<SeeFollowers followers={props.followers} visibility={Visibility} />
+							</div>
+							<a href="" className="inline-block py-3 leading-8 px-3.5">
 								Followee(s) <span className="text-black text-sm pl-2 font-bold lg:inline-block hidden">{props.followings ? props.followings.length : 0}</span>
 							</a>
 						</nav>
