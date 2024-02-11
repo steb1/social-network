@@ -1,6 +1,9 @@
 package models
 
-import "database/sql"
+import (
+	"database/sql"
+	"log"
+)
 
 // Group structure represents the "groups" table
 type Group struct {
@@ -19,7 +22,6 @@ func NewGroupRepository(db *sql.DB) *GroupRepository {
 		db: db,
 	}
 }
-
 
 // CreateGroup adds a new group to the database
 func (gr *GroupRepository) CreateGroup(group *Group) error {
@@ -74,4 +76,34 @@ func (gr *GroupRepository) DeleteGroup(groupID int) error {
 		return err
 	}
 	return nil
+}
+
+func (gr *GroupRepository) GetAllGroup() []Group {
+	rows, err := gr.db.Query("SELECT * FROM groups")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	var groups []Group
+
+	for rows.Next() {
+		var group Group
+		err := rows.Scan(&group.GroupID, &group.Title, &group.Description, &group.CreatorID)
+		if err != nil {
+			log.Fatal(err)
+		}
+		groups = append(groups, group)
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	// // Print or process the retrieved groups
+	// for _, group := range groups {
+	// 	fmt.Printf("GroupID: %d, Title: %s, Description: %s, CreatorID: %d\n", group.GroupID, group.Title, group.Description, group.CreatorID)
+	// }
+
+	return groups
 }
