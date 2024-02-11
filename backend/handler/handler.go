@@ -16,7 +16,13 @@ type SignupResponse struct {
 }
 
 func WriteJSON(w http.ResponseWriter, status int, v any) error {
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(status)
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+    w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST")
+    w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+    w.Header().Set("Access-Control-Allow-Credentials", "true")
+    w.WriteHeader(http.StatusOK)
+	
 	return json.NewEncoder(w).Encode(v)
 }
+
+
