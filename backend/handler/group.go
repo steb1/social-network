@@ -44,10 +44,16 @@ func HandleGetAllGroups(w http.ResponseWriter, r *http.Request) {
 		WriteJSON(w, http.StatusUnauthorized, apiError)
 		return
 	}
-	groups := models.GroupRepo.GetAllGroup()
+	publicGroups := models.GroupRepo.GetAllPublicGroup(userId)
+	ownGroups := models.GroupRepo.GetUserOwnGroups(userId)
+
+	response := make(map[string]interface{})
+
+	response["publicGroups"] = publicGroups
+	response ["ownGroups"] = ownGroups
 
 	if ok {
-		lib.WriteJSONResponse(w, groups)
+		lib.WriteJSONResponse(w, response)
 	}
 }
 
@@ -84,19 +90,23 @@ func HandleCreateMembership(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(requestBody["groupid"], "-------- request body")
-
 	v, ok_ := requestBody["groupid"]
 	groupid, _ :=  strconv.Atoi(fmt.Sprintf("%v", v))
 	if !ok_ {
 		http.Error(w, "Paramètre groupid manquant ou invalide", http.StatusBadRequest)
 		return
 	}
+
+	group, err := models.GroupRepo.GetGroup(groupid)
+
+	if err != nil {
+		http.Error(w, "group doesn't exist", 400)
+		return
+	}
 	
 	// Récupérer groupid
-	exist := models.MembershipRepo.CheckIfMembershispExist( userId, groupid)
-	fmt.Println("is here")
-	if ok && !exist {
+	exist := models.MembershipRepo.CheckIfMembershispExist( userId , groupid)
+	if ok && !exist && userId != group.CreatorID {
 		var Membership models.Membership
 		
 		Membership.GroupID = groupid
