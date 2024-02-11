@@ -239,6 +239,10 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	}
 
+	if avatarFilename == "" {
+		avatarFilename = "blankProfile.png"
+	}
+
 	user.LastName = lastname
 	user.FirstName = firstname
 	user.Nickname = nickname
