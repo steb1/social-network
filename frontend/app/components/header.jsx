@@ -10,9 +10,9 @@ const Header = () => {
            let button =  document.getElementById("createGroup")
 
            const handleSubmit = (e) => {
-                if (name.value.length > 0 && description.value.length > 0)  {
+                if (name.value.trim().length > 0 && description.value.trim().length > 0)  {
                     button.classList.remove('btn-disabled');
-                } else if (name.value.length == 0 || description.value.length == 0) {
+                } else if (name.value.trim().length == 0 || description.value.trim().length == 0) {
                     button.classList.add('btn-disabled');
                 }
            }
@@ -480,12 +480,12 @@ async function handleCreateGroup ()  {
     let description = document.getElementById("GroupDescription")
     let button =  document.getElementById("createGroup")
 
-    if (name.value.length == 0 || description.value.length == 0) {
+    if (name.value.trim().length == 0 || description.value.trim().length == 0) {
         return
     }
 
     console.log("clicked");
-    let requestData = { name: name.value, description: description.value };
+    let requestData = { name: name.value.trim(), description: description.value.trim() };
 
     let  token = document.cookie.split("=")[1]
       
