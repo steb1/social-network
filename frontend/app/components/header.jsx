@@ -112,8 +112,8 @@ const Header = () => {
                                         <form method="dialog">
                                         {/* if there is a button in form, it will close the modal */}
                                         <button className="btn btn-sm btn-circle btn-ghost  absolute right-2 top-2"></button>
-                                        <button id="createGroup"  className="btn btn-disabled btn-active btn-neutral mt-5">Create</button>                             
                                         </form>
+                                        <button id="createGroup"  className="btn btn-disabled btn-active btn-neutral mt-5">Create</button>                             
                                     </div>
                                         
                                    </div>
@@ -478,6 +478,7 @@ const Header = () => {
 async function handleCreateGroup ()  {
     let name = document.getElementById("GroupName")
     let description = document.getElementById("GroupDescription")
+    let button =  document.getElementById("createGroup")
 
     if (name.value.length == 0 || description.value.length == 0) {
         return
@@ -506,8 +507,13 @@ async function handleCreateGroup ()  {
         body: JSON.stringify(requestData)
       });
 
+      console.log(response.ok, "--------ok");
+
       if (response.ok) {
-        
+        console.log("ooook");
+        name.value = ""
+        description.value = ""
+        button.classList.add("btn-disabled")
       }
     } catch (error) {
         console.error("Error while fetching groups:", error);

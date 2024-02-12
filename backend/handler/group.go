@@ -177,7 +177,7 @@ func HandleCreateGroup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Println("here")
-	
+
 	exist := models.GroupRepo.CheckGroupExist(fmt.Sprintf("%v", name))
 	fmt.Println(userId)
 
@@ -189,9 +189,11 @@ func HandleCreateGroup(w http.ResponseWriter, r *http.Request) {
 
 		err := models.GroupRepo.CreateGroup(&Newgroup)
 
+
 		if err != nil {
 			WriteJSON(w, http.StatusUnauthorized, apiError)
 			fmt.Println("Group Not created")
 		}
+		w.WriteHeader(http.StatusOK)
 	}
 }
