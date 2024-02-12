@@ -51,7 +51,7 @@ func NewPostRepository(db *sql.DB) *PostRepository {
 }
 
 // CreatePost adds a new post to the database
-func (pr *PostRepository) CreatePost(post *Post, photo multipart.File, categories []int, createdAt time.Time) error {
+func (pr *PostRepository) CreatePost(post *Post, photo multipart.File, categories []int, createdAt time.Time,UserIDAuthorized []string) (error, int) {
 	query := `
 	INSERT INTO posts (title, content, created_at, author_id, has_image, visibility)
 	VALUES (?, ?, ?, ?, ?, ?)
@@ -60,21 +60,24 @@ func (pr *PostRepository) CreatePost(post *Post, photo multipart.File, categorie
 	result, err := pr.db.Exec(query, post.Title, post.Content, createdAt, post.AuthorID, imageUrl, post.Visibility)
 	if err != nil {
 		fmt.Println(err)
-		return err
+		return err,0
 	}
 	lastInsertID, err := result.LastInsertId()
 	if err != nil {
-		return err
+		return err,0
 	}
 	post.PostID = int(lastInsertID)
 	_ = PostCategoryRepo.CreatePostCategory(post.PostID, categories)
+	if post.Visibility=="Only friends"{
+		_=PostVisibilityRepo.CreatePostVisibility(post.PostID,UserIDAuthorized)
+	}
 	if post.HasImage == 0 {
-		return nil
+		return nil,0
 	}
 	defer photo.Close()
 	if err := os.MkdirAll("imgPost", os.ModePerm); err != nil {
         fmt.Println("Error creating imgPost directory:", err)
-        return nil
+        return nil,0
     }
 	fichierSortie, err := os.Create(fmt.Sprintf("imgPost/%d.jpg", post.PostID))
 	if err != nil {
@@ -84,9 +87,9 @@ func (pr *PostRepository) CreatePost(post *Post, photo multipart.File, categorie
 	_, err = io.Copy(fichierSortie, photo)
 	if err != nil {
 		fmt.Println("err", err)
-		return nil
+		return nil,0
 	}
-	return nil
+	return nil,post.PostID
 }
 
 // GetPost retrieves a post from the database by post_id
@@ -102,12 +105,11 @@ func (pr *PostRepository) GetPost(postID int) (*Post, error) {
 
 // GetAllPosts retrieves all posts from the database
 func (pr *PostRepository) GetAllPosts() ([]*Post, error) {
-	rows, err := pr.db.Query("SELECT post_id, title, content, created_at, visibility, has_image, nickname, first_name, last_name, email FROM posts, users WHERE posts.author_id=users.user_id ORDER BY created_at DESC")
+	rows, err := pr.db.Query("SELECT post_id, title, content, created_at, visibility, has_image, nickname, first_name, last_name, email FROM posts, users WHERE posts.author_id=users.user_id AND visibility='public' ORDER BY created_at DESC")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-
 	var posts []*Post
 	for rows.Next() {
 		var post Post
@@ -121,7 +123,25 @@ func (pr *PostRepository) GetAllPosts() ([]*Post, error) {
 	}
 	return posts, nil
 }
-
+func (pr *PostRepository) GetAllPostsPrivate(userId string) ([]*Post, error) {
+	rows, err := pr.db.Query("SELECT post_id, title, content, created_at, visibility, has_image, nickname, first_name, last_name, email FROM posts, users WHERE posts.author_id=users.user_id AND visibility='private' AND posts.author_id=? ORDER BY created_at DESC",userId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var posts []*Post
+	for rows.Next() {
+		var post Post
+		post.User = &User{}
+		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.HasImage, &post.User.Nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email); err != nil {
+			return nil, err
+		}
+		post.CreatedAt = lib.FormatDateDB(post.CreatedAt)
+		post.Category = PostCategoryRepo.GetPostCategory(post.PostID)
+		posts = append(posts, &post)
+	}
+	return posts, nil
+}
 // GetUserOwnPosts retrieves posts owned by a specific user from the database
 func (pr *PostRepository) GetUserOwnPosts(userID int) ([]*Post, error) {
 	rows, err := pr.db.Query("SELECT post_id, title, category, content, created_at, author_id, image_url, visibility FROM post WHERE author_id = ?", userID)
