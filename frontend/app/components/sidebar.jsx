@@ -6,13 +6,13 @@ const Sidebar = () => {
             <nav id="side">
                 <ul>
                 <li className="active">
-                    <a href="feed.html">
+                    <a href="/home">
                     <img src="assets/images/icons/home.png" alt="feeds" className="w-6" />
                     <span> Feed </span>
                     </a>
                 </li>
                 <li>
-                    <a href="messages.html">
+                    <a href="/messages">
                     <img src="assets/images/icons/message.png" alt="messages" className="w-5" />
                     <span> messages </span>
                     </a>
@@ -24,61 +24,61 @@ const Sidebar = () => {
                     </a>
                 </li>
                 <li>
-                    <a href="event.html">
+                    <a href="#">
                     <img src="assets/images/icons/event.png" alt="messages" className="w-6" />
                     <span> event </span> 
                     </a>
                 </li>
                 <li>
-                    <a href="pages.html">
+                    <a href="#">
                     <img src="assets/images/icons/page.png" alt="pages" className="w-6" />
                     <span> Pages </span> 
                     </a>
                 </li>
                 <li>
-                    <a href="groups.html">
+                    <a href="/groups">
                     <img src="assets/images/icons/group.png" alt="groups" className="w-6" />
                     <span> Groups </span> 
                     </a>
                 </li>
                 <li>
-                    <a href="market.html">
+                    <a href="#">
                     <img src="assets/images/icons/market.png" alt="market" className="w-7 -ml-1" />
                     <span> market </span> 
                     </a>
                 </li> 
                 <li>
-                    <a href="blog.html">
+                    <a href="#">
                     <img src="assets/images/icons/blog.png" alt="blog" className="w-6" />
                     <span> blog </span> 
                     </a>
                 </li> 
                 <li className="!hidden" id="show__more">
-                    <a href="games.html">
+                    <a href="#">
                     <img src="assets/images/icons/game.png" alt="games" className="w-6" />
                     <span> games </span> 
                     </a>
                 </li>
                 <li className="!hidden" id="show__more">
-                    <a href="funding.html">
+                    <a href="#">
                     <img src="assets/images/icons/fund.png" alt="messages" className="w-6" />
                     <span> Fundraiser</span> 
                     </a>
                 </li>
                 <li className="!hidden" id="show__more">
-                    <a href="blog-2.html">
+                    <a href="#">
                     <img src="assets/images/icons/blog-2.png" alt="blog" className="w-6" />
                     <span> blog II </span> 
                     </a>
                 </li>
                 <li className="!hidden" id="show__more">
-                    <a href="event-2.html">
+                    <a href="#">
                     <img src="assets/images/icons/event-2.png" alt="event" className="w-6" />
                     <span> Event II </span> 
                     </a>
                 </li>
                 <li className="!hidden" id="show__more">
-                    <a href="groups-2.html">
+                    <a href="#">
                     <img src="assets/images/icons/group-2.png" alt="groups" className="w-6" />
                     <span> Groups II </span> 
                     </a>

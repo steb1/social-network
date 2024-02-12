@@ -1,4 +1,29 @@
+"use client"
+import config from "@/config";
+import { useEffect } from "react";
+
 const Header = () => {
+
+    useEffect(() => {
+           let name = document.getElementById("GroupName")
+           let description = document.getElementById("GroupDescription")
+           let button =  document.getElementById("createGroup")
+
+           const handleSubmit = (e) => {
+                if (name.value.length > 0 && description.value.length > 0)  {
+                    button.classList.remove('btn-disabled');
+                } else if (name.value.length == 0 || description.value.length == 0) {
+                    button.classList.add('btn-disabled');
+                }
+           }
+
+           if (name) {name.addEventListener("input", handleSubmit)}
+           if (description) {description.addEventListener("input",handleSubmit)}
+           if (button) {button.addEventListener("click",handleCreateGroup)  }
+                
+          
+
+    }, [])
 
     return (
         <header className="z-[100] h-[--m-top]  block fixed mr-20 top-0 left-0 w-full flex items-center bg-white/80 sky-50 backdrop-blur-xl border-b border-slate-200 dark:bg-dark2 dark:border-slate-800">
@@ -58,10 +83,42 @@ const Header = () => {
                     <div className="mt-4" tabIndex={-1} uk-slider="finite:true;sets: true">
                     <div className="uk-slider-container pb-1">
                         <ul className="uk-slider-items grid-small" uk-scrollspy="target: > li; cls: uk-animation-scale-up , uk-animation-slide-right-small; delay: 20 ;repeat: true">
-                        <li className="w-28" uk-scrollspy-class="uk-animation-fade">
-                            <div className="p-3 px-4 rounded-lg bg-teal-100/60 text-teal-600 dark:text-white dark:bg-dark4">
+                        <li onClick={()=>document.getElementById('my_modal_3').showModal()} className="w-28" uk-scrollspy-class="uk-animation-fade">
+                            <div className="p-3 px-4 rounded-lg cursor-pointer bg-teal-100/60 text-teal-600 dark:text-white dark:bg-dark4">
                             <ion-icon name="book" className="text-2xl drop-shadow-md" />
-                            <div className="mt-1.5 text-sm font-medium"> Story </div>
+                            <div className="mt-1.5 text-sm cursor-pointer font-medium"> Group
+                                <dialog id="my_modal_3" className="modal">
+                                <div className="modal-box overflow-y-visible">
+                                    <form method="dialog">
+                                    {/* if there is a button in form, it will close the modal */}
+                                    <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                                    </form>
+                                    <h3 className="font-bold text-lg">Create Group</h3>
+                                    <div>
+                                        <label className="form-control w-full max-w-xs">
+                                            <div className="label">
+                                                <span className="label-text">Name</span>  
+                                            </div>
+                                            <input id="GroupName"  type="text" placeholder="Example : zone 01" required className="input input-bordered w-full max-w-xs" />
+                                        
+                                        </label>    
+                                        <label className="form-control">
+                                            <div className="label">
+                                                <span className="label-text mt-4">Description</span>
+                                              
+                                            </div>
+                                            <textarea id="GroupDescription" className="textarea textarea-bordered h-24" required placeholder="Something ..."></textarea>
+                                        </label>       
+                                        <form method="dialog">
+                                        {/* if there is a button in form, it will close the modal */}
+                                        <button className="btn btn-sm btn-circle btn-ghost  absolute right-2 top-2"></button>
+                                        <button id="createGroup"  className="btn btn-disabled btn-active btn-neutral mt-5">Create</button>                             
+                                        </form>
+                                    </div>
+                                        
+                                   </div>
+                                </dialog>
+                            </div>
                             </div>
                         </li>   
                         <li className="w-28">
@@ -409,10 +466,53 @@ const Header = () => {
             </div>
         </div>
         
+        <script>
+        
+        </script>
        
        
         </header>
     )
+}
+
+async function handleCreateGroup ()  {
+    let name = document.getElementById("GroupName")
+    let description = document.getElementById("GroupDescription")
+
+    if (name.value.length == 0 || description.value.length == 0) {
+        return
+    }
+
+    console.log("clicked");
+    let requestData = { name: name.value, description: description.value };
+
+    let  token = document.cookie.split("=")[1]
+      
+    if (token) {
+      // Use the token as needed
+      console.log('Token:', token);
+    } else {
+      console.log('Token not found in cookies');
+    }
+
+    try {
+      const response = await fetch(config.serverApiUrl + "createGroup", {
+        method: "POST",
+        headers: {
+          'Authorization': token,
+          'Content-Type': 'application/json',
+        },
+        credentials: "include",
+        body: JSON.stringify(requestData)
+      });
+
+      if (response.ok) {
+        
+      }
+    } catch (error) {
+        console.error("Error while fetching groups:", error);
+      }
+
 }
 
 export default Header

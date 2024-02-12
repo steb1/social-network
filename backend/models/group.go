@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 )
 
@@ -108,8 +109,7 @@ func (gr *GroupRepository) GetAllPublicGroup(userid int) []Group {
 	return groups
 }
 
-
-func (gr *GroupRepository) GetUserOwnGroups (userid int) []Group {
+func (gr *GroupRepository) GetUserOwnGroups(userid int) []Group {
 	rows, err := gr.db.Query("SELECT * FROM groups WHERE creator_id = ?", userid)
 	if err != nil {
 		log.Fatal(err)
@@ -125,7 +125,6 @@ func (gr *GroupRepository) GetUserOwnGroups (userid int) []Group {
 			log.Fatal(err)
 		}
 
-
 		groups = append(groups, group)
 	}
 
@@ -134,4 +133,15 @@ func (gr *GroupRepository) GetUserOwnGroups (userid int) []Group {
 	}
 
 	return groups
+}
+
+func (gr *GroupRepository) CheckGroupExist(name string) bool {
+	query := "SELECT * FROM groups WHERE title = ?"
+	var group Group
+	err := gr.db.QueryRow(query, name).Scan(&group.GroupID, &group.Title, &group.Description, &group.CreatorID)
+	fmt.Println(err, "----------- sql")
+	if err == nil {
+		return false
+	}
+	return true
 }
