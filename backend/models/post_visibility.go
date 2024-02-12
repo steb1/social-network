@@ -52,7 +52,7 @@ func (pvr *PostVisibilityRepository) GetPostVisibility(postVisibilityID int) (*P
 }
 
 func (pvr *PostVisibilityRepository) GetAllPostsUserAuth(user_id string) ([]*Post, error) {
-	query:=`SELECT posts.post_id, title, content, created_at, visibility, has_image,
+	query := `SELECT posts.post_id, title, content, created_at, visibility, has_image,
 	 nickname, first_name, last_name, email 
 	 FROM posts,post_visibilities, users 
 	 WHERE post_visibilities.post_id=posts.post_id AND posts.author_id=users.user_id AND post_visibilities.user_id_authorized=? 

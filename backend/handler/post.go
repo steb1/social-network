@@ -2,15 +2,14 @@ package handler
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"server/lib"
 	"server/models"
 	"strconv"
 	"strings"
 	"time"
-	"sort"
 )
 
 func HandleCreatePost(w http.ResponseWriter, r *http.Request) {
@@ -88,7 +87,7 @@ func HandleCreatePost(w http.ResponseWriter, r *http.Request) {
 		post.Category = _categories
 	}
 	postId := strconv.Itoa(post.PostID)
-	comments, err := models.CommentRepo.GetCommentsByPostID(postId)
+	comments, _ := models.CommentRepo.GetCommentsByPostID(postId)
 	post.Comments = comments
 	post.CreatedAt = lib.FormatDateDB(createdAt.Format("2006-01-02 15:04:05"))
 	WriteJSON(w, http.StatusOK, post)
@@ -102,7 +101,7 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 	var (
 		imageId = r.URL.Query().Get("id")
 	)
-	img, err := ioutil.ReadFile("imgPost/" + imageId + ".jpg")
+	img, err := os.ReadFile("imgPost/" + imageId + ".jpg")
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
@@ -120,20 +119,13 @@ func HandleGetAllPosts(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 	var apiError ApiError
-	posts, err := models.PostRepo.GetAllPosts()
-	cookie, err := r.Cookie("social-network")
+	cookie, _ := r.Cookie("social-network")
+	session, _ := models.SessionRepo.GetSession(cookie.Value)
+	posts, err := models.PostRepo.GetAllPostsPublicPrivateAuth(session.UserID)
 	if err != nil {
 		return
 	}
-	session, err := models.SessionRepo.GetSession(cookie.Value)	
-	postAuthorized, _ := models.PostVisibilityRepo.GetAllPostsUserAuth(session.UserID)
-	if (len(postAuthorized)!=0){
-		posts = append(posts, postAuthorized...)
-	}
-	// postPrivate,_:=models.PostRepo.GetAllPostsPrivate(session.UserID)
-	// if len(postPrivate)!=0{
-	// 	posts=append(posts,postPrivate...)
-	// }
+
 	if err != nil {
 		fmt.Println(err)
 		apiError.Error = "Something went wrong while getting all posts"
@@ -150,10 +142,6 @@ func HandleGetAllPosts(w http.ResponseWriter, r *http.Request) {
 
 		posts[i].Comments = comments
 	}
-	less := func(i, j int) bool {
-		return posts[i].PostID > posts[j].PostID
-	}
-	sort.Slice(posts, less)
 
 	WriteJSON(w, http.StatusOK, posts)
 }
