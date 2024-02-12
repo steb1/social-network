@@ -7,6 +7,7 @@ import { cookies } from "next/headers";
 import SeeFollowersFollowees from "./SeeFollowersFollowees.jsx";
 import DisplayPostImage from "./DisplayPostImage.jsx";
 import DisplayPostWithoutImage from "./DisplayPostWithoutImage.jsx";
+import NoPostUI from "./NoPostUI.jsx";
 
 const MainProfile = ({ props, Visibility }) => {
 	const cookieStore = cookies();
@@ -28,7 +29,7 @@ const MainProfile = ({ props, Visibility }) => {
 								</div>
 							</div>
 
-							<h3 className="md:text-3xl text-base font-bold text-black dark:text-white"> {`${props.firstName} ${props.lastName.toUpperCase()}`} </h3>
+							<h3 className="md:text-3xl text-base font-bold text-black dark:text-white">{`${props.firstName.charAt(0).toUpperCase() + props.firstName.slice(1)} ${props.lastName.toUpperCase()}`}</h3>
 
 							<p className="mt-2 text-gray-500 dark:text-white/80">{props.nickname ? `@${props.nickname}` : props.email}</p>
 
@@ -44,11 +45,15 @@ const MainProfile = ({ props, Visibility }) => {
 						) : (
 							<div className="flex items-center gap-2 text-sm py-2 pr-1 max-md:w-full lg:order-2">
 								<button className="button bg-primary flex items-center gap-2 text-white py-2 px-3.5 max-md:flex-1">
-									<ion-icon name="add-circle" className="text-xl"></ion-icon>
+									<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 32 32">
+										<path fill="currentColor" d="M32 14h-4v-4h-2v4h-4v2h4v4h2v-4h4zM12 4a5 5 0 1 1-5 5a5 5 0 0 1 5-5m0-2a7 7 0 1 0 7 7a7 7 0 0 0-7-7m10 28h-2v-5a5 5 0 0 0-5-5H9a5 5 0 0 0-5 5v5H2v-5a7 7 0 0 1 7-7h6a7 7 0 0 1 7 7z" />
+									</svg>
 									<span className="text-sm"> Follow</span>
 								</button>
 								<button className="button bg-primary flex items-center gap-2 text-white py-2 px-3.5 max-md:flex-1">
-									<ion-icon name="add-circle" className="text-xl"></ion-icon>
+									<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
+										<path fill="currentColor" d="M2 22V9q0-.825.588-1.413Q3.175 7 4 7h2V4q0-.825.588-1.413Q7.175 2 8 2h12q.825 0 1.413.587Q22 3.175 22 4v8q0 .825-.587 1.412Q20.825 14 20 14h-2v3q0 .825-.587 1.413Q16.825 19 16 19H5Zm6-10h8V9H8Zm-4 5h12v-3H8q-.825 0-1.412-.588Q6 12.825 6 12V9H4Zm14-5h2V4H8v3h8q.825 0 1.413.587Q18 8.175 18 9Z" />
+									</svg>
 									<span className="text-sm"> Contact </span>
 								</button>
 							</div>
@@ -97,16 +102,7 @@ const MainProfile = ({ props, Visibility }) => {
 							</div>
 						) : null}
 
-						{Visibility === "Private" ? (
-							<PrivateAccountUI />
-						) : (
-							<>
-								{/* TODO FAIRE CA DINAMICLY AND HANDLE CONDITION IF USER HASNO POST SHOW AN DIFFERENT UI */}
-								<DisplayPostImage />
-
-								<DisplayPostWithoutImage />
-							</>
-						)}
+						{Visibility === "Private" ? <PrivateAccountUI /> : <>{!props.userPosts ? <NoPostUI /> : props.userPosts.map((post) => (post.hasImage === 1 ? <DisplayPostImage key={post.post_id} post={post} /> : <DisplayPostWithoutImage key={post.post_id} post={post} />))}</>}
 					</div>
 
 					{Visibility !== "Private" ? (
