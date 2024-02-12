@@ -28,9 +28,9 @@ type PostItems struct {
 
 // Post structure represents the "posts" table
 type Post struct {
-	PostID     int       `json:"post_id"`
-	Title      string    `json:"title"`
-	Category   []string  `json:"category"`
+	PostID int    `json:"post_id"`
+	Title  string `json:"title"`
+	// Category   []string  `json:"category"`
 	Content    string    `json:"content"`
 	CreatedAt  time.Time `json:"created_at"`
 	AuthorID   int       `json:"author_id"`
@@ -88,7 +88,7 @@ func (pr *PostRepository) CreatePost(post *Post, photo multipart.File, categorie
 func (pr *PostRepository) GetPost(postID int) (*Post, error) {
 	query := "SELECT * FROM posts WHERE post_id = ?"
 	var post Post
-	err := pr.db.QueryRow(query, postID).Scan(&post.PostID, &post.Title, &post.Category, &post.Content, &post.CreatedAt, &post.AuthorID, &post.ImageURL, &post.Visibility)
+	err := pr.db.QueryRow(query, postID).Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.AuthorID, &post.ImageURL, &post.Visibility)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +97,7 @@ func (pr *PostRepository) GetPost(postID int) (*Post, error) {
 
 // GetUserOwnPosts retrieves posts owned by a specific user from the database
 func (pr *PostRepository) GetUserOwnPosts(userID int) ([]*Post, error) {
-	rows, err := pr.db.Query("SELECT post_id, title,  content, created_at, author_id, image_url, visibility FROM posts WHERE author_id = ?", userID)
+	rows, err := pr.db.Query("SELECT * FROM posts WHERE author_id = ?", userID)
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +106,7 @@ func (pr *PostRepository) GetUserOwnPosts(userID int) ([]*Post, error) {
 	var posts []*Post
 	for rows.Next() {
 		var post Post
-		err := rows.Scan(&post.PostID, &post.Title, &post.Category, &post.Content, &post.CreatedAt, &post.AuthorID, &post.ImageURL, &post.Visibility)
+		err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.AuthorID, &post.Visibility, &post.HasImage)
 		if err != nil {
 			return nil, err
 		}
