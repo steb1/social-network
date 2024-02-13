@@ -27,11 +27,12 @@ export const Modal = () => {
             if (response.ok) {
                 console.log('post response:', jsonData);
                 console.log('post sent');
+                form.reset();
+                UIkit.modal('#create-status').hide();
             }
         } catch (error) {
             console.error("Erreur lors de la lecture de la réponse JSON :", error);
         }
-        // const datas = await response.json();
     };
     return (
         <div>

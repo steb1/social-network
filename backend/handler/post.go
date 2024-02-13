@@ -98,6 +98,12 @@ func HandleGetAllPosts(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
+	var posts = RetreivePostComments(w)
+
+	WriteJSON(w, http.StatusOK, posts)
+}
+
+func RetreivePostComments(w http.ResponseWriter) []*models.Post {
 	var apiError ApiError
 	posts, err := models.PostRepo.GetAllPosts()
 	if err != nil {
@@ -116,6 +122,5 @@ func HandleGetAllPosts(w http.ResponseWriter, r *http.Request) {
 
 		posts[i].Comments = comments
 	}
-
-	WriteJSON(w, http.StatusOK, posts)
+	return posts
 }

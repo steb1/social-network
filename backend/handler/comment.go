@@ -59,7 +59,16 @@ func HandleCreateComment(w http.ResponseWriter, r *http.Request) {
 		apiError.Error = "An error occured."
 		return
 	}
-	var sucess ApiSuccess
-	sucess.Message = "Comment created !"
-	WriteJSON(w, http.StatusOK, sucess)
+
+	posts := RetreivePostComments(w)
+  
+    var successResponse struct {
+        Message string        `json:"message"`
+        Posts   []*models.Post `json:"posts"`
+    }
+
+    successResponse.Message = "Comment created!"
+    successResponse.Posts = posts
+
+	WriteJSON(w, http.StatusOK, successResponse)
 }

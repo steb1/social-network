@@ -167,7 +167,7 @@ export const PostImage = () => {
     )
 }
 
-export const PostText = ({ post }) => {
+export const PostText = ({ post, setPosts }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
        
@@ -190,6 +190,7 @@ export const PostText = ({ post }) => {
             if (response.ok) {
                 console.log('comment sent');
                 form.reset();
+                setPosts(jsonData.posts)
             } else {
                 console.error('Failed to submit comment:', jsonData);
             }

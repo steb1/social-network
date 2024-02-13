@@ -41,7 +41,7 @@ const HomePage = () => {
       <Header />
       <div className="flex mt-5">
         {/* Fixed Sidebar */}
-        <div className="fixed mt-2 h-auto left-0 top-12 max-sm:hidden max-md:hidden max-lg:hidden  overflow-y-visible touch-none h-full">
+        <div className="fixed mt-2 left-0 top-12 max-sm:hidden max-md:hidden max-lg:hidden  overflow-y-visible touch-none h-full">
           <Sidebar />
         </div>
 
@@ -52,7 +52,7 @@ const HomePage = () => {
           {/* Posts Section */}
           {/* <PostImage/>*/}
           {posts.map((post) => (
-            <PostText key={post.post_id} post={post} />
+            <PostText key={post.post_id} post={post} setPosts={setPosts} />
           ))}
           {serverError && <div>Error: {serverError}</div>}
           <PostPlaceholder />
