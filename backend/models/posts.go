@@ -27,15 +27,17 @@ type PostItems struct {
 
 // Post structure represents the "posts" table
 type Post struct {
-	PostID     int       `json:"post_id"`
-	Title      string    `json:"title"`
-	Category   []string  `json:"category"`
-	Content    string    `json:"content"`
-	CreatedAt  string `json:"created_at"`
-	AuthorID   int       `json:"author_id"`
-	ImageURL   string    `json:"image_url"`
-	Visibility string    `json:"visibility"`
-	HasImage   int       `json:"has_image"`
+	PostID     int      `json:"post_id"`
+	Title      string   `json:"title"`
+	Category   []string `json:"category"`
+	Content    string   `json:"content"`
+	CreatedAt  string   `json:"created_at"`
+	AuthorID   int      `json:"author_id"`
+	ImageURL   string   `json:"image_url"`
+	Visibility string   `json:"visibility"`
+	HasImage   int      `json:"has_image"`
+	Likes      int      `json:"like"`
+	isLiked    bool     `json:"is_liked"`
 	User       *User
 	Comments   []*Comment
 }
@@ -73,9 +75,9 @@ func (pr *PostRepository) CreatePost(post *Post, photo multipart.File, categorie
 	}
 	defer photo.Close()
 	if err := os.MkdirAll("imgPost", os.ModePerm); err != nil {
-        fmt.Println("Error creating imgPost directory:", err)
-        return nil
-    }
+		fmt.Println("Error creating imgPost directory:", err)
+		return nil
+	}
 	fichierSortie, err := os.Create(fmt.Sprintf("imgPost/%d.jpg", post.PostID))
 	if err != nil {
 		lib.HandleError(err, "Creating post image.")
@@ -117,6 +119,7 @@ func (pr *PostRepository) GetAllPosts() ([]*Post, error) {
 		}
 		post.CreatedAt = lib.FormatDateDB(post.CreatedAt)
 		post.Category = PostCategoryRepo.GetPostCategory(post.PostID)
+		// post.Likes = models.PostLikeRepo.GetPostLike()
 		posts = append(posts, &post)
 	}
 	return posts, nil
