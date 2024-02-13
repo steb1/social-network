@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+
 	"server/lib"
 
 	"golang.org/x/crypto/bcrypt"
@@ -9,13 +10,13 @@ import (
 
 type User struct {
 	UserID      int    `json:"user_id"`
-	Email       string `json:"email"`
-	Password    string `json:"password"`
 	FirstName   string `json:"first_name"`
 	LastName    string `json:"last_name"`
+	Nickname    string `json:"nickname"`
+	Email       string `json:"email"`
+	Password    string `json:"password"`
 	DateOfBirth string `json:"birthdate"`
 	Avatar      string `json:"avatar"`
-	Nickname    string `json:"nickname"`
 	AboutMe     string `json:"about_me"`
 	AccountType string `json:"account_type"`
 }
@@ -44,19 +45,6 @@ func (ur *UserRepository) CreateUser(user *User) error {
 	return nil
 }
 
-// GetUser retrieves a user from the database by user_id
-func (ur *UserRepository) GetUser(userID string) (*User, error) {
-	query := "SELECT * FROM users WHERE user_id = ?"
-	var user User
-	err := ur.db.QueryRow(query, userID).Scan(
-		&user.UserID, &user.Email, &user.Password, &user.FirstName,
-		&user.LastName, &user.DateOfBirth, &user.Avatar, &user.Nickname, &user.AboutMe, &user.AccountType)
-	if err != nil {
-		return nil, err
-	}
-	return &user, nil
-}
-
 // UpdateUser updates an existing user in the database
 func (ur *UserRepository) UpdateUser(user *User) error {
 	query := `
@@ -67,6 +55,20 @@ func (ur *UserRepository) UpdateUser(user *User) error {
 	`
 	_, err := ur.db.Exec(query, user.Email, user.Password, user.FirstName, user.LastName,
 		user.DateOfBirth, user.Avatar, user.Nickname, user.AboutMe, user.UserID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// UpdateUser updates an existing user in the database
+func (ur *UserRepository) UpdateUserProfilePrivacy(userID int, mode string) error {
+	query := `
+		UPDATE users
+		SET account_type = ?
+		WHERE user_id = ?
+	`
+	_, err := ur.db.Exec(query, mode, userID)
 	if err != nil {
 		return err
 	}
@@ -90,6 +92,34 @@ func (ur *UserRepository) GetUserByEmail(email string) (*User, error) {
         WHERE email = ?
     `
 	row := ur.db.QueryRow(query, email)
+
+	user := &User{}
+	err := row.Scan(
+		&user.UserID,
+		&user.Email,
+		&user.Password,
+		&user.FirstName,
+		&user.LastName,
+		&user.DateOfBirth,
+		&user.Avatar,
+		&user.Nickname,
+		&user.AboutMe,
+		&user.AccountType,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+// GetUserByID retrieves a user from the database based on their ID
+func (ur *UserRepository) GetUserByID(userID int) (*User, error) {
+	query := `
+        SELECT * FROM users
+        WHERE user_id = ?
+    `
+	row := ur.db.QueryRow(query, userID)
 
 	user := &User{}
 	err := row.Scan(
@@ -236,7 +266,6 @@ func (ur *UserRepository) GetUserByPostID(postID int) (*User, error) {
 
 func (ur *UserRepository) CheckCredentials(login, password string) (User, bool) {
 	user, err := UserRepo.GetUserByNicknameOrEmail(login)
-
 	if err != nil {
 		lib.HandleError(err, "Error getting user by Crendentials. User may not exists.")
 	}
