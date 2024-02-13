@@ -1,6 +1,3 @@
-ALTER TABLE users 
-ADD COLUMN account_type TEXT NOT NULL DEFAULT 'Public';
-
 CREATE UNIQUE INDEX IF NOT EXISTS unique_subscription
 ON subscriptions (follower_user_id, following_user_id);
 CREATE TABLE IF NOT EXISTS "follow_requests" (
@@ -12,3 +9,4 @@ CREATE TABLE IF NOT EXISTS "follow_requests" (
   FOREIGN KEY (follower_user_id) REFERENCES "users" (user_id),
   FOREIGN KEY (following_user_id) REFERENCES "users" (user_id)
 );
+-- TODO : ADD UNIQUE CONSTRAINT 

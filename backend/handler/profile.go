@@ -9,19 +9,20 @@ import (
 )
 
 type UserProfileResponse struct {
-	IDRequester string         `json:"id_requester"`
-	UserID      int            `json:"user_id"`
-	FirstName   string         `json:"firstName"`
-	LastName    string         `json:"lastName"`
-	Nickname    string         `json:"nickname"`
-	Email       string         `json:"email"`
-	DateOfBirth string         `json:"dateOfBirth"`
-	Avatar      string         `json:"avatar"`
-	AboutMe     string         `json:"aboutMe"`
-	AccountType string         `json:"accountType"`
-	UserPosts   []*models.Post `json:"userPosts"`
-	Followers   []*models.User `json:"followers"`
-	Followings  []*models.User `json:"followings"`
+	IDRequester  string         `json:"id_requester"`
+	UserID       int            `json:"user_id"`
+	FirstName    string         `json:"firstName"`
+	LastName     string         `json:"lastName"`
+	Nickname     string         `json:"nickname"`
+	Email        string         `json:"email"`
+	DateOfBirth  string         `json:"dateOfBirth"`
+	Avatar       string         `json:"avatar"`
+	AboutMe      string         `json:"aboutMe"`
+	AccountType  string         `json:"accountType"`
+	FollowStatus string         `json:"followStatus"`
+	UserPosts    []*models.Post `json:"userPosts"`
+	Followers    []*models.User `json:"followers"`
+	Followings   []*models.User `json:"followings"`
 }
 
 func HandleGetProfile(w http.ResponseWriter, r *http.Request) {
@@ -79,21 +80,40 @@ func HandleGetProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	session_user, err := strconv.Atoi(session.UserID)
+	if err != nil {
+		log.Println("🚀 ~ funcHandleGetProfile ~ err:", err)
+		var apiError ApiError
+		apiError.Error = "Not found followings"
+		WriteJSON(w, http.StatusInternalServerError, apiError)
+		return
+	}
+
+	followStatus, err := models.SubscriptionRepo.GetFollowingStatus(session_user, user.UserID)
+	if err != nil {
+		log.Println("🚀 ~ funcHandleGetProfile ~ err:", err)
+		var apiError ApiError
+		apiError.Error = "Not found followings"
+		WriteJSON(w, http.StatusInternalServerError, apiError)
+		return
+	}
+
 	// Create a UserProfileResponse without the password field
 	userProfile := UserProfileResponse{
-		IDRequester: session.UserID,
-		UserID:      user.UserID,
-		FirstName:   user.FirstName,
-		LastName:    user.LastName,
-		Nickname:    user.Nickname,
-		Email:       user.Email,
-		DateOfBirth: user.DateOfBirth,
-		Avatar:      user.Avatar,
-		AboutMe:     user.AboutMe,
-		AccountType: user.AccountType,
-		UserPosts:   postOwned,
-		Followers:   followers,
-		Followings:  followings,
+		IDRequester:  session.UserID,
+		UserID:       user.UserID,
+		FirstName:    user.FirstName,
+		LastName:     user.LastName,
+		Nickname:     user.Nickname,
+		Email:        user.Email,
+		DateOfBirth:  user.DateOfBirth,
+		Avatar:       user.Avatar,
+		AboutMe:      user.AboutMe,
+		AccountType:  user.AccountType,
+		UserPosts:    postOwned,
+		Followers:    followers,
+		Followings:   followings,
+		FollowStatus: followStatus,
 	}
 
 	WriteJSON(w, http.StatusOK, userProfile)

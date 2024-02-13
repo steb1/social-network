@@ -45,6 +45,7 @@ var Routes = []Route{
 	{Path: "/imgPost", Handler: ImageHandler, Methods: []string{"GET"}},
 	{Path: "/api/profile", Handler: HandleGetProfile, Methods: []string{"GET", "OPTIONS"}},
 	{Path: "/api/toggleProfilePrivacy", Handler: ToggleProfilePrivacy, Methods: []string{"POST", "GET", "OPTIONS"}},
+	{Path: "/api/follow", Handler: SubscriptionHandler, Methods: []string{"POST", "OPTIONS"}},
 }
 
 func MiddlewareIsAuthenticated(handler http.HandlerFunc) http.HandlerFunc {

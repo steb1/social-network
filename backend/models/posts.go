@@ -123,7 +123,7 @@ func (pr *PostRepository) UpdatePost(post *Post) error {
 		SET title = ?, category = ?, content = ?, created_at = ?, author_id = ?, image_url = ?, visibility = ?
 		WHERE post_id = ?
 	`
-	_, err := pr.db.Exec(query, post.Title, post.Category, post.Content, post.CreatedAt, post.AuthorID, post.ImageURL, post.Visibility, post.PostID)
+	_, err := pr.db.Exec(query, post.Title, post.Content, post.CreatedAt, post.AuthorID, post.ImageURL, post.Visibility, post.PostID)
 	if err != nil {
 		return err
 	}
