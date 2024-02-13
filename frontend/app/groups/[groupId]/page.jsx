@@ -1,15 +1,15 @@
 "use client"
-import Header from "../../components/header";
-import Sidebar from "../../components/sidebar";
+import Header from "../components/header";
+import Sidebar from "../components/sidebar";
 import AddStory from "../../components/addStory";
-import { GroupRightBar } from "@/app/components/groupRightBar";
-import { PostText } from "../composants/posts"
+import { GroupRightBar } from "@/app/groups/components/groupRightBar";
+import { PostText } from "../components/posts"
 import config from "@/config";
 import { useEffect, useState } from "react";
 import { GroupCover } from "@/app/components/groupCover";
-import { Modal } from "../composants/modal";
+import { Modal } from "../components/modal";
 
-async function fetchGroupDetail (setGroup, setServerError, groupId) {
+async function fetchGroupDetail (setGroup, setEvents, setPosts, setRequests, setMessages, setServerError, groupId) {
     let  token = document.cookie.split("=")[1]
     try {
         const response = await fetch(config.serverApiUrl + "getGroupDetail", {
@@ -27,7 +27,11 @@ async function fetchGroupDetail (setGroup, setServerError, groupId) {
 
             const data = await response.json();
             console.log(data, "-------------- data");
-            setGroup(data)
+            setMessages(data.Message)
+            setPosts(data.Post)
+            setRequests(data.request)
+            setEvents(data.event)
+
           } else {
             console.error("Response is not in JSON format");
             setServerError("Invalid response format");
@@ -46,10 +50,16 @@ async function fetchGroupDetail (setGroup, setServerError, groupId) {
 
 const GroupDetail = ( { params }  ) => {
     let [group, setGroup] = useState([])
+    let [events, setEvents] = useState([])
+    let [posts, setPosts] = useState([])
+    let [request, setRequest] = useState([])
+    let [messages, setMessages] = useState([])
+
+    
     const [serverError, setServerError] = useState(null);
 
     useEffect(() => {
-        fetchGroupDetail(setGroup, setServerError, params.groupId)
+        fetchGroupDetail(setGroup, setEvents, setPosts, setRequest, setMessages, setServerError, params.groupId)
     }, [])
 
     return (
@@ -68,17 +78,17 @@ const GroupDetail = ( { params }  ) => {
               <div className="flex flex-row">
                   <div className=" flex flex-col gap-5 mx-auto ">
                       <AddStory/>
-                      <Modal groupid={group.group.group_id}/>
+                      <Modal />
                       
-                      {group.Post && group.Post.length > 0 ? (
-                          group.Post.map((post) => (
-                            <PostText key={post.PostID} post={post} setGroups={setGroup} setServerError={setServerError} />
+                      {posts && posts.length > 0 ? (
+                          posts.map((post) => (
+                            <PostText key={post.PostID} post={post} setPost={setPosts} setServerError={setServerError} />
                           ))
                         ) : (
                           <p>No Posts available.</p>
                       )}
                   </div>
-                  <div className="mt-10 right-0 mx-10 mb-10">
+                  <div className="mt-10 right-0 mb-10">
                     <GroupRightBar/>
                   </div>
               </div>
