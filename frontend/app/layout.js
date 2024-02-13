@@ -19,8 +19,8 @@ export default function RootLayout({ children }) {
 	return (
 		<html lang="en">
 			<head>
-				<script src="./assets/js/uikit.min.js"></script>
-				<script src="./assets/js/simplebar.js"></script>
+				<script src="../assets/js/uikit.min.js"></script>
+				<script src="../assets/js/simplebar.js"></script>
 				{/* <!-- Ion icon --> */}
 				
 				<script noModule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
@@ -29,7 +29,6 @@ export default function RootLayout({ children }) {
 			</head>
 			<body className={inter.className}>
 					{children}
-					
 			</body>
 		</html>
 	);

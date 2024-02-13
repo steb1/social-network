@@ -54,6 +54,16 @@ func (gr *GroupRepository) GetGroup(groupID int) (*Group, error) {
 	}
 	return &group, nil
 }
+// GetGroup retrieves a group from the database by group_id
+func (gr *GroupRepository) IsOwner(groupID, user_id int) (*Group, error) {
+	query := "SELECT * FROM groups WHERE group_id = ? AND Creator_id = ?"
+	var group Group
+	err := gr.db.QueryRow(query, groupID, user_id).Scan(&group.GroupID, &group.Title, &group.Description, &group.CreatorID)
+	if err != nil {
+		return nil, err
+	}
+	return &group, nil
+}
 
 // UpdateGroup updates an existing group in the database
 func (gr *GroupRepository) UpdateGroup(group *Group) error {

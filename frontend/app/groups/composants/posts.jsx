@@ -261,7 +261,7 @@ export const PostText = ( { post , setGroups }) => {
             {/* post text*/}
                 {/* post heading */}
                 <div className="flex gap-3 sm:p-4 p-2.5 text-sm font-medium">
-                <a href="timeline.html"> <img src="assets/images/avatars/avatar-5.jpg"  className="w-9 h-9 rounded-full" /> </a> 
+                <a href="timeline.html"> <img src="assets/images/avatars/avatar-5.jpg"  className="w-9 h-9 rounded-full" /> { post.AuthorName } </a> 
                 <div className="flex-1">
                     <a href="timeline.html"> <h4 className="text-black dark:text-white">  </h4> </a> 
                     <div className="text-xs text-gray-500 dark:text-white/80"> 2 hours ago</div>
@@ -281,7 +281,7 @@ export const PostText = ( { post , setGroups }) => {
                 </div>
                 </div>
                 <div className="sm:px-4 p-2.5 pt-0">
-                <p className="font-normal">  </p>
+                <p className="font-normal"> { post.Content } </p>
                 </div> 
                 {/* post icons */}
                 <div className="sm:p-4 p-2.5 flex items-center gap-4 text-xs font-semibold">

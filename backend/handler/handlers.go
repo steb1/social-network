@@ -28,6 +28,7 @@ var Routes = []Route{
 	{Path: "/api/getAllGroups", Handler: HandleGetAllGroups, Methods: []string{"GET","OPTIONS"}},
 	{Path: "/api/createMembership", Handler: HandleCreateMembership, Methods: []string{"POST","OPTIONS"}},
 	{Path: "/api/createGroup", Handler: HandleCreateGroup, Methods: []string{"POST","OPTIONS"}},
+	{Path: "/api/getGroupDetail", Handler: HandleGetGroupDetail, Methods: []string{"POST","OPTIONS"}},
 	{Path: "/imgPost", Handler:  ImageHandler, Methods: []string{"GET"}},
 }
 

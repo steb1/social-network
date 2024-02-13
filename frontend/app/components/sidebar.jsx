@@ -1,6 +1,6 @@
 const Sidebar = () => {
     return (
-        <div id="site__sidebar" className="block pt-4 w-[330px] max-sm:hidden max-md:hidden max-lg:hidden transition-transform xl:duration-500 max-xl:w-full max-xl:-translate-x-full">
+        <div id="site__sidebar" className=" left-0 z-[99] pt-[--m-top] overflow-hidden transition-transform xl:duration-500 max-xl:w-full max-xl:-translate-x-full"  uk-sticky="" >
         <div className="pl-2 fixed max-xl:bg-white block shadow-sm 2xl:w-72 sm:w-64 w-[80%] h-[calc(100vh-64px)] relative z-30 max-lg:border-r dark:max-xl:!bg-slate-700 dark:border-slate-700">
             <div className="pr-4" data-simplebar>
             <nav id="side">
