@@ -76,6 +76,38 @@ func (er *EventRepository) DeleteEvent(eventID int) error {
 	return nil
 }
 
+// GetAllEventsByGroupID retrieves all events for a specific group from the database
+func (er *EventRepository) GetAllEventsByGroupID(groupID int) ([]Event, error) {
+	query := `
+		SELECT event_id, title, description, event_date, group_id
+		FROM event
+		WHERE group_id = ?
+	`
+
+	rows, err := er.db.Query(query, groupID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var events []Event
+	for rows.Next() {
+		var event Event
+		err := rows.Scan(&event.EventID, &event.Title, &event.Description, &event.EventDate, &event.GroupID)
+		if err != nil {
+			return nil, err
+		}
+		events = append(events, event)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return events, nil
+}
+
+
 
 
 

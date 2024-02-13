@@ -25,7 +25,6 @@ func NewMembershipRepository(db *sql.DB) *MembershipRepository {
 	}
 }
 
-
 // CreateMembership adds a new membership to the database
 func (cm *MembershipRepository) CreateMembership(membership *Membership) error {
 	query := `
@@ -72,7 +71,7 @@ func (cm *MembershipRepository) UpdateMembership(membership *Membership) error {
 }
 
 // DeleteMembership removes a membership from the database by membership_id
-func  (cm *MembershipRepository) DeleteMembership(membershipID int) error {
+func (cm *MembershipRepository) DeleteMembership(membershipID int) error {
 	query := "DELETE FROM memberships WHERE membership_id = ?"
 	_, err := cm.db.Exec(query, membershipID)
 	if err != nil {
@@ -81,7 +80,7 @@ func  (cm *MembershipRepository) DeleteMembership(membershipID int) error {
 	return nil
 }
 
-func (cm *MembershipRepository) CheckIfMembershispExist( userId, groupId int) bool {
+func (cm *MembershipRepository) CheckIfMembershispExist(userId, groupId int) bool {
 	query := "SELECT * FROM memberships WHERE group_id = ? AND user_id = ?"
 	var membership Membership
 	err := cm.db.QueryRow(query, groupId, userId).Scan(&membership.MembershipID, &membership.UserID, &membership.GroupID, &membership.JoinedAt, &membership.InvitationStatus, &membership.MembershipStatus)
@@ -91,9 +90,8 @@ func (cm *MembershipRepository) CheckIfMembershispExist( userId, groupId int) bo
 	}
 	return true
 }
-
-func (cm *MembershipRepository) CheckGroupIsPublic( userId, groupId int) bool {
-	query := "SELECT * FROM memberships WHERE group_id = ? AND user_id = ?"
+func (cm *MembershipRepository) CheckIfIsMember(userId, groupId int) bool {
+	query := "SELECT * FROM memberships WHERE group_id = ? AND user_id = ? AND InvitationStatus != 'pending'"
 	var membership Membership
 	err := cm.db.QueryRow(query, groupId, userId).Scan(&membership.MembershipID, &membership.UserID, &membership.GroupID, &membership.JoinedAt, &membership.InvitationStatus, &membership.MembershipStatus)
 	if err != nil {
@@ -101,4 +99,84 @@ func (cm *MembershipRepository) CheckGroupIsPublic( userId, groupId int) bool {
 		return false
 	}
 	return true
+}
+
+func (cm *MembershipRepository) CheckGroupIsPublic(userId, groupId int) bool {
+	query := "SELECT * FROM memberships WHERE group_id = ? AND user_id = ?"
+	var membership Membership
+	err := cm.db.QueryRow(query, groupId, userId).Scan(&membership.MembershipID, &membership.UserID, &membership.GroupID, &membership.JoinedAt, &membership.InvitationStatus, &membership.MembershipStatus)
+	if err != nil {
+		
+		fmt.Println(err)
+		return false
+	}
+	return true
+}
+
+// GetAllUsersByGroupID retrieves all users for a specific group from the memberships table
+func (cm *MembershipRepository) GetAllUsersByGroupID(groupID int) ([]User, error) {
+	query := `
+		SELECT u.user_id, u.email, u.password, u.first_name, u.last_name, u.birthdate, u.avatar, u.nickname, u.about_me, u.account_type
+		FROM users u
+		INNER JOIN memberships m ON u.user_id = m.user_id
+		WHERE m.group_id = ? "
+	`
+
+	rows, err := cm.db.Query(query, groupID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []User
+	for rows.Next() {
+		var user User
+		err := rows.Scan(
+			&user.UserID, &user.Email, &user.Password, &user.FirstName, &user.LastName,
+			&user.DateOfBirth, &user.Avatar, &user.Nickname, &user.AboutMe, &user.AccountType,
+		)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+func (cm *MembershipRepository) GetAllRequestByGroupID(groupID int) ([]User, error) {
+	query := `
+		SELECT u.user_id, u.email, u.password, u.first_name, u.last_name, u.birthdate, u.avatar, u.nickname, u.about_me, u.account_type
+		FROM users u
+		INNER JOIN memberships m ON u.user_id = m.user_id
+		WHERE m.group_id = ? AND m.InvitationStatus = "pending"
+	`
+
+	rows, err := cm.db.Query(query, groupID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []User
+	for rows.Next() {
+		var user User
+		err := rows.Scan(
+			&user.UserID, &user.Email, &user.Password, &user.FirstName, &user.LastName,
+			&user.DateOfBirth, &user.Avatar, &user.Nickname, &user.AboutMe, &user.AccountType,
+		)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return users, nil
 }

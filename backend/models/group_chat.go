@@ -75,6 +75,25 @@ func (gcr *GroupChatRepository) DeleteGroupChat(groupChatID int) error {
 	}
 	return nil
 }
+func (repo *GroupChatRepository) GetMessagesByReceiverID(groupChatID int) ([]GroupChat, error) {
+	rows, err := repo.db.Query("SELECT * FROM group_messages WHERE GroupID = ?", groupChatID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
 
+	var messages []GroupChat
+
+	for rows.Next() {
+		var groupChat GroupChat
+		err := rows.Scan(groupChat.SenderID, groupChat.GroupID, groupChat.Content, groupChat.SentTime, groupChat.GroupChatID)
+		if err != nil {
+			return nil, err
+		}
+		messages = append(messages, groupChat)
+	}
+
+	return messages, nil
+}
 
 

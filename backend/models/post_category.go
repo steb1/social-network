@@ -37,16 +37,7 @@ func (pc *PostCategorieRepository) CreatePostCategory(post_id int, categories []
 	return nil
 }
 
-// GetPostCategory retrieves a post category from the database by ID
-func (pc *PostCategorieRepository) GetPostCategory(id string) (*PostCategory, error) {
-	query := "SELECT * FROM post_categories WHERE post_categories_id = ?"
-	var postCategory PostCategory
-	err := pc.db.QueryRow(query, id).Scan(&postCategory.ID, &postCategory.CategoryID, &postCategory.PostID)
-	if err != nil {
-		return nil, err
-	}
-	return &postCategory, nil
-}
+
 
 // UpdatePostCategory updates an existing post category in the database
 func (pc *PostCategorieRepository) UpdatePostCategory(postCategory *PostCategory) error {
@@ -70,4 +61,20 @@ func (pc *PostCategorieRepository) DeletePostCategory(id string) error {
 		return err
 	}
 	return nil
+}
+
+// GetPostCategory retrieves a post category from the database by ID
+func (pc *PostCategorieRepository) GetPostCategory(postId int) ([]string) {
+	rows, err := db.Query("SELECT c.name FROM posts p JOIN post_categories pc ON p.post_id = pc.post_id JOIN categories c ON pc.category_id = c.category_id WHERE p.post_id = ?", postId)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+	var categories []string
+	for rows.Next() {
+		var categorie string
+		rows.Scan(&categorie)
+		categories = append(categories, categorie)
+	}
+	return categories
 }

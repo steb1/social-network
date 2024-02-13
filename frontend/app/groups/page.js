@@ -68,28 +68,28 @@ const Group = () => {
             <Sidebar/>
         </div>
         <div className="flex flex-col flew-wrap mb-10">
-          <div className="flex flex-col mt-36">
+          <div className="flex flex-col mt-20">
                 <h1 className="text-black text-xl font-bold">Suggestions</h1>
                 <hr className="mt-3"/>
                 <div className="carousel carousel-center w-[1000px] p-4 space-x-4 bg-neutral rounded-box">
-                {groups ? (
-                  groups.map((group) => (
-                    <GroupOption key={group.id} group={group} setGroups={setPublicGroups} setServerError={setServerError} />
-                  ))
-                ) : (
-                  <p>No groups available.</p>
-                )}
+                  {groups ? (
+                    groups.map((group) => (
+                      <GroupOption key={group.id} group={group} setGroups={setPublicGroups} setServerError={setServerError} />
+                    ))
+                  ) : (
+                    <p>No groups available.</p>
+                  )}
                 </div>
           </div>
-          <div className="flex flex-col  mt-36">
+          <div className="flex flex-col mt-10">
               <h1 className="text-black text-xl font-bold">My groups</h1>
               <hr className="mt-3"/>
               <div className="carousel carousel-center w-[1000px] p-4 space-x-4 bg-neutral rounded-box">
               
               {Owngroups ? (
                 Owngroups.map((group) => (
-                    <a href="/groups/group_detail/">
-                      <div id={group.group_id} className="card card-compact w-96 bg-base-100 shadow-xl carousel-item w-96 h-96">
+                    <a href={"/groups/" + group.group_id}>
+                      <div id={group.group_id} className="card card-compact w-96 bg-base-100 shadow-xl carousel-item w-96 h-64">
                           <figure><img src="https://i0.wp.com/www.iedunote.com/img/28051/reference-groups.jpg?fit=1080%2C720&quality=100&ssl=1" alt="Shoes" /></figure>
                           <div className="card-body">
                               <h2 className="card-title">{group.title}</h2>

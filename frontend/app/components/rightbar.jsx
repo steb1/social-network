@@ -1,6 +1,6 @@
 export const Rightbar = () => {
     return (
-        <div className="w-96 "> 
+        <div className="w-96" uk-sticky=""> 
 
             <div>
             <div className="box p-5 px-6 border1 dark:bg-dark2">
