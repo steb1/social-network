@@ -3,7 +3,7 @@ export const PostImage = () => {
             <div className="bg-white rounded-xl shadow-sm text-sm font-medium border1 dark:bg-dark2">
                 {/* post heading */}
                 <div className="flex gap-3 sm:p-4 p-2.5 text-sm font-medium">
-                <a href="timeline.html"> <img src="assets/images/avatars/avatar-3.jpg"  className="w-9 h-9 rounded-full" /> </a>  
+                <a href="timeline.html"> <img src="../assets/images/avatars/avatar-3.jpg"  className="w-9 h-9 rounded-full" /> </a>  
                 <div className="flex-1">
                     <a href="timeline.html"> <h4 className="text-black dark:text-white"> Monroe Parker </h4> </a>  
                     <div className="text-xs text-gray-500 dark:text-white/80"> 2 hours ago</div>
@@ -25,7 +25,7 @@ export const PostImage = () => {
                 {/* post image */}
                 <a href="#preview_modal" >
                 <div className="relative w-full lg:h-96 h-full sm:px-4">
-                    <img src="assets/images/post/img-2.jpg"  className="sm:rounded-lg w-full h-full object-cover" />
+                    <img src="../assets/images/post/img-2.jpg"  className="sm:rounded-lg w-full h-full object-cover" />
                 </div>
                 </a>
                 {/* post icons */}
@@ -47,14 +47,14 @@ export const PostImage = () => {
                 {/* comments */}
                 <div className="sm:p-4 p-2.5 border-t border-gray-100 font-normal space-y-3 relative dark:border-slate-700/40"> 
                 <div className="flex items-start gap-3 relative">
-                    <a href="timeline.html"> <img src="assets/images/avatars/avatar-2.jpg"  className="w-6 h-6 mt-1 rounded-full" /> </a>
+                    <a href="timeline.html"> <img src="../assets/images/avatars/avatar-2.jpg"  className="w-6 h-6 mt-1 rounded-full" /> </a>
                     <div className="flex-1">
                     <a href="timeline.html" className="text-black font-medium inline-block dark:text-white"> Steeve </a>
                     <p className="mt-0.5">What a beautiful photo! I love it. 😍 </p>
                     </div>
                 </div>
                 <div className="flex items-start gap-3 relative">
-                    <a href="timeline.html"> <img src="assets/images/avatars/avatar-3.jpg"  className="w-6 h-6 mt-1 rounded-full" /> </a>
+                    <a href="timeline.html"> <img src="../assets/images/avatars/avatar-3.jpg"  className="w-6 h-6 mt-1 rounded-full" /> </a>
                     <div className="flex-1">
                     <a href="timeline.html" className="text-black font-medium inline-block dark:text-white"> Monroe </a>
                     <p className="mt-0.5">   You captured the moment.😎 </p>
@@ -67,7 +67,7 @@ export const PostImage = () => {
                 </div>
                 {/* add comment */}
                 <div className="sm:px-4 sm:py-3 p-2.5 border-t border-gray-100 flex items-center gap-1 dark:border-slate-700/40">
-                <img src="assets/images/avatars/avatar-7.jpg"  className="w-6 h-6 rounded-full" />
+                <img src="../assets/images/avatars/avatar-7.jpg"  className="w-6 h-6 rounded-full" />
                 <div className="flex-1 relative overflow-hidden h-10">
                     <textarea placeholder="Add Comment...." rows={1} className="w-full resize-none !bg-transparent px-4 py-2 focus:!border-transparent focus:!ring-transparent" defaultValue={""} />
                     <div className="!top-2 pr-2" uk-drop="pos: bottom-right; mode: click">
@@ -170,7 +170,7 @@ export const PostImageSlider = () => {
         <div className="bg-white rounded-xl shadow-sm text-sm font-medium border1 dark:bg-dark2">
                 {/* post heading */}
                 <div className="flex gap-3 sm:p-4 p-2.5 text-sm font-medium">
-                <a href="timeline.html"> <img src="assets/images/avatars/avatar-3.jpg"  className="w-9 h-9 rounded-full" /> </a>  
+                <a href="timeline.html"> <img src="../assets/images/avatars/avatar-3.jpg"  className="w-9 h-9 rounded-full" /> </a>  
                 <div className="flex-1">
                     <a href="timeline.html"> <h4 className="text-black dark:text-white"> Monroe Parker </h4> </a>  
                     <div className="text-xs text-gray-500 dark:text-white/80"> 2 hours ago</div>
@@ -192,7 +192,7 @@ export const PostImageSlider = () => {
                 {/* post image */}
                 <a href="#preview_modal" >
                 <div className="relative w-full lg:h-96 h-full sm:px-4">
-                    <img src="assets/images/post/img-2.jpg"  className="sm:rounded-lg w-full h-full object-cover" />
+                    <img src="../assets/images/post/img-2.jpg"  className="sm:rounded-lg w-full h-full object-cover" />
                 </div>
                 </a>
                 {/* post icons */}
@@ -214,14 +214,14 @@ export const PostImageSlider = () => {
                 {/* comments */}
                 <div className="sm:p-4 p-2.5 border-t border-gray-100 font-normal space-y-3 relative dark:border-slate-700/40"> 
                 <div className="flex items-start gap-3 relative">
-                    <a href="timeline.html"> <img src="assets/images/avatars/avatar-2.jpg"  className="w-6 h-6 mt-1 rounded-full" /> </a>
+                    <a href="timeline.html"> <img src="../assets/images/avatars/avatar-2.jpg"  className="w-6 h-6 mt-1 rounded-full" /> </a>
                     <div className="flex-1">
                     <a href="timeline.html" className="text-black font-medium inline-block dark:text-white"> Steeve </a>
                     <p className="mt-0.5">What a beautiful photo! I love it. 😍 </p>
                     </div>
                 </div>
                 <div className="flex items-start gap-3 relative">
-                    <a href="timeline.html"> <img src="assets/images/avatars/avatar-3.jpg"  className="w-6 h-6 mt-1 rounded-full" /> </a>
+                    <a href="timeline.html"> <img src="../assets/images/avatars/avatar-3.jpg"  className="w-6 h-6 mt-1 rounded-full" /> </a>
                     <div className="flex-1">
                     <a href="timeline.html" className="text-black font-medium inline-block dark:text-white"> Monroe </a>
                     <p className="mt-0.5">   You captured the moment.😎 </p>
@@ -234,7 +234,7 @@ export const PostImageSlider = () => {
                 </div>
                 {/* add comment */}
                 <div className="sm:px-4 sm:py-3 p-2.5 border-t border-gray-100 flex items-center gap-1 dark:border-slate-700/40">
-                <img src="assets/images/avatars/avatar-7.jpg"  className="w-6 h-6 rounded-full" />
+                <img src="../assets/images/avatars/avatar-7.jpg"  className="w-6 h-6 rounded-full" />
                 <div className="flex-1 relative overflow-hidden h-10">
                     <textarea placeholder="Add Comment...." rows={1} className="w-full resize-none !bg-transparent px-4 py-2 focus:!border-transparent focus:!ring-transparent" defaultValue={""} />
                     <div className="!top-2 pr-2" uk-drop="pos: bottom-right; mode: click">
@@ -261,7 +261,7 @@ export const PostText = ( { post , setGroups }) => {
             {/* post text*/}
                 {/* post heading */}
                 <div className="flex gap-3 sm:p-4 p-2.5 text-sm font-medium">
-                <a href="timeline.html"> <img src="assets/images/avatars/avatar-5.jpg"  className="w-9 h-9 rounded-full" /> { post.AuthorName } </a> 
+                <a href="timeline.html"> <img src="../assets/images/avatars/avatar-5.jpg"  className="w-9 h-9 rounded-full" /> { post.AuthorName } </a> 
                 <div className="flex-1">
                     <a href="timeline.html"> <h4 className="text-black dark:text-white">  </h4> </a> 
                     <div className="text-xs text-gray-500 dark:text-white/80"> 2 hours ago</div>
@@ -302,21 +302,21 @@ export const PostText = ( { post , setGroups }) => {
                 {/* comments */}
                 <div className="sm:p-4 p-2.5 border-t border-gray-100 font-normal space-y-3 relative dark:border-slate-700/40"> 
                 <div className="flex items-start gap-3 relative">
-                    <a href="timeline.html"> <img src="assets/images/avatars/avatar-2.jpg"  className="w-6 h-6 mt-1 rounded-full" /> </a>
+                    <a href="timeline.html"> <img src="../assets/images/avatars/avatar-2.jpg"  className="w-6 h-6 mt-1 rounded-full" /> </a>
                     <div className="flex-1">
                     <a href="timeline.html" className="text-black font-medium inline-block dark:text-white"> Steeve </a>
                     <p className="mt-0.5"> I love taking photos of nature and animals. 🌳🐶</p>
                     </div>
                 </div>
                 <div className="flex items-start gap-3 relative">
-                    <a href="timeline.html"> <img src="assets/images/avatars/avatar-3.jpg"  className="w-6 h-6 mt-1 rounded-full" /> </a>
+                    <a href="timeline.html"> <img src="../assets/images/avatars/avatar-3.jpg"  className="w-6 h-6 mt-1 rounded-full" /> </a>
                     <div className="flex-1">
                     <a href="timeline.html" className="text-black font-medium inline-block dark:text-white"> Monroe </a>
                     <p className="mt-0.5">  I enjoy people and emotions. 😊😢 </p>
                     </div>
                 </div> 
                 <div className="flex items-start gap-3 relative">
-                    <a href="timeline.html"> <img src="assets/images/avatars/avatar-5.jpg"  className="w-6 h-6 mt-1 rounded-full" /> </a>
+                    <a href="timeline.html"> <img src="../assets/images/avatars/avatar-5.jpg"  className="w-6 h-6 mt-1 rounded-full" /> </a>
                     <div className="flex-1">
                     <a href="timeline.html" className="text-black font-medium inline-block dark:text-white"> Jesse </a>
                     <p className="mt-0.5">  Photography is my passion. 🎨📸 </p>
@@ -325,7 +325,7 @@ export const PostText = ( { post , setGroups }) => {
                 </div>
                 {/* add comment */}
                 <div className="sm:px-4 sm:py-3 p-2.5 border-t border-gray-100 flex items-center gap-1 dark:border-slate-700/40">
-                <img src="assets/images/avatars/avatar-7.jpg"  className="w-6 h-6 rounded-full" />
+                <img src="../assets/images/avatars/avatar-7.jpg"  className="w-6 h-6 rounded-full" />
                 <div className="flex-1 relative overflow-hidden h-10">
                     <textarea placeholder="Add Comment...." rows={1} className="w-full resize-none !bg-transparent px-4 py-2 focus:!border-transparent focus:!ring-transparent" aria-haspopup="true" aria-expanded="false" defaultValue={""} />
                     <div className="!top-2 pr-2 uk-drop" uk-drop="pos: bottom-right; mode: click">

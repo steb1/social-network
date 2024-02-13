@@ -1,6 +1,6 @@
 export const GroupCover = ( { groupInfo }) => {
     return (
-    <div className="bg-white shadow lg:rounded-b-2xl lg:-mt-10 dark:bg-dark2">
+    <div className="bg-white shadow lg:rounded-b-2xl lg:-mt-10 dark:bg-dark2" >
         {/* cover */}
         <div className="relative overflow-hidden w-full lg:h-72 h-36">
             <img src="../assets/images/group/group-cover.jpg" alt="" className="h-full w-full object-cover inset-0" />
@@ -29,11 +29,11 @@ export const GroupCover = ( { groupInfo }) => {
                 <div>
                 <div className="flex items-center gap-2 mt-1">
                     <div className="flex -space-x-4 mr-3">
-                    <img src="assets/images/avatars/avatar-2.jpg" alt="" className="w-10 rounded-full border-4 border-white dark:border-slate-800" />
-                    <img src="assets/images/avatars/avatar-3.jpg" alt="" className="w-10 rounded-full border-4 border-white dark:border-slate-800" />
-                    <img src="assets/images/avatars/avatar-7.jpg" alt="" className="w-10 rounded-full border-4 border-white dark:border-slate-800" />
-                    <img src="assets/images/avatars/avatar-4.jpg" alt="" className="w-10 rounded-full border-4 border-white dark:border-slate-800" />
-                    <img src="assets/images/avatars/avatar-5.jpg" alt="" className="w-10 rounded-full border-4 border-white dark:border-slate-800" />
+                    <img src="../assets/images/avatars/avatar-2.jpg" alt="" className="w-10 rounded-full border-4 border-white dark:border-slate-800" />
+                    <img src="../assets/images/avatars/avatar-3.jpg" alt="" className="w-10 rounded-full border-4 border-white dark:border-slate-800" />
+                    <img src="../assets/images/avatars/avatar-7.jpg" alt="" className="w-10 rounded-full border-4 border-white dark:border-slate-800" />
+                    <img src="../assets/images/avatars/avatar-4.jpg" alt="" className="w-10 rounded-full border-4 border-white dark:border-slate-800" />
+                    <img src="../assets/images/avatars/avatar-5.jpg" alt="" className="w-10 rounded-full border-4 border-white dark:border-slate-800" />
                     </div>
                     
                     <div> 
@@ -57,7 +57,7 @@ export const GroupCover = ( { groupInfo }) => {
             </div>
             </div>
         </div>
-        <div className="flex items-center justify-between  border-t border-gray-100 px-2 dark:border-slate-700">
+        <div className="flex items-center justify-between  border-t border-gray-100 px-2 dark:border-slate-700" >
             <nav className="flex gap-0.5 rounded-xl overflow-hidden -mb-px text-gray-500 font-medium text-sm overflow-x-auto dark:text-white">
             <a href="#" className="inline-block py-3 leading-8 px-3.5 border-b-2 border-blue-600 text-blue-600">Discussion</a>
             <a href="#" className="inline-block py-3 leading-8 px-3.5">Files</a>
