@@ -60,15 +60,15 @@ func HandleCreateComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	posts := RetreivePostComments(w)
-  
-    var successResponse struct {
-        Message string        `json:"message"`
-        Posts   []*models.Post `json:"posts"`
-    }
+	posts := RetreiveAllPosts(w, r)
 
-    successResponse.Message = "Comment created!"
-    successResponse.Posts = posts
+	var successResponse struct {
+		Message string         `json:"message"`
+		Posts   []*models.Post `json:"posts"`
+	}
+
+	successResponse.Message = "Comment created!"
+	successResponse.Posts = posts
 
 	WriteJSON(w, http.StatusOK, successResponse)
 }

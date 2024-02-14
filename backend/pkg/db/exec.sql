@@ -23,3 +23,8 @@
 --     ('Just a comment for the yayediop post I love taking photos of nature and animals.', '5', '2024-02-06 14:40:00', '13');
 -- DELETE FROM posts WHERE post_id > 14;
 -- DELETE FROM comments WHERE comment_id > 8;
+
+-- INSERT INTO post_likes (author_id, post_id, rate)
+-- VALUES 
+--         ('2', '12', '1'),
+--         ('2', '14', '1');

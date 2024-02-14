@@ -102,28 +102,35 @@ func (pr *PostRepository) GetPost(postID int) (*Post, error) {
 	return &post, nil
 }
 
-// GetAllPosts retrieves all posts from the database
-func (pr *PostRepository) GetAllPosts() ([]*Post, error) {
-	rows, err := pr.db.Query("SELECT post_id, title, content, created_at, visibility, has_image, nickname, first_name, last_name, email FROM posts, users WHERE posts.author_id=users.user_id ORDER BY created_at DESC")
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var posts []*Post
-	for rows.Next() {
-		var post Post
-		post.User = &User{}
-		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.HasImage, &post.User.Nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email); err != nil {
+	// GetAllPosts retrieves all posts from the database
+	func (pr *PostRepository) GetAllPosts(currentUserID int) ([]*Post, error) {
+		rows, err := pr.db.Query("SELECT post_id, title, content, created_at, visibility, has_image, nickname, first_name, last_name, email FROM posts, users WHERE posts.author_id=users.user_id ORDER BY created_at DESC")
+		if err != nil {
 			return nil, err
 		}
-		post.CreatedAt = lib.FormatDateDB(post.CreatedAt)
-		post.Category = PostCategoryRepo.GetPostCategory(post.PostID)
-		// post.Likes = models.PostLikeRepo.GetPostLike()
-		posts = append(posts, &post)
+		defer rows.Close()
+
+		var posts []*Post
+		for rows.Next() {
+			var post Post
+			post.User = &User{}
+			if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.HasImage, &post.User.Nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email); err != nil {
+				return nil, err
+			}
+			post.CreatedAt = lib.FormatDateDB(post.CreatedAt)
+			post.Category = PostCategoryRepo.GetPostCategory(post.PostID)
+			post.Likes, err = PostLikeRepo.GetNumberOfLikes(post.PostID)
+			if err != nil {
+				return nil, err
+			}
+			post.isLiked, err = PostLikeRepo.IsPostLikedByCurrentUser(post.PostID, currentUserID)
+			if err != nil {
+				return nil, err
+			}
+			posts = append(posts, &post)
+		}
+		return posts, nil
 	}
-	return posts, nil
-}
 
 // GetUserOwnPosts retrieves posts owned by a specific user from the database
 func (pr *PostRepository) GetUserOwnPosts(userID int) ([]*Post, error) {

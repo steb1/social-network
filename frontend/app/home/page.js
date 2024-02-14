@@ -10,9 +10,13 @@ import "../../public/assets/js/script.js";
 import "../../public/assets/js/simplebar.js";
 import config from "@/config";
 const fetchAllPosts = async (setPosts, setServerError) => {
+  let  token= document.cookie.split("=")[1]
   try {
     const response = await fetch(config.serverApiUrl + "getAllPosts", {
       method: "GET",
+      headers: {
+        'Authorization': token ,
+    },
     });
     if (response.ok) {
       const data = await response.json();
@@ -50,7 +54,6 @@ const HomePage = () => {
           <Modal/>
           <AddStory />
           {/* Posts Section */}
-          {/* <PostImage/>*/}
           {posts.map((post) => (
             <PostText key={post.post_id} post={post} setPosts={setPosts} />
           ))}

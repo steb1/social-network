@@ -92,20 +92,38 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleGetAllPosts(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodOptions {
+		HandleOptions(w, r)
+		return
+	}
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
-	var posts = RetreivePostComments(w)
+	var posts = RetreiveAllPosts(w, r)
 
 	WriteJSON(w, http.StatusOK, posts)
 }
 
-func RetreivePostComments(w http.ResponseWriter) []*models.Post {
+func RetreiveAllPosts(w http.ResponseWriter, r *http.Request) []*models.Post {
 	var apiError ApiError
-	posts, err := models.PostRepo.GetAllPosts()
+
+	sessionToken := r.Header.Get("Authorization")
+	session, err := models.SessionRepo.GetSession(sessionToken)
+	if err != nil {
+		apiError.Error = "Go connect first !"
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return nil
+	}
+	userId, err := strconv.Atoi(session.UserID)
+	if err != nil {
+		apiError.Error = "Error getting user."
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return nil
+	}
+	posts, err := models.PostRepo.GetAllPosts(userId)
 	if err != nil {
 		fmt.Println(err)
 		apiError.Error = "Something went wrong while getting all posts"
