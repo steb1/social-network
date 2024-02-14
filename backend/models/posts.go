@@ -36,6 +36,8 @@ type Post struct {
 	ImageURL   string   `json:"image_url"`
 	Visibility string   `json:"visibility"`
 	HasImage   int      `json:"has_image"`
+	Likes      int      `json:"like"`
+	IsLiked    bool     `json:"is_liked"`
 	User       *User
 	Comments   []*Comment
 }
@@ -104,12 +106,13 @@ func (pr *PostRepository) GetPost(postID int) (*Post, error) {
 }
 
 // GetAllPosts retrieves all posts from the database
-func (pr *PostRepository) GetAllPosts() ([]*Post, error) {
+func (pr *PostRepository) GetAllPosts(currentUserID int) ([]*Post, error) {
 	rows, err := pr.db.Query("SELECT post_id, title, content, created_at, visibility, has_image, nickname, first_name, last_name, email FROM posts, users WHERE posts.author_id=users.user_id AND visibility='public' ORDER BY created_at DESC")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
+
 	var posts []*Post
 	for rows.Next() {
 		var post Post
@@ -119,11 +122,20 @@ func (pr *PostRepository) GetAllPosts() ([]*Post, error) {
 		}
 		post.CreatedAt = lib.FormatDateDB(post.CreatedAt)
 		post.Category = PostCategoryRepo.GetPostCategory(post.PostID)
+		post.Likes, err = PostLikeRepo.GetNumberOfLikes(post.PostID)
+		if err != nil {
+			return nil, err
+		}
+		post.IsLiked, err = PostLikeRepo.IsPostLikedByCurrentUser(post.PostID, currentUserID)
+		if err != nil {
+			return nil, err
+		}
 		posts = append(posts, &post)
 	}
 	return posts, nil
 }
-func (pr *PostRepository) GetAllPostsPublicPrivateAuth(userId string) ([]*Post, error) {
+
+func (pr *PostRepository) GetAllPostsPublicPrivateAuth(userId int) ([]*Post, error) {
 	rows, err := pr.db.Query(`
 	SELECT 
     posts.post_id, 
@@ -225,6 +237,14 @@ ORDER BY
 		}
 		post.CreatedAt = lib.FormatDateDB(post.CreatedAt)
 		post.Category = PostCategoryRepo.GetPostCategory(post.PostID)
+		post.Likes, err = PostLikeRepo.GetNumberOfLikes(post.PostID)
+		if err != nil {
+			return nil, err
+		}
+		post.IsLiked, err = PostLikeRepo.IsPostLikedByCurrentUser(post.PostID, userId)
+		if err != nil {
+			return nil, err
+		}
 		posts = append(posts, &post)
 	}
 	return posts, nil
@@ -247,6 +267,7 @@ func (pr *PostRepository) GetUserOwnPosts(userID int) ([]*Post, error) {
 		}
 		posts = append(posts, &post)
 	}
+
 	return posts, nil
 }
 
