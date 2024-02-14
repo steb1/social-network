@@ -25,6 +25,7 @@
 -- DELETE FROM comments WHERE post_id > 49;
 -- DELETE FROM post_categories WHERE post_id > 14;
 -- DELETE FROM comments WHERE comment_id > 8;
+-- DELETE FROM post_visibilities;
 
 -- INSERT INTO post_likes (author_id, post_id, rate)
 -- VALUES 

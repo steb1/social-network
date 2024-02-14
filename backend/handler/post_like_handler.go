@@ -2,16 +2,13 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"server/models"
 	"strconv"
 )
 
 func HandleLikePost(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodOptions {
-		HandleOptions(w, r)
-		return
-	}
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
@@ -20,15 +17,15 @@ func HandleLikePost(w http.ResponseWriter, r *http.Request) {
 	var apiError ApiError
 	var postLike models.PostLike
 
-	sessionToken := r.Header.Get("Authorization")
-	session, err := models.SessionRepo.GetSession(sessionToken)
-	if err != nil {
+	cookie, errC := r.Cookie("social-network")
+	session, errS := models.SessionRepo.GetSession(cookie.Value)
+	if errS != nil || errC != nil {
 		apiError.Error = "Go connect first !"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
 		return
 	}
-	postLike.AuthorID, err = strconv.Atoi(session.UserID)
-	if err != nil {
+	postLike.AuthorID, errC = strconv.Atoi(session.UserID)
+	if errC != nil {
 		apiError.Error = "Error getting user."
 		WriteJSON(w, http.StatusBadRequest, apiError)
 		return
@@ -39,8 +36,8 @@ func HandleLikePost(w http.ResponseWriter, r *http.Request) {
 		WriteJSON(w, http.StatusBadRequest, apiError)
 		return
 	}
-	postLike.Rate=1
-	
+	postLike.Rate = 1
+
 	// Check if the post is already liked by the user
 	isLiked, err := models.PostLikeRepo.IsPostLikedByCurrentUser(postLike.PostID, postLike.AuthorID)
 	if err != nil {
@@ -48,7 +45,7 @@ func HandleLikePost(w http.ResponseWriter, r *http.Request) {
 		WriteJSON(w, http.StatusInternalServerError, apiError)
 		return
 	}
-	
+	fmt.Println("is liked", isLiked, postLike)
 	if isLiked {
 		// Post is already liked, handle unlike logic
 		if err := models.PostLikeRepo.DeletePostLike(postLike.PostID, postLike.AuthorID); err != nil {
@@ -56,11 +53,11 @@ func HandleLikePost(w http.ResponseWriter, r *http.Request) {
 			WriteJSON(w, http.StatusInternalServerError, apiError)
 			return
 		}
-		} else {
-			// Post is not liked, handle like logic
-			if err := models.PostLikeRepo.CreatePostLike(&postLike); err != nil {
-				apiError.Error = "Failed to like post"
-				WriteJSON(w, http.StatusInternalServerError, apiError)
+	} else {
+		// Post is not liked, handle like logic
+		if err := models.PostLikeRepo.CreatePostLike(&postLike); err != nil {
+			apiError.Error = "Failed to like post"
+			WriteJSON(w, http.StatusInternalServerError, apiError)
 			return
 		}
 	}
@@ -78,7 +75,6 @@ func HandleLikePost(w http.ResponseWriter, r *http.Request) {
 	WriteJSON(w, http.StatusOK, successResponse)
 }
 
-
 func HandleLikeComment(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodOptions {
 		HandleOptions(w, r)
@@ -92,15 +88,15 @@ func HandleLikeComment(w http.ResponseWriter, r *http.Request) {
 	var apiError ApiError
 	var commentLike models.CommentLike
 
-	sessionToken := r.Header.Get("Authorization")
-	session, err := models.SessionRepo.GetSession(sessionToken)
-	if err != nil {
+	cookie, errC := r.Cookie("social-network")
+	session, errS := models.SessionRepo.GetSession(cookie.Value)
+	if errS != nil || errC != nil {
 		apiError.Error = "Go connect first !"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
 		return
 	}
-	commentLike.AuthorID, err = strconv.Atoi(session.UserID)
-	if err != nil {
+	commentLike.AuthorID, errC = strconv.Atoi(session.UserID)
+	if errC != nil {
 		apiError.Error = "Error getting user."
 		WriteJSON(w, http.StatusBadRequest, apiError)
 		return
@@ -111,8 +107,8 @@ func HandleLikeComment(w http.ResponseWriter, r *http.Request) {
 		WriteJSON(w, http.StatusBadRequest, apiError)
 		return
 	}
-	commentLike.Rate=1
-	
+	commentLike.Rate = 1
+
 	// Check if the comment is already liked by the user
 	isLiked, err := models.Comment_likeRepo.IsCommentLikedByCurrentUser(commentLike.CommentID, commentLike.AuthorID)
 	if err != nil {
@@ -120,7 +116,7 @@ func HandleLikeComment(w http.ResponseWriter, r *http.Request) {
 		WriteJSON(w, http.StatusInternalServerError, apiError)
 		return
 	}
-	
+
 	if isLiked {
 		// Comment is already liked, handle unlike logic
 		if err := models.Comment_likeRepo.DeleteCommentLike(commentLike.CommentID, commentLike.AuthorID); err != nil {
@@ -128,11 +124,11 @@ func HandleLikeComment(w http.ResponseWriter, r *http.Request) {
 			WriteJSON(w, http.StatusInternalServerError, apiError)
 			return
 		}
-		} else {
-			// Comment is not liked, handle like logic
-			if err := models.Comment_likeRepo.CreateCommentLike(&commentLike); err != nil {
-				apiError.Error = "Failed to like comment"
-				WriteJSON(w, http.StatusInternalServerError, apiError)
+	} else {
+		// Comment is not liked, handle like logic
+		if err := models.Comment_likeRepo.CreateCommentLike(&commentLike); err != nil {
+			apiError.Error = "Failed to like comment"
+			WriteJSON(w, http.StatusInternalServerError, apiError)
 			return
 		}
 	}
