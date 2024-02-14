@@ -6,23 +6,21 @@
 
 -- INSERT INTO post_categories (category_id, post_id)
 -- VALUES
---     ('1', '60'),
---     ('2', '61'),
---     ('6', '62'),
---     ('2', '60');
+--     ('1', '83'),
+--     ('2', '84'),
+--     ('6', '85'),
+--     ('2', '83');
 
 -- INSERT INTO comments (content, author_id, createdAt, post_id)
 -- VALUES 
---     ('This is a little comment text for post 3', '6', '2024-02-07 14:30:00', '60'),
---     ('I love taking photos of nature and animals. 🌳🐶', '4', '2024-02-07 14:40:00', '62'),
---     ('I enjoy people and emotions. 😊😢 ', '4', '2024-02-07 14:50:00', '62'),
---     ('This is a little comment text for post yoows', '5', '2024-02-06 14:30:00', '61'),
---     ('I love taking photos of nature and animals.', '1', '2024-02-06 14:40:00', '61'),
---     ('Just a comment for the yayediop post I love taking photos of nature and animals.', '5', '2024-02-06 14:40:00', '60');
+--     ('This is a little comment text for post 3', '6', '2024-02-07 14:30:00', '83'),
+--     ('I love taking photos of nature and animals. 🌳🐶', '4', '2024-02-07 14:40:00', '85'),
+--     ('I enjoy people and emotions. 😊😢 ', '4', '2024-02-07 14:50:00', '85'),
+--     ('This is a little comment text for post yoows', '5', '2024-02-06 14:30:00', '85'),
+--     ('I love taking photos of nature and animals.', '1', '2024-02-06 14:40:00', '85'),
+--     ('Just a comment for the yayediop post I love taking photos of nature and animals.', '5', '2024-02-06 14:40:00', '83');
 
 --  DELETE FROM posts;
 -- DELETE FROM comments;
 -- DELETE FROM post_categories;
-SELECT post_id, title, content, created_at, visibility, has_image, nickname, first_name, last_name, email FROM posts, users WHERE visibility='public' 
-UNION 
-SELECT post_id, title, content, created_at, visibility, has_image, nickname, first_name, last_name, email FROM posts, users WHERE visibility='private' AND posts.author_id=5 ORDER BY created_at DESC
+-- DELETE FROM post_visibilities;

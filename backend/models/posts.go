@@ -68,7 +68,7 @@ func (pr *PostRepository) CreatePost(post *Post, photo multipart.File, categorie
 	}
 	post.PostID = int(lastInsertID)
 	_ = PostCategoryRepo.CreatePostCategory(post.PostID, categories)
-	if post.Visibility == "Only friends" {
+	if post.Visibility == "almost private" {
 		_ = PostVisibilityRepo.CreatePostVisibility(post.PostID, UserIDAuthorized)
 	}
 	if post.HasImage == 0 {
@@ -123,28 +123,7 @@ func (pr *PostRepository) GetAllPosts() ([]*Post, error) {
 	}
 	return posts, nil
 }
-func (pr *PostRepository) GetAllPostsPrivate(userId string) ([]*Post, error) {
-	rows, err := pr.db.Query("SELECT post_id, title, content, created_at, visibility, has_image, nickname, first_name, last_name, email FROM posts, users WHERE posts.author_id=users.user_id AND visibility='private' AND posts.author_id=? ORDER BY created_at DESC", userId)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var posts []*Post
-	for rows.Next() {
-		var post Post
-		post.User = &User{}
-		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.HasImage, &post.User.Nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email); err != nil {
-			return nil, err
-		}
-		post.CreatedAt = lib.FormatDateDB(post.CreatedAt)
-		post.Category = PostCategoryRepo.GetPostCategory(post.PostID)
-		posts = append(posts, &post)
-	}
-	return posts, nil
-}
-
 func (pr *PostRepository) GetAllPostsPublicPrivateAuth(userId string) ([]*Post, error) {
-	fmt.Println("POOOOOOOOOIUUUU")
 	rows, err := pr.db.Query(`
 	SELECT 
     posts.post_id, 
@@ -184,7 +163,7 @@ JOIN
 JOIN 
     users ON posts.author_id = users.user_id
 WHERE 
-    posts.visibility = 'private' AND subscriptions.follower_user_id = ?
+    (posts.visibility = 'private' AND subscriptions.follower_user_id = ?)
 
 UNION
 
@@ -207,13 +186,33 @@ JOIN
     users ON posts.author_id = users.user_id
 WHERE 
     post_visibilities.user_id_authorized = ?
+	
+
+UNION
+
+SELECT 
+    posts.post_id, 
+    posts.title, 
+    posts.content, 
+    posts.created_at, 
+    posts.visibility, 
+    posts.has_image, 
+    users.nickname, 
+    users.first_name, 
+    users.last_name, 
+    users.email 
+FROM 
+    posts
+JOIN 
+    users ON posts.author_id = users.user_id
+WHERE
+posts.author_id=?
 
 ORDER BY 
     created_at DESC;
 
-	`, userId, userId)
+	`, userId, userId, userId, userId)
 	if err != nil {
-		fmt.Println("Bruuuuuuh")
 		return nil, err
 	}
 	defer rows.Close()
@@ -248,7 +247,6 @@ func (pr *PostRepository) GetUserOwnPosts(userID int) ([]*Post, error) {
 		}
 		posts = append(posts, &post)
 	}
-
 	return posts, nil
 }
 

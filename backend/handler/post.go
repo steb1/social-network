@@ -24,8 +24,8 @@ func HandleCreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sessionToken := r.Header.Get("Authorization")
-	session, err := models.SessionRepo.GetSession(sessionToken)
+	cookie, err := r.Cookie("social-network")
+	session, err := models.SessionRepo.GetSession(cookie.Value)
 	if err != nil {
 		apiError.Error = "Go connect first !"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
@@ -45,9 +45,13 @@ func HandleCreatePost(w http.ResponseWriter, r *http.Request) {
 	post.AuthorID = userId
 	post.Visibility = strings.TrimSpace(r.FormValue("visibility"))
 	UserIDAuthorized := []string{}
-	if post.Visibility == "Only friends" {
+	if post.Visibility == "almost private" {
 		UserIDAuthorized = r.Form["followers"]
-		UserIDAuthorized = append(UserIDAuthorized, session.UserID)
+		if len(UserIDAuthorized) == 0 {
+			apiError.Error = "Error choose followers."
+			WriteJSON(w, http.StatusUnauthorized, apiError)
+			return
+		}
 	}
 	photo, _, _ := r.FormFile("media_post")
 	hasImage := map[bool]int{true: 1, false: 0}[photo != nil]
@@ -92,25 +96,6 @@ func HandleCreatePost(w http.ResponseWriter, r *http.Request) {
 	post.CreatedAt = lib.FormatDateDB(createdAt.Format("2006-01-02 15:04:05"))
 	WriteJSON(w, http.StatusOK, post)
 }
-
-func ImageHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "GET" {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return
-	}
-	var (
-		imageId = r.URL.Query().Get("id")
-	)
-	img, err := os.ReadFile("imgPost/" + imageId + ".jpg")
-	if err != nil {
-		log.Println(err)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	w.Header().Set("Content-Type", "image/jpeg")
-	w.Write(img)
-}
-
 func HandleGetAllPosts(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
@@ -119,13 +104,17 @@ func HandleGetAllPosts(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 	var apiError ApiError
-	cookie, _ := r.Cookie("social-network")
-	session, _ := models.SessionRepo.GetSession(cookie.Value)
+	cookie, err := r.Cookie("social-network")
+	session, err := models.SessionRepo.GetSession(cookie.Value)
+	if err != nil {
+		apiError.Error = "Go connect first !"
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	}
 	posts, err := models.PostRepo.GetAllPostsPublicPrivateAuth(session.UserID)
 	if err != nil {
 		return
 	}
-
 	if err != nil {
 		fmt.Println(err)
 		apiError.Error = "Something went wrong while getting all posts"
@@ -144,4 +133,22 @@ func HandleGetAllPosts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	WriteJSON(w, http.StatusOK, posts)
+}
+
+func ImageHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+	var (
+		imageId = r.URL.Query().Get("id")
+	)
+	img, err := os.ReadFile("imgPost/" + imageId + ".jpg")
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.Header().Set("Content-Type", "image/jpeg")
+	w.Write(img)
 }
