@@ -237,7 +237,7 @@ export const PostText = ({ post, setPosts }) => {
                 <div>
                     <div className="flex items-center gap-2.5">
                     <button type="button" className="button-icon text-red-500 bg-red-100 dark:bg-slate-700"> <ion-icon className="text-lg" name="heart" /> </button>
-                    <a href="#">1,300</a>
+                    <span>{post.like}</span>
                     </div>
                     
                 </div>
