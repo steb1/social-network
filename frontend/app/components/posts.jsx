@@ -195,9 +195,39 @@ export const PostText = ({ post, setPosts }) => {
                 console.error('Failed to submit comment:', jsonData);
             }
         } catch (error) {
-            console.error("Erreur lors de la lecture de la réponse comment JSON :", error);
+            console.error("Error while sending like:", error);
         }
     };
+    
+    const handleLikeClick = async (e) => {
+        e.preventDefault();
+       
+        let  token= document.cookie.split("=")[1]
+
+        const response = await fetch(config.serverApiUrl + "likePost", {
+            method: 'POST',
+            headers: {
+                'Authorization': token,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                post_id: post.post_id,
+            }),
+        })
+        try {
+            const jsonData = await response.json();
+            if (response.ok) {
+                console.log('like sent');
+                setPosts(jsonData.posts)
+            } else {
+                console.error('Failed to like post:', jsonData);
+            }
+        } catch (error) {
+            console.error("Error while sending like:", error);
+        }
+    };
+
+
     
     return (
         <div className="bg-white rounded-xl shadow-sm text-sm font-medium border1 dark:bg-dark2">
@@ -236,10 +266,9 @@ export const PostText = ({ post, setPosts }) => {
                 <div className="sm:p-4 p-2.5 flex items-center gap-4 text-xs font-semibold">
                 <div>
                     <div className="flex items-center gap-2.5">
-                    <button type="button" className="button-icon text-red-500 bg-red-100 dark:bg-slate-700"> <ion-icon className="text-lg" name="heart" /> </button>
-                    <span>{post.like}</span>
+                        <button type="button" onClick={handleLikeClick} className="button-icon text-red-500 bg-red-100 dark:bg-slate-700"> <ion-icon className="text-lg" name="heart" /> </button>
+                        <span>{post.like}</span>
                     </div>
-                    
                 </div>
                 <div className="flex items-center gap-3">
                     <button type="button" className="button-icon bg-slate-200/70 dark:bg-slate-700"> <ion-icon className="text-lg" name="chatbubble-ellipses" /> </button>

@@ -101,13 +101,6 @@ func HandleGetAllPosts(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
-
-	var posts = RetreiveAllPosts(w, r)
-
-	WriteJSON(w, http.StatusOK, posts)
-}
-
-func RetreiveAllPosts(w http.ResponseWriter, r *http.Request) []*models.Post {
 	var apiError ApiError
 
 	sessionToken := r.Header.Get("Authorization")
@@ -115,14 +108,21 @@ func RetreiveAllPosts(w http.ResponseWriter, r *http.Request) []*models.Post {
 	if err != nil {
 		apiError.Error = "Go connect first !"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
-		return nil
+		return 
 	}
 	userId, err := strconv.Atoi(session.UserID)
 	if err != nil {
 		apiError.Error = "Error getting user."
 		WriteJSON(w, http.StatusUnauthorized, apiError)
-		return nil
+		return 
 	}
+
+	var posts = RetreiveAllPosts(w, r, userId, apiError)
+
+	WriteJSON(w, http.StatusOK, posts)
+}
+
+func RetreiveAllPosts(w http.ResponseWriter, r *http.Request, userId int, apiError ApiError ) []*models.Post {
 	posts, err := models.PostRepo.GetAllPosts(userId)
 	if err != nil {
 		fmt.Println(err)

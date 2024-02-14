@@ -42,6 +42,7 @@ func HandleCreateComment(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("Error: post_id is not a valid number!!!")
 		apiError.Error = "Error: post_id is not a valid number!!!"
+		WriteJSON(w, http.StatusBadRequest, apiError)
 		return
 	}
 	comment.PostID = postID
@@ -49,18 +50,19 @@ func HandleCreateComment(w http.ResponseWriter, r *http.Request) {
 	userId, err := strconv.Atoi(session.UserID)
 	if err != nil {
 		apiError.Error = "Error getting user."
-		WriteJSON(w, http.StatusUnauthorized, apiError)
+		WriteJSON(w, http.StatusBadRequest, apiError)
 		return
 	}
 	comment.AuthorID = userId
 	errors := models.CommentRepo.CreateComment(&comment, createdAt)
 	if errors != nil {
 		fmt.Println(errors)
-		apiError.Error = "An error occured."
+		apiError.Error = "An error occured while creating comment."
+		WriteJSON(w, http.StatusInternalServerError, apiError)
 		return
 	}
 
-	posts := RetreiveAllPosts(w, r)
+	posts := RetreiveAllPosts(w, r, comment.AuthorID, apiError)
 
 	var successResponse struct {
 		Message string         `json:"message"`
