@@ -84,7 +84,6 @@ func (ur *UserRepository) UserExists(userID string) (bool, error) {
 	query := "SELECT COUNT(*) as total FROM users WHERE user_id = ?"
 	var total int
 	err := ur.db.QueryRow(query, userID).Scan(&total)
-
 	if err != nil {
 		return false, err
 	}
