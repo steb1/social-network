@@ -131,7 +131,7 @@ func RetreiveAllPosts(w http.ResponseWriter, r *http.Request, userId int, apiErr
 	}
 	for i := range posts {
 		postIDStr := strconv.Itoa(posts[i].PostID)
-		comments, err := models.CommentRepo.GetCommentsByPostID(postIDStr)
+		comments, err := models.CommentRepo.GetCommentsByPostID(postIDStr, userId)
 		if err != nil {
 			fmt.Println(err)
 			apiError.Error = "Something went wrong while getting comments inside posts"
