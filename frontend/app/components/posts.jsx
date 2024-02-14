@@ -266,7 +266,7 @@ export const PostText = ({ post, setPosts }) => {
                 <div className="sm:p-4 p-2.5 flex items-center gap-4 text-xs font-semibold">
                 <div>
                     <div className="flex items-center gap-2.5">
-                        <button type="button" onClick={handleLikeClick} className="button-icon text-red-500 bg-red-100 dark:bg-slate-700"> <ion-icon className="text-lg" name="heart" /> </button>
+                        <button type="button" onClick={handleLikeClick} className={`button-icon  ${post.is_liked ? 'bg-red-100 text-red-500' : 'bg-gray-200'} dark:bg-slate-700`}> <ion-icon className="text-lg" name="heart" /> </button>
                         <span>{post.like}</span>
                     </div>
                 </div>
