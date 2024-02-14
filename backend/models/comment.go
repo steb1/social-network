@@ -2,7 +2,6 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"server/lib"
 	"time"
@@ -89,7 +88,6 @@ func (cc *CommentRepository) GetCommentsByPostID(postID string, currentUserID in
 		if err != nil {
 			return nil, err
 		}
-		fmt.Println("comment likessss", comment.Likes)
 		comment.IsLiked, err = Comment_likeRepo.IsCommentLikedByCurrentUser(comment.CommentID, currentUserID)
 		if err != nil {
 			return nil, err
