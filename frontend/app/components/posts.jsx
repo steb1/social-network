@@ -11,6 +11,10 @@ export const PostText = ({ post, setPosts }) => {
             console.log('Comment cannot be empty');
             return;
         }
+        if (commentContent.length > 400) {
+            console.log('Comment exceeds character limit (400 characters)');
+            return;
+        }
         let  token= document.cookie.split("=")[1]
 
         const formDataJson = new FormData(form);
@@ -48,7 +52,6 @@ export const PostText = ({ post, setPosts }) => {
             if (response.ok) {
                 console.log('like sent');
                 setPosts(jsonData.posts)
-                console.log("---------", jsonData.posts);
             } else {
                 console.error('Failed to like post:', jsonData);
             }
@@ -144,7 +147,7 @@ export const PostText = ({ post, setPosts }) => {
                             </a>
                             <div className="flex-1 relative">
                                 <a href="timeline.html" className="text-black font-medium inline-block dark:text-white">{comment.User.first_name} {comment.User.last_name}</a>
-                                <p className="mt-0.5">{comment.content}</p>
+                                <p className="mt-0.5 break-all w-4/5">{comment.content}</p>
                                 {/* Like Button for Comment */}
                                 <div className="flex items-center absolute top-1 right-1 gap-2 text-xs font-semibold">
                                     <button type="button" onClick={() => handleCommentLikeClick(comment.comment_id)} className={`button-icon ${comment.is_liked ? 'bg-red-100 text-red-500' : 'bg-gray-200'} dark:bg-slate-700`}>
