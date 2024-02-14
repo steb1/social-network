@@ -38,8 +38,8 @@ func HandleCreateComment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	comment.Content = strings.TrimSpace(r.FormValue("comment_body"))
-	if comment.Content == "" {
-		apiError.Error = "Comment cannot be empty."
+	if (comment.Content == "" || len(comment.Content)>400) {
+		apiError.Error = "Comment empty or too long."
 		WriteJSON(w, http.StatusBadRequest, apiError)
 		return
 	}

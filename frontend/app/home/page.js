@@ -17,7 +17,6 @@ export const fetchFollowers = async (setFollowers) => {
   });
   if (response.ok) {
     const followers = await response.json();
-    console.log("response followers: ", followers);
     setFollowers(followers);
     return followers;
   }
@@ -32,7 +31,6 @@ const fetchAllPosts = async (setPosts, setServerError) => {
     if (response.ok) {
       const data = await response.json();
       setPosts(data);
-      console.log("dtata", data);
     } else {
       const errorResponse = await response.json();
       const errorMessage = errorResponse.error || "An error occurred.";
@@ -52,35 +50,7 @@ const HomePage = () => {
     fetchAllPosts(setPosts, setServerError);
     fetchFollowers(setFollowers);
   }, []); // Empty dependency array ensures this runs only once after the initial render
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const NewformData = new FormData(e.currentTarget);
-    const response = await fetch(config.serverApiUrl + "createPost", {
-      method: "POST",
-      credentials: "include",
-      body: NewformData,
-    });
-    try {
-      const jsonData = await response.json();
-      if (response.ok) {
-        console.log("post response:", jsonData);
-        console.log("post sent");
-        UIkit.modal("#create-status").hide();
-        setPosts([jsonData, ...posts]);
-        const body = document.querySelector(".post_body");
-        const checkboxes = document.querySelectorAll(
-          "input.select_category:checked"
-        );
-        body.value = "";
-        checkboxes.forEach((checkbox) => {
-          checkbox.checked = false;
-        });
-      }
-    } catch (error) {
-      console.error("Erreur lors de la lecture de la réponse JSON :", error);
-    }
-  };
-
+  
   return (
     <div id="wrapper" className="pt-15 space-x-2">
       {/* Header */}
@@ -93,7 +63,7 @@ const HomePage = () => {
 
         <div className="flex-1 pt-8 px-5 md:max-w-[580px] xl:space-y-6 space-y-3 ml-80 ">
           {/* Add Story Section */}
-          <Modal onSubmit={handleSubmit} followers={followers} />
+          <Modal followers={followers} setPosts={setPosts} posts={posts} />
           <AddStory />
           {/* Posts Section */}
           {posts.map((post) => (
