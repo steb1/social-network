@@ -1,12 +1,14 @@
-export const PostImage = () => {
+
+import config from "@/config";
+export const PostImage = ({post}) => {
     return (            
             <div className="bg-white rounded-xl shadow-sm text-sm font-medium border1 dark:bg-dark2">
                 {/* post heading */}
                 <div className="flex gap-3 sm:p-4 p-2.5 text-sm font-medium">
                 <a href="timeline.html"> <img src="assets/images/avatars/avatar-3.jpg"  className="w-9 h-9 rounded-full" /> </a>  
                 <div className="flex-1">
-                    <a href="timeline.html"> <h4 className="text-black dark:text-white"> Monroe Parker </h4> </a>  
-                    <div className="text-xs text-gray-500 dark:text-white/80"> 2 hours ago</div>
+                    <a href="timeline.html"> <h4 className="text-black dark:text-white"> {post.User.first_name} {post.User.last_name} ({post.User.nickname}) </h4> </a> 
+                    <div className="text-xs text-gray-500 dark:text-white/80"> {post.created_at}</div>
                 </div>
                 <div className="-mr-1">
                     <button type="button" className="button-icon w-8 h-8"> <ion-icon className="text-xl" name="ellipsis-horizontal" /> </button>
@@ -22,10 +24,19 @@ export const PostImage = () => {
                     </div>
                 </div>
                 </div>
+                <div className="sm:px-4 p-2.5 pt-0">
+                <p className="font-normal"> {post.content}</p>
+                 {/* categories */}
+                 <div className="flex gap-1 text-xs font-semibold">
+                    {post.category.map((category, index) => (
+                        <span key={index} className="text-blue-500">#{category}</span>
+                    ))}
+                </div>
+                </div> 
                 {/* post image */}
                 <a href="#preview_modal" >
                 <div className="relative w-full lg:h-96 h-full sm:px-4">
-                    <img src="assets/images/post/img-2.jpg"  className="sm:rounded-lg w-full h-full object-cover" />
+                    <img src={`${config.serverApiUrl}/imgPost?id=${post.post_id}`}   className="sm:rounded-lg w-full h-full object-cover" />
                 </div>
                 </a>
                 {/* post icons */}
@@ -46,24 +57,15 @@ export const PostImage = () => {
                 </div>
                 {/* comments */}
                 <div className="sm:p-4 p-2.5 border-t border-gray-100 font-normal space-y-3 relative dark:border-slate-700/40"> 
-                <div className="flex items-start gap-3 relative">
-                    <a href="timeline.html"> <img src="assets/images/avatars/avatar-2.jpg"  className="w-6 h-6 mt-1 rounded-full" /> </a>
-                    <div className="flex-1">
-                    <a href="timeline.html" className="text-black font-medium inline-block dark:text-white"> Steeve </a>
-                    <p className="mt-0.5">What a beautiful photo! I love it. 😍 </p>
-                    </div>
-                </div>
-                <div className="flex items-start gap-3 relative">
-                    <a href="timeline.html"> <img src="assets/images/avatars/avatar-3.jpg"  className="w-6 h-6 mt-1 rounded-full" /> </a>
-                    <div className="flex-1">
-                    <a href="timeline.html" className="text-black font-medium inline-block dark:text-white"> Monroe </a>
-                    <p className="mt-0.5">   You captured the moment.😎 </p>
-                    </div>
-                </div>
-                <button type="button" className="flex items-center gap-1.5 text-gray-500 hover:text-blue-500 mt-2">
-                    <ion-icon name="chevron-down-outline" className="ml-auto duration-200 group-aria-expanded:rotate-180" />
-                    More Comment
-                </button>
+                    {post.Comments.map(comment => (
+                        <div  key={comment.comment_id} className="flex items-start gap-3 relative">
+                            <a href="timeline.html"> <img src="assets/images/avatars/avatar-2.jpg"  className="w-6 h-6 mt-1 rounded-full" /> </a>
+                            <div className="flex-1">
+                            <a href="timeline.html" className="text-black font-medium inline-block dark:text-white"> {comment.User.first_name} {comment.User.last_name}</a>
+                            <p className="mt-0.5">{comment.content}</p>
+                            </div>
+                        </div>
+                    ))}
                 </div>
                 {/* add comment */}
                 <div className="sm:px-4 sm:py-3 p-2.5 border-t border-gray-100 flex items-center gap-1 dark:border-slate-700/40">
@@ -85,7 +87,7 @@ export const PostImage = () => {
                 </div> 
 
                 {/* create status */}
-                <div className=" hidden lg:p-20 uk- open" id="create-status">
+                <div className=" hidden lg:p-20 uk- open" id="create-status2">
                     <div className="uk-modal-dialog tt relative overflow-hidden mx-auto bg-white shadow-xl rounded-lg md:w-[520px] w-full dark:bg-dark2">
                     <div className="text-center py-4 border-b mb-0 dark:border-slate-700">
                         <h2 className="text-sm font-medium text-black"> Create Status </h2>
