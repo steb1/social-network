@@ -67,8 +67,8 @@ export const GroupCover = ( { groupInfo }) => {
             <a href="#" className="inline-block py-3 leading-8 px-3.5">Members</a>
             <a href="#" className="inline-block py-3 leading-8 px-3.5">Media</a>
             </nav>
-            
-        </div>
+               
+        </div> 
 </div>
 
     )

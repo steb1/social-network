@@ -260,11 +260,11 @@ export const PostText = ( { post , setGroups }) => {
         <div className="bg-white rounded-xl shadow-sm text-sm font-medium border1 dark:bg-dark2">
             {/* post text*/}
                 {/* post heading */}
-                <div className="flex gap-3 sm:p-4 p-2.5 text-sm font-medium">
-                <a href="timeline.html"> <img src="../assets/images/avatars/avatar-5.jpg"  className="w-9 h-9 rounded-full" /> { post.AuthorName } </a> 
+                <div className="flex flex-row gap-3 sm:p-4 p-2.5 text-sm font-medium">
+                <a href="timeline.html"> <img src="../assets/images/avatars/avatar-5.jpg"  className="w-9 h-9 rounded-full" />  </a> 
                 <div className="flex-1">
-                    <a href="timeline.html"> <h4 className="text-black dark:text-white">  </h4> </a> 
-                    <div className="text-xs text-gray-500 dark:text-white/80"> 2 hours ago</div>
+                    <a href="timeline.html"> <h4 className="text-black dark:text-white"> {post ? ( post.AuthorName) : "" } </h4> </a> 
+                    <div className="text-xs text-gray-500 dark:text-white/80"> { post ? (post.CreatedAt) : "" } </div>
                 </div>
                 <div className="-mr-1">
                     <button type="button" className="button__ico w-8 h-8" aria-haspopup="true" aria-expanded="false"> <ion-icon className="text-xl md hydrated" name="ellipsis-horizontal" role="img" aria-label="ellipsis horizontal" /> </button>
@@ -282,44 +282,38 @@ export const PostText = ( { post , setGroups }) => {
                 </div>
                 <div className="sm:px-4 p-2.5 pt-0">
                 <p className="font-normal"> { post.Content } </p>
-                </div> 
+                </div>
+                {
+                    post.hasImage = 1 ? 
+                
+                (<div className="relative w-full lg:h-96 h-full sm:px-4">
+                    <img src="../assets/images/post/img-2.jpg"  className="sm:rounded-lg w-full h-full object-cover" />
+                </div>) : ""
+                }
                 {/* post icons */}
                 <div className="sm:p-4 p-2.5 flex items-center gap-4 text-xs font-semibold">
                 <div>
                     <div className="flex items-center gap-2.5">
                     <button type="button" className="button-icon text-red-500 bg-red-100 dark:bg-slate-700"> <ion-icon className="text-lg" name="heart" /> </button>
-                    <a href="#">1,300</a>
+                    <a href="#"> { post.NumberOfLikes} </a>
                     </div>
                     
                 </div>
                 <div className="flex items-center gap-3">
                     <button type="button" className="button-icon bg-slate-200/70 dark:bg-slate-700"> <ion-icon className="text-lg" name="chatbubble-ellipses" /> </button>
-                    <span>260</span>
+                    <span> { post.NumberOfComments == 0 ? (post.NumberOfComments) : "0" } </span>
                 </div>
                 <button type="button" className="button-icon ml-auto"> <ion-icon className="text-xl" name="paper-plane-outline" /> </button>
                 <button type="button" className="button-icon"> <ion-icon className="text-xl" name="share-outline" /> </button>
                 </div>
                 {/* comments */}
+
                 <div className="sm:p-4 p-2.5 border-t border-gray-100 font-normal space-y-3 relative dark:border-slate-700/40"> 
                 <div className="flex items-start gap-3 relative">
                     <a href="timeline.html"> <img src="../assets/images/avatars/avatar-2.jpg"  className="w-6 h-6 mt-1 rounded-full" /> </a>
                     <div className="flex-1">
                     <a href="timeline.html" className="text-black font-medium inline-block dark:text-white"> Steeve </a>
                     <p className="mt-0.5"> I love taking photos of nature and animals. 🌳🐶</p>
-                    </div>
-                </div>
-                <div className="flex items-start gap-3 relative">
-                    <a href="timeline.html"> <img src="../assets/images/avatars/avatar-3.jpg"  className="w-6 h-6 mt-1 rounded-full" /> </a>
-                    <div className="flex-1">
-                    <a href="timeline.html" className="text-black font-medium inline-block dark:text-white"> Monroe </a>
-                    <p className="mt-0.5">  I enjoy people and emotions. 😊😢 </p>
-                    </div>
-                </div> 
-                <div className="flex items-start gap-3 relative">
-                    <a href="timeline.html"> <img src="../assets/images/avatars/avatar-5.jpg"  className="w-6 h-6 mt-1 rounded-full" /> </a>
-                    <div className="flex-1">
-                    <a href="timeline.html" className="text-black font-medium inline-block dark:text-white"> Jesse </a>
-                    <p className="mt-0.5">  Photography is my passion. 🎨📸 </p>
                     </div>
                 </div>
                 </div>

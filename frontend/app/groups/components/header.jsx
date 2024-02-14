@@ -3,6 +3,23 @@ import config from "@/config";
 import { useEffect } from "react";
 
 const Header = () => {
+    useEffect(() => {
+        let name = document.getElementById("GroupName")
+        let description = document.getElementById("GroupDescription")
+        let button =  document.getElementById("createGroup")
+
+        const handleSubmit = (e) => {
+             if (name.value.trim().length > 0 && description.value.trim().length > 0)  {
+                 button.classList.remove('btn-disabled');
+             } else if (name.value.trim().length == 0 || description.value.trim().length == 0) {
+                 button.classList.add('btn-disabled');
+             }
+        }
+
+        if (name) {name.addEventListener("input", handleSubmit)}
+        if (description) {description.addEventListener("input",handleSubmit)}
+        if (button) {button.addEventListener("click",handleCreateGroup)  }
+ }, [])
     return (
         <header className="z-[100] h-[--m-top]  block fixed mr-20 top-0 left-0 w-full flex items-center bg-white/80 sky-50 backdrop-blur-xl border-b border-slate-200 dark:bg-dark2 dark:border-slate-800">
                 <div className="flex items-center w-full xl:px-6 px-2 max-lg:gap-10">

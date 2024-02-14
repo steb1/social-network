@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { GroupCover } from "@/app/components/groupCover";
 import { Modal } from "../components/modal";
 
-async function fetchGroupDetail (setGroup, setEvents, setPosts, setRequests, setMessages, setServerError, groupId) {
+export async function fetchGroupDetail (setPosts , setGroup, setEvents, setRequests, setMessages, setServerError, groupId) {
     let  token = document.cookie.split("=")[1]
     try {
         const response = await fetch(config.serverApiUrl + "getGroupDetail", {
@@ -31,6 +31,7 @@ async function fetchGroupDetail (setGroup, setEvents, setPosts, setRequests, set
             setPosts(data.Post)
             setRequests(data.request)
             setEvents(data.event)
+            setGroup(data.group)
 
           } else {
             console.error("Response is not in JSON format");
@@ -59,7 +60,8 @@ const GroupDetail = ( { params }  ) => {
     const [serverError, setServerError] = useState(null);
 
     useEffect(() => {
-        fetchGroupDetail(setGroup, setEvents, setPosts, setRequest, setMessages, setServerError, params.groupId)
+        fetchGroupDetail(setPosts, setGroup, setEvents, setRequest, setMessages, setServerError, params.groupId)
+        
     }, [])
 
     return (
@@ -73,16 +75,16 @@ const GroupDetail = ( { params }  ) => {
             </div>
             <div className="flex flex-col w-full mx-4">
               <div className="mt-36 w-full mr-20">
-                <GroupCover groupInfo={group.group}/>
+                <GroupCover groupInfo={group}/>
               </div>
               <div className="flex flex-row">
                   <div className=" flex flex-col gap-5 mx-auto ">
                       <AddStory/>
-                      <Modal />
+                      <Modal groupId={group.group_id} setPosts={setPosts} setGroup={setGroup} setEvents={setEvents} setRequests={setRequest} setMessages={setMessages} setServerError={setServerError}/>
                       
                       {posts && posts.length > 0 ? (
                           posts.map((post) => (
-                            <PostText key={post.PostID} post={post} setPost={setPosts} setServerError={setServerError} />
+                            <PostText key={post.PostID} post={post} setPost={setPosts} setGroup={setGroup} setEvents={setEvents} setRequest={setRequest} setMessages={setMessages} setServerError={setServerError} />
                           ))
                         ) : (
                           <p>No Posts available.</p>
