@@ -226,6 +226,32 @@ export const PostText = ({ post, setPosts }) => {
             console.error("Error while sending like:", error);
         }
     };
+  
+    const handleCommentLikeClick = async (comment_id) => {       
+        let  token= document.cookie.split("=")[1]
+
+        const response = await fetch(config.serverApiUrl + "likeComment", {
+            method: 'POST',
+            headers: {
+                'Authorization': token,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                comment_id: comment_id,
+            }),
+        })
+        try {
+            const jsonData = await response.json();
+            if (response.ok) {
+                console.log('like comment sent');
+                setPosts(jsonData.posts)
+            } else {
+                console.error('Failed to like comment:', jsonData);
+            }
+        } catch (error) {
+            console.error("Error while sending like comment:", error);
+        }
+    };
 
 
     
@@ -264,12 +290,12 @@ export const PostText = ({ post, setPosts }) => {
                 </div> 
                 {/* post icons */}
                 <div className="sm:p-4 p-2.5 flex items-center gap-4 text-xs font-semibold">
-                <div>
-                    <div className="flex items-center gap-2.5">
-                        <button type="button" onClick={handleLikeClick} className={`button-icon  ${post.is_liked ? 'bg-red-100 text-red-500' : 'bg-gray-200'} dark:bg-slate-700`}> <ion-icon className="text-lg" name="heart" /> </button>
-                        <span>{post.like}</span>
+                    <div>
+                        <div className="flex items-center gap-2.5">
+                            <button type="button" onClick={handleLikeClick} className={`button-icon  ${post.is_liked ? 'bg-red-100 text-red-500' : 'bg-gray-200'} dark:bg-slate-700`}> <ion-icon className="text-lg" name="heart" /> </button>
+                            <span>{post.like}</span>
+                        </div>
                     </div>
-                </div>
                 <div className="flex items-center gap-3">
                     <button type="button" className="button-icon bg-slate-200/70 dark:bg-slate-700"> <ion-icon className="text-lg" name="chatbubble-ellipses" /> </button>
                     <span>{post.Comments.length}</span>
@@ -280,11 +306,20 @@ export const PostText = ({ post, setPosts }) => {
                 {/* comments */}
                 <div className="sm:p-4 p-2.5 border-t border-gray-100 font-normal space-y-3 relative dark:border-slate-700/40"> 
                     {post.Comments.map(comment => (
-                        <div  key={comment.comment_id} className="flex items-start gap-3 relative">
-                            <a href="timeline.html"> <img src="assets/images/avatars/avatar-2.jpg"  className="w-6 h-6 mt-1 rounded-full" /> </a>
-                            <div className="flex-1">
-                            <a href="timeline.html" className="text-black font-medium inline-block dark:text-white"> {comment.User.first_name} {comment.User.last_name}</a>
-                            <p className="mt-0.5">{comment.content}</p>
+                        <div key={comment.comment_id} className="flex items-start gap-3 relative">
+                            <a href="timeline.html"> 
+                                <img src="assets/images/avatars/avatar-2.jpg" className="w-6 h-6 mt-1 rounded-full" /> 
+                            </a>
+                            <div className="flex-1 relative">
+                                <a href="timeline.html" className="text-black font-medium inline-block dark:text-white">{comment.User.first_name} {comment.User.last_name}</a>
+                                <p className="mt-0.5">{comment.content}</p>
+                                {/* Like Button for Comment */}
+                                <div className="flex items-center absolute top-1 right-1 gap-2 text-xs font-semibold">
+                                    <button type="button" onClick={() => handleCommentLikeClick(comment.comment_id)} className={`button-icon ${comment.is_liked ? 'bg-red-100 text-red-500' : 'bg-gray-200'} dark:bg-slate-700`}>
+                                        <ion-icon className="text-lg" name="heart" />
+                                    </button>
+                                    <span className="ml-1">{comment.like}</span>
+                                </div>
                             </div>
                         </div>
                     ))}

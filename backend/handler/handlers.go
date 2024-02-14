@@ -29,6 +29,7 @@ var Routes = []Route{
 	{Path: "/api/getAllPosts", Handler: HandleGetAllPosts, Methods: []string{"GET", "OPTIONS"}},
 	{Path: "/api/createComment", Handler: HandleCreateComment, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/likePost", Handler: HandleLikePost, Methods: []string{"POST", "OPTIONS"}},
+	{Path: "/api/likeComment", Handler: HandleLikeComment, Methods: []string{"POST", "OPTIONS"}},
 }
 
 func MiddlewareIsAuthenticated(handler http.HandlerFunc) http.HandlerFunc {
