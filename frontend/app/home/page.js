@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useEffect, useState } from "react";
 import Header from "../components/header";
 import Sidebar from "../components/sidebar";
@@ -9,18 +9,30 @@ import { Rightbar } from "../components/rightbar";
 import "../../public/assets/js/script.js";
 import "../../public/assets/js/simplebar.js";
 import config from "@/config";
+
+export const fetchFollowers = async (setFollowers) => {
+  const response = await fetch(config.serverApiUrl + "getFollowers", {
+    method: "GET",
+    credentials: "include",
+  });
+  if (response.ok) {
+    const followers = await response.json();
+    console.log("response followers: ", followers);
+    setFollowers(followers);
+    return followers;
+  }
+};
+
 const fetchAllPosts = async (setPosts, setServerError) => {
-  let  token= document.cookie.split("=")[1]
   try {
     const response = await fetch(config.serverApiUrl + "getAllPosts", {
       method: "GET",
-      headers: {
-        'Authorization': token ,
-    },
+      credentials: "include",
     });
     if (response.ok) {
       const data = await response.json();
       setPosts(data);
+      console.log("dtata", data);
     } else {
       const errorResponse = await response.json();
       const errorMessage = errorResponse.error || "An error occurred.";
@@ -35,9 +47,39 @@ const fetchAllPosts = async (setPosts, setServerError) => {
 const HomePage = () => {
   const [posts, setPosts] = useState([]);
   const [serverError, setServerError] = useState(null);
+  const [followers, setFollowers] = useState([]);
   useEffect(() => {
     fetchAllPosts(setPosts, setServerError);
+    fetchFollowers(setFollowers);
   }, []); // Empty dependency array ensures this runs only once after the initial render
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const NewformData = new FormData(e.currentTarget);
+    const response = await fetch(config.serverApiUrl + "createPost", {
+      method: "POST",
+      credentials: "include",
+      body: NewformData,
+    });
+    try {
+      const jsonData = await response.json();
+      if (response.ok) {
+        console.log("post response:", jsonData);
+        console.log("post sent");
+        UIkit.modal("#create-status").hide();
+        setPosts([jsonData, ...posts]);
+        const body = document.querySelector(".post_body");
+        const checkboxes = document.querySelectorAll(
+          "input.select_category:checked"
+        );
+        body.value = "";
+        checkboxes.forEach((checkbox) => {
+          checkbox.checked = false;
+        });
+      }
+    } catch (error) {
+      console.error("Erreur lors de la lecture de la réponse JSON :", error);
+    }
+  };
 
   return (
     <div id="wrapper" className="pt-15 space-x-2">
@@ -51,7 +93,7 @@ const HomePage = () => {
 
         <div className="flex-1 pt-8 px-5 md:max-w-[580px] xl:space-y-6 space-y-3 ml-80 ">
           {/* Add Story Section */}
-          <Modal/>
+          <Modal onSubmit={handleSubmit} followers={followers} />
           <AddStory />
           {/* Posts Section */}
           {posts.map((post) => (

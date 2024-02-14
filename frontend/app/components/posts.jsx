@@ -18,9 +18,7 @@ export const PostText = ({ post, setPosts }) => {
 
         const response = await fetch(config.serverApiUrl + "createComment", {
             method: 'POST',
-            headers: {
-                'Authorization': token ,
-            },
+            credentials: "include",
             body: formDataJson,
         })
         try {
@@ -37,17 +35,10 @@ export const PostText = ({ post, setPosts }) => {
         }
     };
     
-    const handleLikeClick = async (e) => {
-        e.preventDefault();
-       
-        let  token= document.cookie.split("=")[1]
-
+    const handleLikeClick = async () => {       
         const response = await fetch(config.serverApiUrl + "likePost", {
             method: 'POST',
-            headers: {
-                'Authorization': token,
-                'Content-Type': 'application/json',
-            },
+            credentials: "include",
             body: JSON.stringify({
                 post_id: post.post_id,
             }),
@@ -57,6 +48,7 @@ export const PostText = ({ post, setPosts }) => {
             if (response.ok) {
                 console.log('like sent');
                 setPosts(jsonData.posts)
+                console.log("---------", jsonData.posts);
             } else {
                 console.error('Failed to like post:', jsonData);
             }
@@ -66,14 +58,10 @@ export const PostText = ({ post, setPosts }) => {
     };
   
     const handleCommentLikeClick = async (comment_id) => {       
-        let  token= document.cookie.split("=")[1]
 
         const response = await fetch(config.serverApiUrl + "likeComment", {
             method: 'POST',
-            headers: {
-                'Authorization': token,
-                'Content-Type': 'application/json',
-            },
+            credentials: "include",
             body: JSON.stringify({
                 comment_id: comment_id,
             }),
@@ -127,11 +115,11 @@ export const PostText = ({ post, setPosts }) => {
                 </div>
                 </div>
                 {/* post image */}
-                <div >
+                {post.has_image === 1 ? (<div >
                 <div className="relative w-full lg:h-96 h-full sm:px-4">
-                    <img src="assets/images/post/img-2.jpg"  className="sm:rounded-lg w-full h-full object-cover" />
+                <img src={`${config.serverApiUrl}/imgPost?id=${post.post_id}`}   className="sm:rounded-lg w-full h-full object-cover" />
                 </div>
-                </div>
+                </div>) : ("")}
                 {/* post icons */}
                 <div className="sm:p-4 p-2.5 flex items-center gap-4 text-xs font-semibold">
                     <div>

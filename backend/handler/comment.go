@@ -29,9 +29,9 @@ func HandleCreateComment(w http.ResponseWriter, r *http.Request) {
 	var comment models.Comment
 	var apiError ApiError
 
-	sessionToken := r.Header.Get("Authorization")
-	session, err := models.SessionRepo.GetSession(sessionToken)
-	if err != nil {
+	cookie, errC := r.Cookie("social-network")
+	session, errS := models.SessionRepo.GetSession(cookie.Value)
+	if (errS != nil || errC != nil) {
 		apiError.Error = "Go connect first !"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
 		return

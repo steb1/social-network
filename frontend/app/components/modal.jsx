@@ -1,39 +1,23 @@
 
 import config from "@/config";
-export const Modal = () => {
-    const displayFriend=()=>{
-        const select=document.getElementById("selectVisibility");
+export const Modal = ({ onSubmit, followers }) => {
+    const handleFormSubmit = (e) => {
+        e.preventDefault();
+        onSubmit(e);
+    };
+    console.log("followers: ", followers)
+    if (followers == null) {
+        followers = [];
+    }
+    const displayFriend = () => {
+        const select = document.getElementById("selectVisibility");
         var selectElement = document.getElementById("friend");
-        if (select.value=="Only friends"){
+        if (select.value == "almost private") {
             selectElement.classList.remove("hidden");
-        }else{
+        } else {
             selectElement.classList.add("hidden");
         }
     }
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-      let  token= document.cookie.split("=")[1]
-        const form = document.getElementById('create-post-form')
-        const NewformData = new FormData(form)
-        const response = await fetch(config.serverApiUrl + "createPost", {
-            method: 'POST',
-            headers: {
-                'Authorization': token ,
-            },
-            body: NewformData,
-        })
-        try {
-            const jsonData = await response.json();
-            if (response.ok) {
-                console.log('post response:', jsonData);
-                console.log('post sent');
-                form.reset();
-                UIkit.modal('#create-status').hide();
-            }
-        } catch (error) {
-            console.error("Erreur lors de la lecture de la réponse JSON :", error);
-        }
-    };
     return (
         <div>
             {/* open chat box */}
@@ -400,9 +384,9 @@ export const Modal = () => {
                     </div>
                 </div>
             </div>
-            {/* create status */}
-            <div className="hidden lg:p-20 uk- open" id="create-status" uk-modal="">
-                <form id="create-post-form" encType="multipart/form-data" onSubmit={handleSubmit} action="">
+           {/* create status */}
+           <div className="hidden lg:p-20 uk- open closed" id="create-status" uk-modal="">
+                <form id="create-post-form" encType="multipart/form-data" onSubmit={handleFormSubmit} action="">
                     <div className="uk-modal-dialog tt relative overflow-hidden mx-auto bg-white shadow-xl rounded-lg md:w-[520px] w-full dark:bg-dark2">
                         <div className="text-center py-4 border-b mb-0 dark:border-slate-700">
                             <h2 className="text-sm font-medium text-black"> Create Status </h2>
@@ -414,51 +398,54 @@ export const Modal = () => {
                             </button>
                         </div>
                         <div className="space-y-5 mt-3 p-2">
-                            <textarea name="body" className="w-full !text-black placeholder:!text-black !bg-white !border-transparent focus:!border-transparent focus:!ring-transparent !font-normal !text-xl   dark:!text-white dark:placeholder:!text-white dark:!bg-slate-800" rows={6} placeholder="What do you have in mind?" defaultValue={""} />
+                            <textarea name="body" className="post_body w-full !text-black placeholder:!text-black !bg-white !border-transparent focus:!border-transparent focus:!ring-transparent !font-normal !text-xl   dark:!text-white dark:placeholder:!text-white dark:!bg-slate-800" rows={6} placeholder="What do you have in mind?" defaultValue={""} />
                         </div>
                         <div className="flex items-center gap-2 text-sm py-2 px-4 font-medium flex-wrap">
                             <button type="button" className="flex items-center gap-1.5 bg-sky-50 text-sky-600 rounded-full py-1 px-2 border-2 border-sky-100 dark:bg-sky-950 dark:border-sky-900">
                                 <ion-icon name="image" className="text-base" />
                                 <input name="media_post" type="file" className="file-input file-input-bordered file-input-xs w-full max-w-xs" />
                             </button>
-                            <button className="btn" onClick={()=>document.getElementById('my_modal_1').showModal()}>Categories</button>
+                            <div className="btn" onClick={() => document.getElementById('my_modal_1').showModal()}>Categories</div>
                             <dialog id="my_modal_1" className="modal">
                                 <div className="modal-box w-[400px]">
                                     <div className="modal-action flex flex-col dark:border-slate-700">
-                                    <div className="p-5 flex justify-between items-center">
-                                        <input className="checkbox checkbox-info" type="checkbox" name="category" id="Technology" value="Technology" /><label for="Technology">Technology</label>
-                                        <input className="checkbox checkbox-info" type="checkbox" name="category" id="Health" value="Health" /><label for="Health">Health</label>
-                                        <input className="checkbox checkbox-info" type="checkbox" name="category" id="Politic" value="Politics" /><label for="Politic">Politics</label>
-                                    </div>
-                                    <div className="p-5 flex justify-between items-center">
-                                        <input className="checkbox checkbox-info" type="checkbox" name="category" id="Sport" value="Sports" /><label for="Sport">Sports</label>
-                                        <input className="checkbox checkbox-info" type="checkbox" name="category" id="Religion" value="Religion" /><label for="Religion">Religion</label>
-                                        <input className="checkbox checkbox-info" type="checkbox" name="category" id="Other" value="Others" /><label for="Other">Others</label>
-                                    </div>
-                                    <form method="dialog">
-                                        {/* if there is a button in form, it will close the modal */}
-                                        <button className="btn">Close</button>
-                                    </form>
+                                        <div className="p-5 flex justify-between items-center">
+                                            <input className="checkbox checkbox-info select_category" type="checkbox" name="category" id="Technology" value="Technology" /><label for="Technology">Technology</label>
+                                            <input className="checkbox checkbox-info select_category" type="checkbox" name="category" id="Health" value="Health" /><label for="Health">Health</label>
+                                            <input className="checkbox checkbox-info select_category" type="checkbox" name="category" id="Politic" value="Politics" /><label for="Politic">Politics</label>
+                                        </div>
+                                        <div className="p-5 flex justify-between items-center">
+                                            <input className="checkbox checkbox-info select_category" type="checkbox" name="category" id="Sport" value="Sports" /><label for="Sport">Sports</label>
+                                            <input className="checkbox checkbox-info select_category" type="checkbox" name="category" id="Religion" value="Religion" /><label for="Religion">Religion</label>
+                                            <input className="checkbox checkbox-info select_category" type="checkbox" name="category" id="Other" value="Others" /><label for="Other">Others</label>
+                                        </div>
+                                        <form method="dialog">
+                                            {/* if there is a button in form, it will close the modal */}
+                                            <button className="btn">Close</button>
+                                        </form>
                                     </div>
                                 </div>
-                                </dialog>
+                            </dialog>
                         </div>
                         <div className="p-5 flex justify-between items-center">
                             <select id="selectVisibility" onChange={displayFriend} name="visibility" className="select select-bordered select-bordered w-26 max-w-xs">
                                 <option disabled defaultValue="Public">Audience</option>
-                                <option value="Public">Public</option>
-                                <option value="Private">Private</option>
-                                <option value="Only friends">Only friends</option>
+                                <option value="public">Public</option>
+                                <option value="private">Private</option>
+                                <option value="almost private">Almost private</option>
                             </select>
-                            <select id="friend" className="select hidden select-bordered select-bordered w-26 max-w-xs">
+                            <select name="followers" id="friend" className="select hidden select-bordered select-bordered w-26 max-w-xs" multiple>
                                 <option disabled defaultValue="option1">Select Friends</option>
-                                <option value="option1">Friend 1</option>
-                                <option value="option2">Friend 2</option>
-                                <option value="option3">Friend 3</option>
+                                {followers.map((follow) => (
+                                    <option key={follow.user_id} value={follow.user_id}>
+                                        <label>{follow.first_name} {follow.last_name} </label>
+                                    </option>
+                                ))}
                             </select>
                             <div className="flex items-center gap-2">
-                                <button type="submit" className="button bg-blue-500 text-white py-2 px-12 text-[14px]"> Create</button>
+                                <button type="submit" id="but" className="button bg-blue-500 text-white py-2 px-12 text-[14px]"> Create</button>
                             </div>
+
                         </div>
                     </div>
                 </form>
