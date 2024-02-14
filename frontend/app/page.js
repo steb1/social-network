@@ -7,4 +7,6 @@ function Home() {
 	return <HomePage />;
 }
 
-export default authMiddleware(Home, config.serverApiUrl + "checkAuth");
+export default Home;
+
+//export default authMiddleware(Home, config.serverApiUrl + "checkAuth");
