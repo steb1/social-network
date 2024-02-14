@@ -38,6 +38,11 @@ func HandleCreateComment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	comment.Content = strings.TrimSpace(r.FormValue("comment_body"))
+	if comment.Content == "" {
+		apiError.Error = "Comment cannot be empty."
+		WriteJSON(w, http.StatusBadRequest, apiError)
+		return
+	}
 	postID, err := strconv.Atoi(r.FormValue("post_id"))
 	if err != nil {
 		fmt.Println("Error: post_id is not a valid number!!!")
