@@ -37,7 +37,7 @@ type Post struct {
 	Visibility string   `json:"visibility"`
 	HasImage   int      `json:"has_image"`
 	Likes      int      `json:"like"`
-	isLiked    bool     `json:"is_liked"`
+	IsLiked    bool     `json:"is_liked"`
 	User       *User
 	Comments   []*Comment
 }
@@ -123,7 +123,7 @@ func (pr *PostRepository) GetPost(postID int) (*Post, error) {
 			if err != nil {
 				return nil, err
 			}
-			post.isLiked, err = PostLikeRepo.IsPostLikedByCurrentUser(post.PostID, currentUserID)
+			post.IsLiked, err = PostLikeRepo.IsPostLikedByCurrentUser(post.PostID, currentUserID)
 			if err != nil {
 				return nil, err
 			}
