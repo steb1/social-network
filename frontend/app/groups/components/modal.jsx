@@ -1,4 +1,7 @@
-export const Modal = ( { groupId } ) => {
+import config from "@/config";
+import { fetchGroupDetail } from "../[groupId]/page";
+
+export const Modal = ( { groupId, setPosts , setGroup, setEvents, setRequests, setMessages, setServerError} ) => {
     return (
         <div>            
         {/* open chat box */}
@@ -118,7 +121,7 @@ export const Modal = ( { groupId } ) => {
             </div>
             <div className="p-5 flex justify-between items-center">
                 <div className="flex items-center gap-2"> 
-                <button type="button" id={handleCreateGroupPost(groupId)} className="button bg-blue-500 text-white py-2 px-12 text-[14px]"> Create</button>
+                <button type="button" id={groupId} onClick={(e) =>  handleCreateGroupPost(e, setPosts, setGroup, setEvents, setRequests, setMessages, setServerError)} className="button bg-blue-500 text-white py-2 px-12 text-[14px] uk-modal-close"> Create</button>
                 </div>
             </div>
             </div>
@@ -129,15 +132,26 @@ export const Modal = ( { groupId } ) => {
     )
 }
 
-async function handleCreateGroupPost (group_id) {
+async function handleCreateGroupPost (e, setPosts, setGroup, setEvents, setRequests, setMessages, setServerError) {
     let  token = document.cookie.split("=")[1]
+    if (!e.target.id) {
+        return
+    }
 
     let content = document.getElementById("groupPostContent")
     let file = document.getElementById("groupPostFile")
 
-    if (!file.value || !content.value) {
+
+    if (!content.value) {
         return
     }
+
+    let groupId = e.target.id
+
+    const formData = new FormData();
+    formData.append("file", file.files[0]);
+    formData.append("content", content.value);
+    formData.append("groupId", groupId);
       
       if (token) {
         // Use the token as needed
@@ -153,23 +167,23 @@ async function handleCreateGroupPost (group_id) {
             'Authorization': token,
           },
           credentials: "include",
-          body: JSON.stringify( { file : file , content : content} )
+          body: formData,
         });
       
         if (response.ok) {
           const contentType = response.headers.get("content-type");
           if (contentType && contentType.includes("application/json")) {
             const data = await response.json();
+            fetchGroupDetail(setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId)
+            
             
           } else {
             console.error("Response is not in JSON format");
-            setServerError("Invalid response format");
           }
         } else {
           const errorResponse = await response.json();
           const errorMessage = errorResponse.error || "An error occurred.";
           console.error("No Group retrieved:", errorMessage);
-          setServerError(`No Group retrieved: ${errorMessage}`);
         }
       } catch (error) {
         console.error("Error while fetching groups:", error);

@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"server/lib"
 	"time"
 )
 
@@ -23,7 +24,7 @@ type PostItemGroup struct {
 	Title         string
 	Content       string
 	IsLiked       bool
-	CreatedAt     time.Time
+	CreatedAt     string
 	AuthorID      int
 	GroupID       int
 	ImageURL      string
@@ -31,6 +32,7 @@ type PostItemGroup struct {
 	HasImage      int
 	Categories    []string
 	ListOfComment []CommentGroup
+	NumberOfComments int
 	NumberOfLikes int
 }
 
@@ -45,7 +47,7 @@ func NewGroupPostRepository(db *sql.DB) *GroupPostRepository {
 }
 
 // CreatePostInGroup creates a new post in the specified group.
-func (gp *GroupPostRepository) CreatePostInGroup(post *GroupPost) (int, error) {
+func (gp *GroupPostRepository) CreatePostInGroup(post *GroupPost) error {
 	query := `
 		INSERT INTO group_posts (title, content, created_at, author_id, group_id, image_url, visibility, has_image)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -53,15 +55,15 @@ func (gp *GroupPostRepository) CreatePostInGroup(post *GroupPost) (int, error) {
 
 	result, err := gp.db.Exec(query, post.Title, post.Content, post.CreatedAt, post.AuthorID, post.GroupID, post.ImageURL, post.Visibility, post.HasImage)
 	if err != nil {
-		return 0, err
+		return err
 	}
 
-	postID, err := result.LastInsertId()
+	_, err = result.LastInsertId()
 	if err != nil {
-		return 0, err
+		return err
 	}
 
-	return int(postID), nil
+	return nil
 }
 
 // GetPostByID retrieves a post by its ID.
@@ -69,7 +71,7 @@ func (gp *GroupPostRepository) GetPostByID(postID int) (*GroupPost, error) {
 	query := `
 		SELECT post_id, title, content, created_at, author_id, group_id, image_url, visibility, has_image
 		FROM group_posts
-		WHERE post_id = ?
+		WHERE post_id = ? 
 	`
 
 	row := gp.db.QueryRow(query, postID)
@@ -148,7 +150,7 @@ func (gp *GroupPostRepository) GetAllPosts(groupID int) ([]GroupPost, error) {
 func (pr *GroupPostRepository) GetAllPostsItems(groupid, userId int) ([]PostItemGroup, error) {
 	var posts []*GroupPost
 
-	rows, err := pr.db.Query("SELECT post_id, title, content, created_at, author_id, group_id, image_url, visibility, has_image FROM group_posts WHERE group_id= ?", groupid)
+	rows, err := pr.db.Query("SELECT post_id, title, content, created_at, author_id, group_id, image_url, visibility, has_image FROM group_posts WHERE group_id= ? ORDER BY created_at DESC", groupid)
 	if err != nil {
 		return nil, err
 	}
@@ -171,7 +173,6 @@ func (pr *GroupPostRepository) GetAllPostsItems(groupid, userId int) ([]PostItem
 	for i := 0; i < len(posts); i++ {
 		tabUser, _ := UserRepo.SelectAllUsers()
 
-		
 		user := ""
 		for j := 0; j < len(tabUser); j++ {
 			if posts[i].AuthorID == tabUser[j].UserID {
@@ -210,7 +211,7 @@ func (pr *GroupPostRepository) GetAllPostsItems(groupid, userId int) ([]PostItem
 			AuthorName:    user,
 			Title:         posts[i].Title,
 			Content:       posts[i].Content,
-			CreatedAt:     posts[i].CreatedAt,
+			CreatedAt:     lib.TimeSinceCreation(posts[i].CreatedAt.Format("2006-01-02 15:04:05")),
 			AuthorID:      posts[i].AuthorID,
 			GroupID:       posts[i].GroupID,
 			ImageURL:      posts[i].ImageURL,
@@ -219,7 +220,8 @@ func (pr *GroupPostRepository) GetAllPostsItems(groupid, userId int) ([]PostItem
 			ListOfComment: tabAllComments,
 			Categories:    Category,
 			NumberOfLikes: CountLikesForPost,
-			IsLiked: Isliked,
+			NumberOfComments: len(tabAllComments) ,
+			IsLiked:       Isliked,
 		}
 
 		tabPostItem = append(tabPostItem, PostItemi)

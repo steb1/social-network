@@ -302,3 +302,101 @@ func HandleGetGroupDetail(w http.ResponseWriter, r *http.Request) {
 		lib.WriteJSONResponse(w, response)
 	}
 }
+
+func HandleCreateGroupPost(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodOptions {
+		HandleOptions(w, r)
+		return
+	}
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, GET")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	_, ok := IsAuthenticated(r)
+
+	var apiError ApiError
+
+	if !ok {
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	} 
+
+	
+	sessionToken := r.Header.Get("Authorization")
+	session, err := models.SessionRepo.GetSession(sessionToken)
+	if err != nil {
+		apiError.Error = "Go connect first !"
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	}
+
+	userId, err := strconv.Atoi(session.UserID)
+	if err != nil {
+		apiError.Error = "Error getting user."
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	}
+
+	// Access the form fields
+	content := r.FormValue("content")
+	groupID := r.FormValue("groupId")
+
+	fmt.Println("Is hereee")
+
+	
+
+	intGroupId, err := strconv.Atoi(fmt.Sprintf("%v", groupID))
+	if err != nil {
+		http.Error(w, "Erreur lors de la lecture du corps de la requête", http.StatusBadRequest)
+		return
+	}
+	_, err = models.GroupRepo.GetGroup(intGroupId)
+
+	if err != nil {
+		http.Error(w, "Erreur group doesn't exist", http.StatusBadRequest)
+		return
+	}
+
+	exist := models.MembershipRepo.CheckIfIsMember(userId, intGroupId)
+	fmt.Println(exist)
+	
+	_ , err = models.GroupRepo.IsOwner(intGroupId, userId)
+	 IsOwner := false
+	if err == nil {
+		IsOwner = true
+	}
+
+	if exist || IsOwner {
+		var PostGroup models.GroupPost
+
+		PostGroup.Title = ""
+		PostGroup.AuthorID = userId
+		PostGroup.GroupID = intGroupId
+		PostGroup.CreatedAt = time.Now()
+
+		PostGroup.HasImage = 1
+		PostGroup.ImageURL = ""
+
+		// if !ok___ {
+		// 	PostGroup.HasImage = 0
+		// }
+		PostGroup.ImageURL = lib.UploadImage(r)
+
+		content := content
+
+		PostGroup.Content = fmt.Sprintf("%v", content)
+			
+		err = models.GroupPostRepo.CreatePostInGroup(&PostGroup)
+		 if err != nil  {
+			fmt.Println(err)
+			WriteJSON(w, http.StatusUnauthorized, apiError)
+			return
+		 }
+
+		 response := make(map[string]interface{})
+
+		 response["ok"] = true 
+
+		 lib.WriteJSONResponse(w, response)
+	}
+}
