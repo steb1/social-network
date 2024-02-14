@@ -49,9 +49,9 @@ func SigninHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 	if r.Method == "OPTIONS" {
-		// Preflight request, respond with a 200 OK
 		return
 	}
+
 	request := new(LoginRequest)
 
 	var apiError ApiError

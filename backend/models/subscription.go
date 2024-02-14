@@ -4,6 +4,11 @@ import (
 	"database/sql"
 )
 
+const (
+	StatusFollow   = "Unfollow"
+	StatusUnfollow = "Follow"
+)
+
 // Subscription structure represents the "subscriptions" table
 type Subscription struct {
 	SubscriptionID  int `json:"subscription_id"`
@@ -61,9 +66,9 @@ func (sr *SubscriptionRepository) UpdateSubscription(subscription *Subscription)
 }
 
 // DeleteSubscription removes a subscription from the database by subscription_id
-func (sr *SubscriptionRepository) DeleteSubscription(subscriptionID int) error {
-	query := "DELETE FROM subscriptions WHERE subscription_id = ?"
-	_, err := sr.db.Exec(query, subscriptionID)
+func (sr *SubscriptionRepository) DeleteSubscription(followeUserId, followingUserId int) error {
+	query := "DELETE FROM subscriptions WHERE follower_user_id = ? AND following_user_id = ? "
+	_, err := sr.db.Exec(query, followeUserId, followingUserId)
 	if err != nil {
 		return err
 	}
@@ -130,4 +135,31 @@ func (sr *SubscriptionRepository) GetFollowing(userId int) ([]*User, error) {
 	}
 
 	return following, nil
+}
+func (sr *SubscriptionRepository) UserAlreadyFollow(followerUserId, followingUserId int) (bool, error) {
+	query := "SELECT COUNT(*) as total FROM subscriptions WHERE follower_user_id = ? AND following_user_id = ?"
+	var total int
+
+	err := sr.db.QueryRow(query, followerUserId, followingUserId).Scan(&total)
+	if err != nil {
+		return false, err
+	}
+	if total == 0 {
+		return false, nil
+	}
+
+	return true, nil
+}
+
+func (sr *SubscriptionRepository) GetFollowingStatus(requesterUserId, userId int) (string, error) {
+	ok, _ := sr.UserAlreadyFollow(requesterUserId, userId)
+	if ok {
+		return StatusFollow, nil
+	}
+	ok, _ = FollowRequestRepo.HasPendingRequestFromAnUser(requesterUserId, userId)
+	if ok {
+		return StatusPending, nil
+	}
+
+	return StatusUnfollow, nil
 }

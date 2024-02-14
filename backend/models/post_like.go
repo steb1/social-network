@@ -35,7 +35,7 @@ func (plr *PostLikeRepository) CreatePostLike(postLike *PostLike) error {
 }
 
 // GetPostLike retrieves a post like from the database by post_like_id
-func  (plr *PostLikeRepository) GetPostLike(postLikeID int) (*PostLike, error) {
+func (plr *PostLikeRepository) GetPostLike(postLikeID int) (*PostLike, error) {
 	query := "SELECT * FROM post_likes WHERE post_like_id = ?"
 	var postLike PostLike
 	err := plr.db.QueryRow(query, postLikeID).Scan(&postLike.PostLikeID, &postLike.AuthorID, &postLike.PostID, &postLike.Rate)
@@ -46,7 +46,7 @@ func  (plr *PostLikeRepository) GetPostLike(postLikeID int) (*PostLike, error) {
 }
 
 // UpdatePostLike updates an existing post like in the database
-func  (plr *PostLikeRepository) UpdatePostLike(postLike *PostLike) error {
+func (plr *PostLikeRepository) UpdatePostLike(postLike *PostLike) error {
 	query := `
 		UPDATE post_likes
 		SET author_id = ?, post_id = ?, rate = ?
@@ -61,28 +61,27 @@ func  (plr *PostLikeRepository) UpdatePostLike(postLike *PostLike) error {
 
 // GetUserLikedPosts retrieves posts liked by a specific user from the database
 func (pr *PostRepository) GetUserLikedPosts(userID int) ([]*Post, error) {
-    rows, err := pr.db.Query("SELECT p.post_id, p.title, p.category, p.content, p.created_at, p.author_id, p.image_url, p.visibility FROM post p INNER JOIN post_like pl ON p.post_id = pl.post_id WHERE pl.author_id = ?", userID)
-    if err != nil {
-        return nil, err
-    }
-    defer rows.Close()
+	rows, err := pr.db.Query("SELECT p.post_id, p.title, p.category, p.content, p.created_at, p.author_id, p.image_url, p.visibility FROM post p INNER JOIN post_like pl ON p.post_id = pl.post_id WHERE pl.author_id = ?", userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
 
-    var posts []*Post
-    for rows.Next() {
-        var post Post
-        err := rows.Scan(&post.PostID, &post.Title, &post.Category, &post.Content, &post.CreatedAt, &post.AuthorID, &post.ImageURL, &post.Visibility)
-        if err != nil {
-            return nil, err
-        }
-        posts = append(posts, &post)
-    }
+	var posts []*Post
+	for rows.Next() {
+		var post Post
+		err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.AuthorID, &post.ImageURL, &post.Visibility)
+		if err != nil {
+			return nil, err
+		}
+		posts = append(posts, &post)
+	}
 
-    return posts, nil
+	return posts, nil
 }
 
-
 // DeletePostLike removes a post like from the database by post_like_id
-func  (plr *PostLikeRepository) DeletePostLike(postLikeID int) error {
+func (plr *PostLikeRepository) DeletePostLike(postLikeID int) error {
 	query := "DELETE FROM post_likes WHERE post_like_id = ?"
 	_, err := plr.db.Exec(query, postLikeID)
 	if err != nil {

@@ -8,6 +8,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+const (
+	TypePublic  = "Public"
+	TypePrivate = "Private"
+)
+
 type User struct {
 	UserID      int    `json:"user_id"`
 	FirstName   string `json:"first_name"`
@@ -73,6 +78,37 @@ func (ur *UserRepository) UpdateUserProfilePrivacy(userID int, mode string) erro
 		return err
 	}
 	return nil
+}
+
+func (ur *UserRepository) UserExists(userID string) (bool, error) {
+	query := "SELECT COUNT(*) as total FROM users WHERE user_id = ?"
+	var total int
+	err := ur.db.QueryRow(query, userID).Scan(&total)
+
+	if err != nil {
+		return false, err
+	}
+	if total == 0 {
+		return false, err
+	}
+	return true, nil
+}
+
+func (ur *UserRepository) GetAccountType(userId int) (string, error) {
+	var accountType string
+	query := `
+       SELECT account_type FROM users 
+	   WHERE user_id = ? 
+    `
+	row := ur.db.QueryRow(query, userId)
+	err := row.Scan(
+		&accountType,
+	)
+	if err != nil {
+		return accountType, err
+	}
+
+	return accountType, nil
 }
 
 // DeleteUser removes a user from the database by user_id
