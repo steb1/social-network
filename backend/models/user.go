@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"log"
 
 	"server/lib"
 
@@ -174,6 +175,23 @@ func (ur *UserRepository) GetUserByID(userID int) (*User, error) {
 	}
 
 	return user, nil
+}
+
+func (ur *UserRepository) GetIDFromUsernameOrEmail(usernameOrEmail string) (int, error) {
+	query := `
+	SELECT id_user FROM users WHERE nickname = ? OR email = ?
+`
+	var userId int
+	err := ur.db.QueryRow(query, usernameOrEmail, usernameOrEmail).Scan(&userId)
+	if err != nil {
+		log.Println("🚀 ~ func ~ err:", err)
+		if err == sql.ErrNoRows {
+			return 0, nil
+		}
+		return 0, err
+	}
+
+	return userId, nil
 }
 
 // GetUserByNickname retrieves a user from the database based on their nickname
