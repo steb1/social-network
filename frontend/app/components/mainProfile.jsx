@@ -1,5 +1,5 @@
-import "../../public/assets/js/script.js";
-import "../../public/assets/js/simplebar.js";
+import "../../public/js/script.js";
+import "../../public/js/simplebar.js";
 import PrivateAccountUI from "./Privateaccount.jsx";
 import Link from "next/link";
 import ButtonTogglePrivacy from "./buttonTogglePrivacy.jsx";
