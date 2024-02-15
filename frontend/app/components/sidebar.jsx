@@ -1,288 +1,116 @@
-const Sidebar = () => {
+import Link from "next/link";
+import React from "react";
+import config from "@/config";
+import { cookies } from "next/headers";
+import { notFound } from "next/navigation";
+
+const Sidebar = async () => {
+    const cookieStore = cookies();
+    let user = null;
+
+    try {
+        const response = await fetch(`${config.serverApiUrl}checkAuth`, {
+            method: "GET",
+            headers: {
+                Authorization: cookieStore.get("social-network").value,
+            },
+        });
+
+        if (response.ok) {
+            user = await response.json();
+        } else {
+            return notFound();
+        }
+    } catch {
+        return notFound();
+    }
+
     return (
         <div
             id='site__sidebar'
-            className=' top-0 left-0 z-[99] pt-[--m-top] overflow-hidden transition-transform xl:duration-500 max-xl:w-full max-xl:-translate-x-full'
+            className='fixed top-0 left-0 z-[99] pt-[--m-top] overflow-hidden transition-transform xl:duration-500 max-xl:w-full max-xl:-translate-x-full'
         >
             <div className='p-2 max-xl:bg-white shadow-sm 2xl:w-72 sm:w-64 w-[80%] h-[calc(100vh-64px)] relative z-30 max-lg:border-r dark:max-xl:!bg-slate-700 dark:border-slate-700 dark:!bg-slate-800'>
-                <div className='pr-4' data-simplebar>
+                <div className='pr-6 pt-10' data-simplebar>
                     <nav id='side'>
-                        <ul>
+                        <ul className='grid gap-y-5'>
                             <li>
-                                <a href='feed.html'>
-                                    <img src='assets/images/icons/home.png' alt='feeds' className='w-6' />
-                                    <span> Feed </span>
-                                </a>
-                            </li>
-                            <li className='active'>
-                                <a href='messages.html'>
-                                    <img src='assets/images/icons/message.png' alt='messages' className='w-5' />
-                                    <span> messages </span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href='video.html'>
-                                    <img src='assets/images/icons/video.png' alt='messages' className='w-6' />
-                                    <span> video </span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href='event.html'>
-                                    <img src='assets/images/icons/event.png' alt='messages' className='w-6' />
-                                    <span> event </span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href='pages.html'>
-                                    <img src='assets/images/icons/page.png' alt='pages' className='w-6' />
-                                    <span> Pages </span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href='groups.html'>
-                                    <img src='assets/images/icons/group.png' alt='groups' className='w-6' />
-                                    <span> Groups </span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href='market.html'>
-                                    <img src='assets/images/icons/market.png' alt='market' className='w-7 -ml-1' />
-                                    <span> market </span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href='blog.html'>
-                                    <img src='assets/images/icons/blog.png' alt='blog' className='w-6' />
-                                    <span> blog </span>
-                                </a>
-                            </li>
-                            <li className='!hidden' id='show__more'>
-                                <a href='games.html'>
-                                    <img src='assets/images/icons/game.png' alt='games' className='w-6' />
-                                    <span> games </span>
-                                </a>
-                            </li>
-                            <li className='!hidden' id='show__more'>
-                                <a href='funding.html'>
-                                    <img src='assets/images/icons/fund.png' alt='messages' className='w-6' />
-                                    <span> Fundraiser </span>
-                                </a>
-                            </li>
-                            <li className='!hidden' id='show__more'>
-                                <a href='blog-2.html'>
-                                    <img src='assets/images/icons/blog-2.png' alt='blog' className='w-6' />
-                                    <span> blog II </span>
-                                </a>
-                            </li>
-                            <li className='!hidden' id='show__more'>
-                                <a href='event-2.html'>
-                                    <img src='assets/images/icons/event-2.png' alt='event' className='w-6' />
-                                    <span> Event II </span>
-                                </a>
-                            </li>
-                            <li className='!hidden' id='show__more'>
-                                <a href='groups-2.html'>
-                                    <img src='assets/images/icons/group-2.png' alt='groups' className='w-6' />
-                                    <span> Groups II </span>
-                                </a>
-                            </li>
-                        </ul>
-
-                        <button
-                            type='button'
-                            className='flex items-center gap-4 py-2 px-4 w-full font-medium text-sm text-black dark:text-white'
-                            uk-toggle='target: #show__more; cls: !hidden uk-animation-fade'
-                        >
-                            <svg
-                                className='bg-gray-200 rounded-full w-6 h-6 dark:bg-slate-700'
-                                fill='currentColor'
-                                viewBox='0 0 20 20'
-                                xmlns='http://www.w3.org/2000/svg'
-                            >
-                                <path
-                                    fill-rule='evenodd'
-                                    d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'
-                                    clip-rule='evenodd'
-                                ></path>
-                            </svg>
-                            <span id='show__more'> See More </span>
-                            <span className='!hidden' id='show__more'>
-                                {" "}
-                                See Less{" "}
-                            </span>
-                        </button>
-                    </nav>
-
-                    <div className='font-medium text-sm text-black border-t pt-3 mt-2 dark:text-white dark:border-slate-800'>
-                        <div className='px-3 pb-2 text-sm font-medium'>
-                            <div className='text-black dark:text-white'>Shortcut</div>
-                        </div>
-                        <a href='#'>
-                            <div className='flex items-center gap-2 p-3 px-4 rounded-xl hover:bg-secondery'>
-                                <img
-                                    src='assets/images/avatars/avatar-2.jpg'
-                                    alt=''
-                                    className='w-6 rounded-full object-cover'
-                                />
-                                <div> Marin Gray</div>
-                            </div>
-                        </a>
-                        <a href='#'>
-                            <div className='flex items-center gap-2 p-3 px-4 rounded-xl hover:bg-secondery'>
-                                <img
-                                    src='assets/images/avatars/avatar-7.jpg'
-                                    alt=''
-                                    className='w-6 rounded-full object-cover'
-                                />
-                                <div> Alexa Stella</div>
-                            </div>
-                        </a>
-                        <a href='#'>
-                            <div className='flex items-center gap-2 p-3 px-4 rounded-xl hover:bg-secondery'>
-                                <img
-                                    src='assets/images/avatars/avatar-3.jpg'
-                                    alt=''
-                                    className='w-6 rounded-full object-cover'
-                                />
-                                <div> Sarah Ali</div>
-                            </div>
-                        </a>
-                    </div>
-
-                    <nav
-                        id='side'
-                        className='font-medium text-sm text-black border-t pt-3 mt-2 dark:text-white dark:border-slate-800'
-                    >
-                        <div className='px-3 pb-2 text-sm font-medium'>
-                            <div className='text-black dark:text-white'>Pages</div>
-                        </div>
-
-                        <ul className='mt-2 -space-y-2' uk-nav='multiple: true'>
-                            <li>
-                                <a href='setting.html'>
+                                <Link href='/'>
                                     <svg
                                         xmlns='http://www.w3.org/2000/svg'
-                                        fill='none'
+                                        width='42'
+                                        height='42'
                                         viewBox='0 0 24 24'
-                                        stroke-width='1.5'
-                                        stroke='currentColor'
-                                        className='w-4 h-4'
+                                        className='w-6'
                                     >
                                         <path
-                                            stroke-linecap='round'
-                                            stroke-linejoin='round'
-                                            d='M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z'
-                                        />
-                                        <path
-                                            stroke-linecap='round'
-                                            stroke-linejoin='round'
-                                            d='M15 12a3 3 0 11-6 0 3 3 0 016 0z'
+                                            fill='currentColor'
+                                            d='M12 16.688q.142 0 .276-.043q.134-.043.247-.14q.606-.56 1.148-1.088q.542-.527.954-1.033q.412-.506.66-.983q.25-.478.25-.928q0-.834-.57-1.385q-.57-.55-1.367-.55q-.494 0-.897.205t-.701.515q-.26-.31-.678-.515q-.418-.205-.875-.205q-.8 0-1.372.548q-.571.548-.571 1.38q0 .453.238.937q.239.484.651.985q.413.502.952 1.031q.539.53 1.134 1.077q.111.106.245.15q.134.042.276.042M6.615 20q-.666 0-1.14-.475Q5 19.051 5 18.385v-7.53l-1.538 1.199q-.177.134-.366.104q-.188-.031-.323-.208t-.11-.365q.024-.189.195-.323l8.148-6.26q.224-.162.478-.242q.254-.081.519-.081q.264 0 .51.08q.246.081.462.243l8.173 6.26q.171.134.192.323q.022.188-.113.369q-.135.167-.323.198q-.189.03-.36-.104L19 10.856v7.529q0 .666-.475 1.14q-.474.475-1.14.475z'
                                         />
                                     </svg>
-                                    <span> Setting </span>
-                                </a>
+                                    <span className='text-base'> Home </span>
+                                </Link>
                             </li>
                             <li>
-                                <a href='upgrade.html'>
-                                    <svg
-                                        xmlns='http://www.w3.org/2000/svg'
-                                        fill='none'
-                                        viewBox='0 0 24 24'
-                                        stroke-width='1.5'
-                                        stroke='currentColor'
-                                        className='w-4 h-4'
-                                    >
+                                <Link href='/groups'>
+                                    <svg xmlns='http://www.w3.org/2000/svg' width='42' height='42' viewBox='0 0 24 24'>
                                         <path
-                                            stroke-linecap='round'
-                                            stroke-linejoin='round'
-                                            d='M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z'
+                                            fill='currentColor'
+                                            d='M10.27 12h3.46a1.5 1.5 0 0 0 1.48-1.75l-.3-1.79a2.951 2.951 0 0 0-5.82.01l-.3 1.79c-.15.91.55 1.74 1.48 1.74m-8.61-.89c-.13.26-.18.57-.1.88c.16.69.76 1.03 1.53 1h1.95c.83 0 1.51-.58 1.51-1.29c0-.14-.03-.27-.07-.4c-.01-.03-.01-.05.01-.08c.09-.16.14-.34.14-.53c0-.31-.14-.6-.36-.82c-.03-.03-.03-.06-.02-.1c.07-.2.07-.43.01-.65a1.12 1.12 0 0 0-.99-.74a.09.09 0 0 1-.07-.03C5.03 8.14 4.72 8 4.37 8c-.3 0-.57.1-.75.26c-.03.03-.06.03-.09.02a1.24 1.24 0 0 0-1.7 1.03c0 .02-.01.04-.03.06c-.29.26-.46.65-.41 1.05c.03.22.12.43.25.6c.03.02.03.06.02.09m14.58 2.54c-1.17-.52-2.61-.9-4.24-.9c-1.63 0-3.07.39-4.24.9A2.988 2.988 0 0 0 6 16.39V18h12v-1.61c0-1.18-.68-2.26-1.76-2.74m-15.02.93A2.01 2.01 0 0 0 0 16.43V18h4.5v-1.61c0-.83.23-1.61.63-2.29c-.37-.06-.74-.1-1.13-.1c-.99 0-1.93.21-2.78.58m21.56 0A6.95 6.95 0 0 0 20 14c-.39 0-.76.04-1.13.1c.4.68.63 1.46.63 2.29V18H24v-1.57c0-.81-.48-1.53-1.22-1.85M22 11v-.5c0-1.1-.9-2-2-2h-2c-.42 0-.65.48-.39.81l.7.63c-.19.31-.31.67-.31 1.06c0 1.1.9 2 2 2s2-.9 2-2'
                                         />
                                     </svg>
-                                    <span> Upgrade </span>
-                                </a>
+                                    <span className='text-base'> Groups </span>
+                                </Link>
                             </li>
                             <li>
-                                <a href='form-login.html'>
-                                    <svg
-                                        xmlns='http://www.w3.org/2000/svg'
-                                        fill='none'
-                                        viewBox='0 0 24 24'
-                                        stroke-width='1.5'
-                                        stroke='currentColor'
-                                        className='w-4 h-4'
-                                    >
+                                <Link href='/messages'>
+                                    <svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24'>
                                         <path
-                                            stroke-linecap='round'
-                                            stroke-linejoin='round'
-                                            d='M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9'
+                                            fill='currentColor'
+                                            d='M15.85 8.14c.39 0 .77.03 1.14.08C16.31 5.25 13.19 3 9.44 3c-4.25 0-7.7 2.88-7.7 6.43c0 2.05 1.15 3.86 2.94 5.04L3.67 16.5l2.76-1.19c.59.21 1.21.38 1.87.47c-.09-.39-.14-.79-.14-1.21c-.01-3.54 3.44-6.43 7.69-6.43M12 5.89a.96.96 0 1 1 0 1.92a.96.96 0 0 1 0-1.92M6.87 7.82a.96.96 0 1 1 0-1.92a.96.96 0 0 1 0 1.92'
+                                        />
+                                        <path
+                                            fill='currentColor'
+                                            d='M22.26 14.57c0-2.84-2.87-5.14-6.41-5.14s-6.41 2.3-6.41 5.14s2.87 5.14 6.41 5.14c.58 0 1.14-.08 1.67-.2L20.98 21l-1.2-2.4c1.5-.94 2.48-2.38 2.48-4.03m-8.34-.32a.96.96 0 1 1 .96-.96c.01.53-.43.96-.96.96m3.85 0a.96.96 0 1 1 0-1.92a.96.96 0 0 1 0 1.92'
                                         />
                                     </svg>
-                                    <span> Authentication </span>
-                                </a>
+                                    <span className='text-base'> Messages </span>
+                                </Link>
                             </li>
-                            <li className='uk-parent'>
-                                <a href='#' className='group'>
-                                    <svg
-                                        xmlns='http://www.w3.org/2000/svg'
-                                        fill='none'
-                                        viewBox='0 0 24 24'
-                                        stroke-width='1.5'
-                                        stroke='currentColor'
-                                        className='w-4 h-4'
-                                    >
+                            <li>
+                                <Link href=''>
+                                    <svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24'>
                                         <path
-                                            stroke-linecap='round'
-                                            stroke-linejoin='round'
-                                            d='M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z'
+                                            fill='currentColor'
+                                            d='M12 18.5q.625 0 1.063-.437T13.5 17h-3q0 .625.438 1.063T12 18.5M7 16h10v-2h-1v-2.6q0-1.525-.788-2.787T13 7v-.5q0-.425-.288-.712T12 5.5q-.425 0-.712.288T11 6.5V7q-1.425.35-2.212 1.613T8 11.4V14H7zm3-2v-3q0-.825.588-1.412T12 9q.825 0 1.413.588T14 11v3zm2 8q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 2q2.075 0 3.9.788t3.175 2.137q1.35 1.35 2.138 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12q0-3.35-2.325-5.675T12 4Q8.65 4 6.325 6.325T4 12q0 3.35 2.325 5.675T12 20m0-8'
                                         />
                                     </svg>
-                                    <span> Development </span>
-                                    <ion-icon
-                                        name='chevron-down'
-                                        className='text-base ml-auto duration-200 group-aria-expanded:rotate-180'
-                                    ></ion-icon>
-                                </a>
-                                <ul className='pl-10 my-1 space-y-0 text-sm'>
-                                    <li>
-                                        <a href='components.html' className='!py-2 !rounded -md'>
-                                            Elements
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href='components.html' className='!py-2 !rounded -md'>
-                                            Components
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href='components.html' className='!py-2 !rounded -md'>
-                                            Icons
-                                        </a>
-                                    </li>
-                                </ul>
+                                    <span className='text-base'> Notifications </span>
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href=''>
+                                    <svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24'>
+                                        <path
+                                            fill='currentColor'
+                                            d='M11 17h2v-4h4v-2h-4V7h-2v4H7v2h4zm1 5q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 2q2.075 0 3.9.788t3.175 2.137q1.35 1.35 2.138 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12q0-3.35-2.325-5.675T12 4Q8.65 4 6.325 6.325T4 12q0 3.35 2.325 5.675T12 20m0-8'
+                                        />
+                                    </svg>
+                                    <span className='text-base'> Create </span>
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href={`/profile/${user.user_id}`}>
+                                    <div className='avatar'>
+                                        <div className='w-7 rounded-full'>
+                                            <img src={`http://localhost:8080/img/${user.avatar}`} />
+                                        </div>
+                                    </div>
+                                    <span className='text-base'> Profile </span>
+                                </Link>
                             </li>
                         </ul>
                     </nav>
-
-                    <div className='text-xs font-medium flex flex-wrap gap-2 gap-y-0.5 p-2 mt-2'>
-                        <a href='#' className='hover:underline'>
-                            About
-                        </a>
-                        <a href='#' className='hover:underline'>
-                            Blog{" "}
-                        </a>
-                        <a href='#' className='hover:underline'>
-                            Careers
-                        </a>
-                        <a href='#' className='hover:underline'>
-                            Support
-                        </a>
-                        <a href='#' className='hover:underline'>
-                            Contact Us{" "}
-                        </a>
-                        <a href='#' className='hover:underline'>
-                            Developer
-                        </a>
-                    </div>
                 </div>
             </div>
 
