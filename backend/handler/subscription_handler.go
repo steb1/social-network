@@ -9,9 +9,18 @@ import (
 	"strconv"
 )
 
+const (
+	TypeAccept = "Accept"
+	TypeReject = "Reject"
+)
+
 type FollowResponse struct {
 	Type    string `json:"type"`
 	Message string `json:"message"`
+}
+type PendingRequest struct {
+	Type           string `json:"type"`
+	FollowerUserId int    `json:"follower_user_id"`
 }
 
 func addCorsHeader(res http.ResponseWriter) {
@@ -161,12 +170,8 @@ func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(followResponse)
 	WriteJSON(w, http.StatusOK, followResponse)
 }
+
 func GetPendingRequests(w http.ResponseWriter, r *http.Request) {
-	addCorsHeader(w)
-	if r.Method == http.MethodOptions {
-		w.WriteHeader(http.StatusOK)
-		return
-	}
 	var apiError ApiError
 
 	sessionToken := r.Header.Get("Authorization")
@@ -191,7 +196,83 @@ func GetPendingRequests(w http.ResponseWriter, r *http.Request) {
 		WriteJSON(w, http.StatusBadRequest, apiError)
 		return
 	}
-
 	WriteJSON(w, http.StatusOK, users)
+}
+func AcceptOrRejectPendingRequests(w http.ResponseWriter, r *http.Request) {
+	var apiError ApiError
+	sessionToken := r.Header.Get("Authorization")
+	session, err := models.SessionRepo.GetSession(sessionToken)
+	if err != nil {
+		fmt.Println(err.Error())
+		apiError.Error = "Go connect first !"
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	}
+	userId, err := strconv.Atoi(session.UserID)
+	if err != nil {
+		fmt.Println("token")
+		apiError.Error = "Error getting user."
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	}
+
+	request := new(PendingRequest)
+	if err := json.NewDecoder(r.Body).Decode(request); err != nil {
+		apiError.Error = "Cannot Decode your JSON. Check the your data format"
+		WriteJSON(w, http.StatusBadRequest, apiError)
+		return
+	}
+	fmt.Println(request)
+
+	ok, _ := models.FollowRequestRepo.HasPendingRequestFromAnUser(request.FollowerUserId, userId)
+	if !ok {
+		apiError.Error = "That request no longer exists."
+		WriteJSON(w, http.StatusBadRequest, apiError)
+		return
+	}
+
+	if request.Type == TypeAccept {
+		var ApiSuccess ApiSuccess
+		err := models.FollowRequestRepo.AcceptFollowingRequest(request.FollowerUserId, userId)
+		if err != nil {
+			apiError.Error = "Cannot Accept Following request an error occurred."
+			WriteJSON(w, http.StatusBadRequest, apiError)
+			return
+		}
+		ApiSuccess.Message = "Following request accepted."
+		WriteJSON(w, http.StatusOK, ApiSuccess)
+		return
+	}
+
+	if request.Type == TypeReject {
+		var ApiSuccess ApiSuccess
+		err := models.FollowRequestRepo.RejectFollowingRequest(request.FollowerUserId, userId)
+		if err != nil {
+			apiError.Error = "Cannot Reject Following request an error occurred."
+			WriteJSON(w, http.StatusBadRequest, apiError)
+			return
+		}
+		ApiSuccess.Message = "Following request rejected."
+		WriteJSON(w, http.StatusOK, ApiSuccess)
+		return
+	}
+	apiError.Error = "Check your request."
+	WriteJSON(w, http.StatusBadRequest, apiError)
+}
+func HandlePendingRequests(w http.ResponseWriter, r *http.Request) {
+	addCorsHeader(w)
+	fmt.Println("coucou")
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	if r.Method == http.MethodGet {
+		GetPendingRequests(w, r)
+	}
+
+	if r.Method == http.MethodPost {
+		AcceptOrRejectPendingRequests(w, r)
+	}
 
 }
