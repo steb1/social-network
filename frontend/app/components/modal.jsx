@@ -1,5 +1,25 @@
+"use client";
 import config from "@/config";
-export const Modal = ({ followers, setPosts, posts }) => {
+import React, { useEffect, useState } from "react";
+
+export const fetchFollowers = async (setFollowers) => {
+	const response = await fetch(config.serverApiUrl + "getFollowers", {
+		method: "GET",
+		credentials: "include",
+	});
+	if (response.ok) {
+		const followers = await response.json();
+		setFollowers(followers);
+		return followers;
+	}
+};
+
+export const Modal = () => {
+	let [followers, setFollowers] = useState([]);
+	useEffect(() => {
+		fetchFollowers(setFollowers);
+	}, []);
+
 	const handleFormSubmit = async (e) => {
 		e.preventDefault();
 		const NewformData = new FormData(e.currentTarget);
@@ -13,7 +33,6 @@ export const Modal = ({ followers, setPosts, posts }) => {
 			if (response.ok) {
 				console.log("post sent");
 				UIkit.modal("#create-status").hide();
-				setPosts([jsonData, ...posts]);
 				const body = document.querySelector(".post_body");
 				const checkboxes = document.querySelectorAll("input.select_category:checked");
 				body.value = "";
