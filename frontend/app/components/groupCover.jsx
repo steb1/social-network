@@ -1,9 +1,9 @@
-export const GroupCover = ( { groupInfo }) => {
+export const GroupCover = ( { groupInfo, setTab , tab }) => {
     return (
     <div className="bg-white shadow lg:rounded-b-2xl lg:-mt-10 dark:bg-dark2" >
         {/* cover */}
         <div className="relative overflow-hidden w-full lg:h-72 h-36">
-            <img src="../assets/images/group/group-cover.jpg" alt="" className="h-full w-full object-cover inset-0" />
+            <img src="../../assets/images/group/banniere.jpg" alt="" className="h-full w-full object-cover inset-0" />
             {/* overly */}
             <div className="w-full bottom-0 absolute left-0 bg-gradient-to-t from -black/60 pt-10 z-10" />
             <div className="absolute bottom-0 right-0 m-4 z-20">
@@ -42,11 +42,11 @@ export const GroupCover = ( { groupInfo }) => {
                         </ion-icon></button>
                     <div className="w-[240px]" uk-dropdown="pos: bottom-right; animation: uk-animation-scale-up uk-transform-origin-top-right; animate-out: true; mode: click;offset:10"> 
                         <nav>
+                        <a href="#"> <ion-icon className="text-xl" name="flag-outline" />  Report group</a>  
                         <a href="#"> <ion-icon className="text-xl" name="pricetags-outline" /> Unfollow </a>  
                         <a href="#"> <ion-icon className="text-xl" name="share-outline" /> Share</a>  
                         <a href="#"> <ion-icon className="text-xl" name="link-outline" />  Copy link </a>  
                         <a href="#"> <ion-icon className="text-xl" name="chatbubble-ellipses-outline" />  Sort comments </a>  
-                        <a href="#"> <ion-icon className="text-xl" name="flag-outline" />  Report group</a>  
                         <hr />
                         <a href="#" className="text-red-400 hover:!bg-red-50 dark:hover:!bg-red-500/50"> <ion-icon className="text-xl" name="stop-circle-outline" />  Block </a>  
                         </nav>
@@ -59,17 +59,18 @@ export const GroupCover = ( { groupInfo }) => {
         </div>
         <div className="flex items-center justify-between  border-t border-gray-100 px-2 dark:border-slate-700" >
             <nav className="flex gap-0.5 rounded-xl overflow-hidden -mb-px text-gray-500 font-medium text-sm overflow-x-auto dark:text-white">
-            <a href="#" className="inline-block py-3 leading-8 px-3.5 border-b-2 border-blue-600 text-blue-600">Discussion</a>
-            <a href="#" className="inline-block py-3 leading-8 px-3.5">Files</a>
-            <a href="#" className="inline-block py-3 leading-8 px-3.5">Photos</a>
-            <a href="#" className="inline-block py-3 leading-8 px-3.5">Event</a>
-            <a href="#" className="inline-block py-3 leading-8 px-3.5">Video</a>
-            <a href="#" className="inline-block py-3 leading-8 px-3.5">Members</a>
-            <a href="#" className="inline-block py-3 leading-8 px-3.5">Media</a>
+            <span href="#" id="1" onClick={() => HandleTab(1, setTab)} className={`inline-block py-3 leading-8 px-3.5 border-b-2 ${tab === 1 ? 'border-blue-600 text-blue-600' : 'border-gray-300 text-gray-500'}`}>Posts</span>
+            <span href="#" id="2" onClick={() => HandleTab(2, setTab)}  className={`inline-block py-3 leading-8 px-3.5 border-b-2 ${tab === 2 ? 'border-blue-600 text-blue-600' : 'border-gray-300 text-gray-500'}`}>Messages</span>
+            <span href="#" id="3" onClick={() => HandleTab(3, setTab)}  className={`inline-block py-3 leading-8 px-3.5 border-b-2 ${tab === 3 ? 'border-blue-600 text-blue-600' : 'border-gray-300 text-gray-500'}`}>Events</span>
+            <span href="#" id="4" onClick={() => HandleTab(4, setTab)}  className={`inline-block py-3 leading-8 px-3.5 border-b-2 ${tab === 4 ? 'border-blue-600 text-blue-600' : 'border-gray-300 text-gray-500'}`}>Members</span>
+            <span href="#" id="5" onClick={() => HandleTab(5, setTab)}  className={`inline-block py-3 leading-8 px-3.5 border-b-2 ${tab === 5 ? 'border-blue-600 text-blue-600' : 'border-gray-300 text-gray-500'}`}>Requests</span>
             </nav>
-               
         </div> 
-</div>
+    </div>
 
     )
+}
+
+const HandleTab = (id, setTab) => {
+    setTab(id)
 }

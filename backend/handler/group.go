@@ -280,6 +280,7 @@ func HandleGetGroupDetail(w http.ResponseWriter, r *http.Request) {
 		GroupData.Group = *group
 
 		events, _ := models.EventRepo.GetAllEventsByGroupID(intGroupId)
+		
 
 		Members, _ := models.MembershipRepo.GetAllUsersByGroupID(intGroupId)	
 

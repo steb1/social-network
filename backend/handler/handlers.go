@@ -30,6 +30,7 @@ var Routes = []Route{
 	{Path: "/api/createGroup", Handler: HandleCreateGroup, Methods: []string{"POST","OPTIONS"}},
 	{Path: "/api/getGroupDetail", Handler: HandleGetGroupDetail, Methods: []string{"POST","OPTIONS"}},
 	{Path: "/api/createGroupPost", Handler: HandleCreateGroupPost, Methods: []string{"POST","OPTIONS"}},
+	{Path: "/api/createEvent", Handler: HandleCreateEvent, Methods: []string{"POST","OPTIONS"}},
 	{Path: "/imgPost", Handler:  ImageHandler, Methods: []string{"GET"}},
 }
 

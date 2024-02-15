@@ -126,6 +126,45 @@ export const Modal = ( { groupId, setPosts , setGroup, setEvents, setRequests, s
             </div>
             </div>
         </div>
+        {/* create event */}
+        <div className="hidden lg:p-20 uk- open" id="create-event" uk-modal="">
+            <div className="uk-modal-dialog tt relative overflow-hidden mx-auto bg-white shadow-xl rounded-lg md:w-[520px] w-full dark:bg-dark2">
+            <div className="text-center py-4 border-b mb-0 dark:border-slate-700">
+                <h2 className="text-sm font-medium text-black"> Create Event </h2>
+                {/* close button */}
+                <button type="button" className="button-icon absolute top-0 right-0 m-2.5 uk-modal-close">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                </button>
+            </div>
+            <div className="space-y-5 mt-3 p-2">
+                <label className="input  flex items-center gap-2">
+                    Title
+                    <input id="EventTitle" type="text" className=" w-56 mx-auto" placeholder="" />
+                </label>    
+                  
+                <label className="input  flex items-center gap-2">
+                    Date
+                    <input id="EventDate" type="date" className="w-56 mx-auto" placeholder="" />
+                </label>
+                <label className="input  flex items-center gap-2">
+                    Time
+                    <input id="EventTime" type="time" className="w-56 mx-auto" placeholder="" />
+                </label>
+                <label className="input  flex items-center gap-2">
+                    Description
+                    <input id="DescriptionEvent" type="text" className="w-56 mx-auto" placeholder="" />
+                </label>
+                
+            </div>
+            <div className="p-5 flex justify-between items-center">
+                <div className="flex items-center gap-2"> 
+                <button type="button" id={groupId} onClick={(e) => handleCreateEvent(e, setPosts, setGroup, setEvents, setRequests, setMessages, setServerError)} className="button bg-blue-500 text-white py-2 px-12 text-[14px] uk-modal-close"> Create</button>
+                </div>
+            </div>
+            </div>
+        </div>
 
         </div>
 
@@ -142,7 +181,7 @@ async function handleCreateGroupPost (e, setPosts, setGroup, setEvents, setReque
     let file = document.getElementById("groupPostFile")
 
 
-    if (!content.value) {
+    if (!content.value.trim()) {
         return
     }
 
@@ -175,8 +214,69 @@ async function handleCreateGroupPost (e, setPosts, setGroup, setEvents, setReque
           if (contentType && contentType.includes("application/json")) {
             const data = await response.json();
             fetchGroupDetail(setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId)
-            
-            
+          } else {
+            console.error("Response is not in JSON format");
+          }
+        } else {
+          const errorResponse = await response.json();
+          const errorMessage = errorResponse.error || "An error occurred.";
+          console.error("No Group retrieved:", errorMessage);
+        }
+      } catch (error) {
+        console.error("Error while fetching groups:", error);
+      }
+}
+
+async function handleCreateEvent(e, setPosts, setGroup, setEvents, setRequests, setMessages, setServerError) {
+    let  token = document.cookie.split("=")[1]
+    if (!e.target.id) {
+        return
+    }
+
+    let DescriptionEvent = document.getElementById("DescriptionEvent")
+    let EventTime = document.getElementById("EventTime")
+    let EventDate = document.getElementById("EventDate")
+    let EventTitle = document.getElementById("EventTitle")
+
+
+    if (!DescriptionEvent || !EventTime || !EventDate || !EventTitle || !DescriptionEvent.value.trim()  || !EventDate.value.trim() || !EventTitle.value.trim() ) {
+        return
+    }
+
+
+    let groupId = e.target.id
+    
+
+    const formData = new FormData();
+    formData.append("DescriptionEvent", DescriptionEvent.value);
+    formData.append("EventTime", EventTime.value);
+    formData.append("EventDate", EventDate.value);
+    formData.append("EventTitle", EventTitle.value);
+    formData.append("groupId", groupId);
+
+      
+      if (token) {
+        // Use the token as needed
+        console.log('Token:', token);
+      } else {
+        console.log('Token not found in cookies');
+      }
+
+      try {
+        const response = await fetch(config.serverApiUrl + "createEvent", {
+          method: "POST",
+          headers: {
+            'Authorization': token,
+          },
+          credentials: "include",
+          body: formData,
+        });
+      
+        if (response.ok) {
+          const contentType = response.headers.get("content-type");
+          if (contentType && contentType.includes("application/json")) {
+            const data = await response.json();
+            fetchGroupDetail(setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId)
           } else {
             console.error("Response is not in JSON format");
           }
