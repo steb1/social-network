@@ -5,11 +5,12 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"server/lib"
-	"server/models"
 	"strconv"
 	"strings"
 	"time"
+
+	"server/lib"
+	"server/models"
 )
 
 func HandleCreatePost(w http.ResponseWriter, r *http.Request) {
@@ -24,7 +25,7 @@ func HandleCreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cookie, err := r.Cookie("social-network")
+	cookie, _ := r.Cookie("social-network")
 	session, err := models.SessionRepo.GetSession(cookie.Value)
 	if err != nil {
 		apiError.Error = "Go connect first !"
@@ -75,7 +76,8 @@ func HandleCreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	errors, idPost := models.PostRepo.CreatePost(&post, photo, categories, createdAt, UserIDAuthorized)
-	user, _ := models.UserRepo.GetUser(session.UserID)
+	USERRID, _ := strconv.Atoi(session.UserID)
+	user, _ := models.UserRepo.GetUserByID(USERRID)
 	if errors != nil {
 		fmt.Println(errs)
 		apiError.Error = "An error occured."
@@ -111,7 +113,7 @@ func HandleGetAllPosts(w http.ResponseWriter, r *http.Request) {
 
 	cookie, errC := r.Cookie("social-network")
 	session, errS := models.SessionRepo.GetSession(cookie.Value)
-	if (errS != nil || errC != nil) {
+	if errS != nil || errC != nil {
 		apiError.Error = "Go connect first !"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
 		return
@@ -123,7 +125,7 @@ func HandleGetAllPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var posts = RetreiveAllPosts(w, r, userId, apiError)
+	posts := RetreiveAllPosts(w, r, userId, apiError)
 
 	WriteJSON(w, http.StatusOK, posts)
 }
@@ -155,9 +157,7 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
-	var (
-		imageId = r.URL.Query().Get("id")
-	)
+	imageId := r.URL.Query().Get("id")
 	img, err := os.ReadFile("imgPost/" + imageId + ".jpg")
 	if err != nil {
 		log.Println(err)
