@@ -97,7 +97,7 @@ const GroupDetail = ( { params }  ) => {
                       ) : events && events.length > 0 && tab == 3 ? (
                         events.map((event) => (
                         <div className="mx-auto ">
-                          <Event key={event.event_id} event={event} setPost={setPosts} setGroup={setGroup} setEvents={setEvents} setRequest={setRequest} setMessages={setMessages} setServerError={setServerError}  />
+                          <Event key={event.event_id} event={event} setPosts={setPosts} setGroup={setGroup} setEvents={setEvents} setRequests={setRequest} setMessages={setMessages} setServerError={setServerError} groupId={group.group_id} />
                         </div>
                         ))
                       ) : tab == 4 ? (

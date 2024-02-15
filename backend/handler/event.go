@@ -105,3 +105,107 @@ func HandleCreateEvent(w http.ResponseWriter, r *http.Request) {
 		lib.WriteJSONResponse(w, response)
 	}
 }
+
+func HandleRegisterEvent(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method == http.MethodOptions {
+		HandleOptions(w, r)
+		return
+	}
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, GET")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	_, ok := IsAuthenticated(r)
+
+	var apiError ApiError
+
+	if !ok {
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	}
+
+	sessionToken := r.Header.Get("Authorization")
+	session, err := models.SessionRepo.GetSession(sessionToken)
+	if err != nil {
+		apiError.Error = "Go connect first !"
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	}
+
+	userId, err := strconv.Atoi(session.UserID)
+	if err != nil {
+		apiError.Error = "Error getting user."
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	}
+
+	eventID := r.FormValue("eventId")
+	intEventId, err := strconv.Atoi(fmt.Sprintf("%v", eventID))
+
+
+	if err != nil {
+		http.Error(w, "Erreur group doesn't exist", http.StatusBadRequest)
+		return
+	}
+
+	event , err := models.EventRepo.GetEvent(intEventId)
+
+	if err != nil {
+		http.Error(w, "Erreur group doesn't exist", http.StatusBadRequest)
+		return
+	}
+
+	
+
+	existMember := models.MembershipRepo.CheckIfIsMember(userId, event.GroupID)
+	fmt.Println(existMember)
+
+	_, err = models.GroupRepo.IsOwner(event.GroupID, userId)
+
+	IsOwner := false
+	if err == nil {
+		IsOwner = true
+	}
+
+	if IsOwner || existMember {
+		Attendance, err := models.AttendanceRepo.IsRegistered(intEventId, userId)
+
+		if err != nil {
+			var Attendance models.Attendance
+
+			Attendance.EventID = intEventId
+			Attendance.UserID = userId
+			Attendance.AttendanceOption = 0
+
+			err = models.AttendanceRepo.CreateAttendance(&Attendance)
+
+			if err != nil {
+				WriteJSON(w, http.StatusUnauthorized, apiError)
+				return
+			}
+
+			response := make(map[string]interface{})
+
+			response["ok"] = true 
+
+			lib.WriteJSONResponse(w, response)
+		} else {
+			
+			err = models.AttendanceRepo.DeleteAttendance(Attendance.AttendanceID)
+
+			if err != nil {
+				http.Error(w, "Erreur group doesn't exist", http.StatusBadRequest)
+				return
+			}
+
+			response := make(map[string]interface{})
+
+			response["ok"] = true 
+
+			lib.WriteJSONResponse(w, response)
+		}
+	}
+
+
+}
