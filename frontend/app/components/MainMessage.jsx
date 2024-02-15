@@ -1,4 +1,5 @@
 import React from "react";
+import SideBarPreviewChat from "../messages/SideBarPreviewChat";
 
 const MainMessage = () => {
 	return (
@@ -14,133 +15,8 @@ const MainMessage = () => {
 							</div>
 
 							<div className="space-y-2 p-2 overflow-y-auto md:h-[calc(100vh-204px)] h-[calc(100vh-130px)]">
-								<a href="#" className="relative flex items-center gap-4 p-2 duration-200 rounded-xl hover:bg-secondery">
-									<div className="relative w-14 h-14 shrink-0">
-										<img src="assets/images/avatars/avatar-5.jpg" alt="" className="object-cover w-full h-full rounded-full" />
-										<div className="w-4 h-4 absolute bottom-0 right-0  bg-green-500 rounded-full border border-white dark:border-slate-800"></div>
-									</div>
-									<div className="flex-1 min-w-0">
-										<div className="flex items-center gap-2 mb-1.5">
-											<div className="mr-auto text-sm text-black dark:text-white font-medium">Jesse Steeve</div>
-											<div className="text-xs font-light text-gray-500 dark:text-white/70">09:40AM</div>
-										</div>
-										<div className="font-medium overflow-hidden text-ellipsis text-sm whitespace-nowrap">Love your photos 😍</div>
-									</div>
-								</a>
-								<a href="#" className="relative flex items-center gap-4 p-2 duration-200 rounded-xl hover:bg-secondery">
-									<div className="relative w-14 h-14 shrink-0">
-										<img src="assets/images/avatars/avatar-2.jpg" alt="" className="object-cover w-full h-full rounded-full" />
-									</div>
-									<div className="flex-1 min-w-0">
-										<div className="flex items-center gap-2 mb-1.5">
-											<div className="mr-auto text-sm text-black dark:text-white font-medium">Martin Gray</div>
-											<div className="text-xs font-light text-gray-500 dark:text-white/70">09:40AM</div>
-											<div className="w-2.5 h-2.5 bg-blue-600 rounded-full dark:bg-slate-700"></div>
-										</div>
-										<div className="font-medium overflow-hidden text-ellipsis text-sm whitespace-nowrap">Photo editor needed. Fix photos? 🛠️</div>
-									</div>
-								</a>
-								<a href="#" className="relative flex items-center gap-4 p-2 duration-200 rounded-xl hover:bg-secondery">
-									<div className="relative w-14 h-14 shrink-0">
-										<img src="assets/images/avatars/avatar-3.jpg" alt="" className="object-cover w-full h-full rounded-full" />
-										<div className="w-4 h-4 absolute bottom-0 right-0  bg-green-500 rounded-full border border-white dark:border-slate-800"></div>
-									</div>
-									<div className="flex-1 min-w-0">
-										<div className="flex items-center gap-2 mb-1.5">
-											<div className="mr-auto text-sm text-black dark:text-white font-medium">Monroe Parker</div>
-											<div className="text-xs font-light text-gray-500 dark:text-white/70">09:40AM</div>
-										</div>
-										<div className="font-medium overflow-hidden text-ellipsis text-sm whitespace-nowrap">Can i call you to day?</div>
-									</div>
-								</a>
-								<a href="#" className="relative flex items-center gap-4 p-2 duration-200 rounded-xl hover:bg-secondery">
-									<div className="relative w-14 h-14 shrink-0">
-										<img src="assets/images/avatars/avatar-4.jpg" alt="" className="object-cover w-full h-full rounded-full" />
-									</div>
-									<div className="flex-1 min-w-0">
-										<div className="flex items-center gap-2 mb-1.5">
-											<div className="mr-auto text-sm text-black dark:text-white font-medium">James Lewis</div>
-											<div className="text-xs font-light text-gray-500 dark:text-white/70">09:40AM</div>
-										</div>
-										<div className="font-medium overflow-hidden text-ellipsis text-sm whitespace-nowrap"> Want to buy landscape photo? 🌄 </div>
-									</div>
-								</a>
-
-								<a href="#" className="relative flex items-center gap-4 p-2 duration-200 rounded-xl hover:bg-secondery">
-									<div className="relative w-14 h-14 shrink-0">
-										<img src="assets/images/avatars/avatar-5.jpg" alt="" className="object-cover w-full h-full rounded-full" />
-										<div className="w-4 h-4 absolute bottom-0 right-0  bg-green-500 rounded-full border border-white dark:border-slate-800"></div>
-									</div>
-									<div className="flex-1 min-w-0">
-										<div className="flex items-center gap-2 mb-1.5">
-											<div className="mr-auto text-sm text-black dark:text-white font-medium">Jesse Steeve</div>
-											<div className="text-xs font-light text-gray-500 dark:text-white/70">09:40AM</div>
-										</div>
-										<div className="font-medium overflow-hidden text-ellipsis text-sm whitespace-nowrap">Headshot needed. Resume. Do it? 👩‍💼</div>
-									</div>
-								</a>
-								<a href="#" className="relative flex items-center gap-4 p-2 duration-200 rounded-xl hover:bg-secondery">
-									<div className="relative w-14 h-14 shrink-0">
-										<img src="assets/images/avatars/avatar-2.jpg" alt="" className="object-cover w-full h-full rounded-full" />
-									</div>
-									<div className="flex-1 min-w-0">
-										<div className="flex items-center gap-2 mb-1.5">
-											<div className="mr-auto text-sm text-black dark:text-white font-medium">Martin Gray</div>
-											<div className="text-xs font-light text-gray-500 dark:text-white/70">04:20PM</div>
-											<div className="w-2.5 h-2.5 bg-blue-600 rounded-full dark:bg-slate-700"></div>
-										</div>
-										<div className="font-medium overflow-hidden text-ellipsis text-sm whitespace-nowrap">Online course interesting? 🎓</div>
-									</div>
-								</a>
-								<a href="#" className="relative flex items-center gap-4 p-2 duration-200 rounded-xl hover:bg-secondery">
-									<div className="relative w-14 h-14 shrink-0">
-										<img src="assets/images/avatars/avatar-3.jpg" alt="" className="object-cover w-full h-full rounded-full" />
-									</div>
-									<div className="flex-1 min-w-0">
-										<div className="flex items-center gap-2 mb-1.5">
-											<div className="mr-auto text-sm text-black dark:text-white font-medium">Monroe Parker</div>
-											<div className="text-xs font-light text-gray-500 dark:text-white/70">09:40AM</div>
-										</div>
-										<div className="font-medium overflow-hidden text-ellipsis text-sm whitespace-nowrap">I’m glad you like it.😊</div>
-									</div>
-								</a>
-								<a href="#" className="relative flex items-center gap-4 p-2 duration-200 rounded-xl hover:bg-secondery">
-									<div className="relative w-14 h-14 shrink-0">
-										<img src="assets/images/avatars/avatar-4.jpg" alt="" className="object-cover w-full h-full rounded-full" />
-									</div>
-									<div className="flex-1 min-w-0">
-										<div className="flex items-center gap-2 mb-1.5">
-											<div className="mr-auto text-sm text-black dark:text-white font-medium">James Lewis</div>
-											<div className="text-xs font-light text-gray-500 dark:text-white/70">01:10PM</div>
-										</div>
-										<div className="font-medium overflow-hidden text-ellipsis text-sm whitespace-nowrap"> Product photographer wanted? 📷 </div>
-									</div>
-								</a>
-								<a href="#" className="relative flex items-center gap-4 p-2 duration-200 rounded-xl hover:bg-secondery">
-									<div className="relative w-14 h-14 shrink-0">
-										<img src="assets/images/avatars/avatar-5.jpg" alt="" className="object-cover w-full h-full rounded-full" />
-										<div className="w-4 h-4 absolute bottom-0 right-0  bg-green-500 rounded-full border border-white dark:border-slate-800"></div>
-									</div>
-									<div className="flex-1 min-w-0">
-										<div className="flex items-center gap-2 mb-1.5">
-											<div className="mr-auto text-sm text-black dark:text-white font-medium">Jesse Steeve</div>
-											<div className="text-xs font-light text-gray-500 dark:text-white/70">09:40AM</div>
-										</div>
-										<div className="font-medium overflow-hidden text-ellipsis text-sm whitespace-nowrap">Love your photos 😍</div>
-									</div>
-								</a>
-								<a href="#" className="relative flex items-center gap-4 p-2 duration-200 rounded-xl hover:bg-secondery">
-									<div className="relative w-14 h-14 shrink-0">
-										<img src="assets/images/avatars/avatar-2.jpg" alt="" className="object-cover w-full h-full rounded-full" />
-									</div>
-									<div className="flex-1 min-w-0">
-										<div className="flex items-center gap-2 mb-1.5">
-											<div className="mr-auto text-sm text-black dark:text-white font-medium">Martin Gray</div>
-											<div className="text-xs font-light text-gray-500 dark:text-white/70">02:52PM</div>
-										</div>
-										<div className="font-medium overflow-hidden text-ellipsis text-sm whitespace-nowrap">Photo editor needed. Fix photos? 🛠️</div>
-									</div>
-								</a>
+								<SideBarPreviewChat />
+								<SideBarPreviewChat />
 							</div>
 						</div>
 
@@ -165,23 +41,9 @@ const MainMessage = () => {
 							</div>
 
 							<div className="flex items-center gap-2">
-								<button type="button" className="button__ico">
-									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-6 h-6">
-										<path
-											fill-rule="evenodd"
-											d="M2 3.5A1.5 1.5 0 013.5 2h1.148a1.5 1.5 0 011.465 1.175l.716 3.223a1.5 1.5 0 01-1.052 1.767l-.933.267c-.41.117-.643.555-.48.95a11.542 11.542 0 006.254 6.254c.395.163.833-.07.95-.48l.267-.933a1.5 1.5 0 011.767-1.052l3.223.716A1.5 1.5 0 0118 15.352V16.5a1.5 1.5 0 01-1.5 1.5H15c-1.149 0-2.263-.15-3.326-.43A13.022 13.022 0 012.43 8.326 13.019 13.019 0 012 5V3.5z"
-											clip-rule="evenodd"
-										/>
-									</svg>
-								</button>
-								<button type="button" className="hover:bg-slate-100 p-1.5 rounded-full">
-									<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
-										<path stroke-linecap="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
-									</svg>
-								</button>
 								<button type="button" className="hover:bg-slate-100 p-1.5 rounded-full" uk-toggle="target: .rightt ; cls: hidden">
 									<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
-										<path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+										<path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
 									</svg>
 								</button>
 							</div>
@@ -224,22 +86,6 @@ const MainMessage = () => {
 								<div className="flex gap-2 flex-row-reverse items-end">
 									<img src="assets/images/avatars/avatar-3.jpg" alt="" className="w-4 h-4 rounded-full shadow" />
 									<div className="px-4 py-2 rounded-[20px] max-w-sm bg-gradient-to-tr from-sky-500 to-blue-500 text-white shadow"> Wow, it’s beautiful. How much ? 😍 </div>
-								</div>
-
-								<div className="flex gap-2 flex-row-reverse items-end">
-									<img src="assets/images/avatars/avatar-3.jpg" alt="" className="w-4 h-4 rounded-full shadow" />
-
-									<a className="block rounded-[18px] border overflow-hidden" href="#">
-										<div className="max-w-md">
-											<div className="max-w-full relative w-72">
-												<div className="relative pb-[57.4286%]">
-													<div className="w-full h-full absolute inset-0">
-														<img src="assets/images/product/product-2.jpg" alt="" className="block max-w-full max-h-52 w-full h-full object-cover" />
-													</div>
-												</div>
-											</div>
-										</div>
-									</a>
 								</div>
 
 								<div className="flex justify-center ">
@@ -294,26 +140,6 @@ const MainMessage = () => {
 
 						<div className="flex items-center md:gap-4 gap-2 md:p-3 p-2 overflow-hidden">
 							<div id="message__wrap" className="flex items-center gap-2 h-full dark:text-white -mt-1.5">
-								<button type="button" className="shrink-0">
-									<ion-icon className="text-3xl flex" name="add-circle-outline"></ion-icon>
-								</button>
-								<div className="dropbar pt-36 h-60 bg-gradient-to-t via-white from-white via-30% from-30% dark:from-slate-900 dark:via-900" uk-drop="stretch: x; target: #message__wrap ;animation:  slide-bottom ;animate-out: true; pos: top-left; offset:10 ; mode: click ; duration: 200">
-									<div className="sm:w-full p-3 flex justify-center gap-5" uk-scrollspy="target: > button; cls: uk-animation-slide-bottom-small; delay: 100;repeat:true">
-										<button type="button" className="bg-sky-50 text-sky-600 border border-sky-100 shadow-sm p-2.5 rounded-full shrink-0 duration-100 hover:scale-[1.15] dark:bg-dark3 dark:border-0">
-											<ion-icon className="text-3xl flex" name="image"></ion-icon>
-										</button>
-										<button type="button" className="bg-green-50 text-green-600 border border-green-100 shadow-sm p-2.5 rounded-full shrink-0 duration-100 hover:scale-[1.15] dark:bg-dark3 dark:border-0">
-											<ion-icon className="text-3xl flex" name="images"></ion-icon>
-										</button>
-										<button type="button" className="bg-pink-50 text-pink-600 border border-pink-100 shadow-sm p-2.5 rounded-full shrink-0 duration-100 hover:scale-[1.15] dark:bg-dark3 dark:border-0">
-											<ion-icon className="text-3xl flex" name="document-text"></ion-icon>
-										</button>
-										<button type="button" className="bg-orange-50 text-orange-600 border border-orange-100 shadow-sm p-2.5 rounded-full shrink-0 duration-100 hover:scale-[1.15] dark:bg-dark3 dark:border-0">
-											<ion-icon className="text-3xl flex" name="gift"></ion-icon>
-										</button>
-									</div>
-								</div>
-
 								<button type="button" className="shrink-0">
 									<ion-icon className="text-3xl flex" name="happy-outline"></ion-icon>
 								</button>
@@ -379,47 +205,6 @@ const MainMessage = () => {
 							</div>
 
 							<hr className="opacity-80 dark:border-slate-700" />
-
-							<ul className="text-base font-medium p-3">
-								<li>
-									<div className="flex items-center gap-5 rounded-md p-3 w-full hover:bg-secondery">
-										<ion-icon name="notifications-off-outline" className="text-2xl"></ion-icon> Mute Notification
-										<label className="switch cursor-pointer ml-auto">
-											{" "}
-											<input type="checkbox" checked />
-											<span className="switch-button !relative"></span>
-										</label>
-									</div>
-								</li>
-								<li>
-									{" "}
-									<button type="button" className="flex items-center gap-5 rounded-md p-3 w-full hover:bg-secondery">
-										{" "}
-										<ion-icon name="flag-outline" className="text-2xl"></ion-icon> Report{" "}
-									</button>
-								</li>
-								<li>
-									{" "}
-									<button type="button" className="flex items-center gap-5 rounded-md p-3 w-full hover:bg-secondery">
-										{" "}
-										<ion-icon name="settings-outline" className="text-2xl"></ion-icon> Ignore messages{" "}
-									</button>{" "}
-								</li>
-								<li>
-									{" "}
-									<button type="button" className="flex items-center gap-5 rounded-md p-3 w-full hover:bg-secondery">
-										{" "}
-										<ion-icon name="stop-circle-outline" className="text-2xl"></ion-icon> Block{" "}
-									</button>{" "}
-								</li>
-								<li>
-									{" "}
-									<button type="button" className="flex items-center gap-5 rounded-md p-3 w-full hover:bg-red-50 text-red-500">
-										{" "}
-										<ion-icon name="trash-outline" className="text-2xl"></ion-icon> Delete Chat{" "}
-									</button>{" "}
-								</li>
-							</ul>
 
 							<button type="button" className="absolute top-0 right-0 m-4 p-2 bg-secondery rounded-full" uk-toggle="target: .rightt ; cls: hidden">
 								<ion-icon name="close" className="text-2xl flex"></ion-icon>
