@@ -92,7 +92,7 @@ func (pr *PostRepository) GetUserLikedPosts(userID int) ([]*Post, error) {
 	var posts []*Post
 	for rows.Next() {
 		var post Post
-		err := rows.Scan(&post.PostID, &post.Title, &post.Category, &post.Content, &post.CreatedAt, &post.AuthorID, &post.ImageURL, &post.Visibility)
+		err := rows.Scan(&post.PostID, &post.Title, &post.Category, &post.Content, &post.CreatedAt, &post.AuthorID, &post.Visibility)
 		if err != nil {
 			return nil, err
 		}
