@@ -124,3 +124,27 @@ func (sr *FollowRequestRepository) AcceptFollowingRequest(followRequestId int) e
 
 	return nil
 }
+func (sr *FollowRequestRepository) GetFollowRequestersForAnUser(userId int) ([]*User, error) {
+	query := "SELECT * FROM follow_requests WHERE following_user_id = ?"
+
+	rows, err := sr.db.Query(query, userId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var followRequesters []*User
+	var followRequest FollowRequest
+	for rows.Next() {
+		err := rows.Scan(&followRequest.FollowRequestID, &followRequest.FollowerUserID, &followRequest.FollowingUserID, &followRequest.Status)
+		if err != nil {
+			return nil, err
+		}
+		user, err := UserRepo.GetUserByID(followRequest.FollowerUserID)
+		if err != nil {
+			return nil, err
+		}
+		followRequesters = append(followRequesters, user)
+	}
+	return followRequesters, nil
+}
