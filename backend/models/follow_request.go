@@ -2,12 +2,13 @@ package models
 
 import (
 	"database/sql"
+	"fmt"
 )
 
 const (
 	StatusPending  = "Pending"
 	StatusAccepted = "Accepted"
-	StatusDeclined = "Declined"
+	StatusRejected = "Rejected"
 )
 
 // FollowRequest structure represents the "subscriptions" table
@@ -41,16 +42,6 @@ func (sr *FollowRequestRepository) CreateFollowRequest(followRequest *FollowRequ
 	return nil
 }
 
-func (sr *FollowRequestRepository) GetFollowRequest(followResquestId int) (*FollowRequest, error) {
-	query := "SELECT * FROM follow_requests WHERE follow_request_id = ?"
-	var followRequest FollowRequest
-	err := sr.db.QueryRow(query, followResquestId).Scan(&followRequest.FollowRequestID, &followRequest.FollowerUserID, &followRequest.FollowingUserID)
-	if err != nil {
-		return nil, err
-	}
-	return &followRequest, nil
-}
-
 func (sr *FollowRequestRepository) UpdateFollowRequest(followRequest *FollowRequest) error {
 	query := `
 		UPDATE follow_requests
@@ -64,12 +55,14 @@ func (sr *FollowRequestRepository) UpdateFollowRequest(followRequest *FollowRequ
 	return nil
 }
 
-func (sr *FollowRequestRepository) DeleteFollowRequest(followeUserId, followingUserId int) error {
+func (sr *FollowRequestRepository) DeleteFollowRequest(followerUserId, followingUserId int) error {
 	query := "DELETE FROM follow_requests WHERE follower_user_id = ? AND following_user_id = ? "
-	_, err := sr.db.Exec(query, followeUserId, followingUserId)
+	res, err := sr.db.Exec(query, followerUserId, followingUserId)
 	if err != nil {
 		return err
 	}
+	fmt.Println(followerUserId, followingUserId)
+	fmt.Println(res.RowsAffected())
 	return nil
 }
 
@@ -97,27 +90,53 @@ func (sr *FollowRequestRepository) HasPendingRequestFromAnUser(requesterUserId, 
 
 //TODO: Accept following requests
 
-func (sr *FollowRequestRepository) AcceptFollowingRequest(followRequestId int) error {
+func (sr *FollowRequestRepository) AcceptFollowingRequest(followerUserID, followingUserId int) error {
 	query := ` 
 	UPDATE follow_requests
 	SET status = ? 
-	WHERE follow_request_id = ?
+	WHERE follower_user_id = ?
+  			AND following_user_id = ?
 	`
 	// Set the status to Accepted and Create a new Subscription
-	_, err := sr.db.Exec(query, StatusAccepted, followRequestId)
+	_, err := sr.db.Exec(query, StatusAccepted, followerUserID, followingUserId)
 
 	if err != nil {
 		return err
 	}
-	followRequest, err := sr.GetFollowRequest(followRequestId)
-	if err != nil {
-		return err
-	}
+
 	var subcription Subscription
-	subcription.FollowerUserID = followRequest.FollowerUserID
-	subcription.FollowingUserID = followRequest.FollowingUserID
+	subcription.FollowerUserID = followerUserID
+	subcription.FollowingUserID = followingUserId
 
 	err = SubscriptionRepo.CreateSubscription(&subcription)
+	if err != nil {
+		return err
+	}
+	// Delete the follow Request because of the UNIQUE constraint on the Follow Request table
+	err = sr.DeleteFollowRequest(followerUserID, followingUserId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (sr *FollowRequestRepository) RejectFollowingRequest(followerUserID, followingUserId int) error {
+	query := ` 
+	UPDATE follow_requests
+	SET status = ? 
+	WHERE follower_user_id = ?
+  			AND following_user_id = ?
+	`
+	// Set the status to Accepted and Create a new Subscription
+	_, err := sr.db.Exec(query, StatusRejected, followerUserID, followingUserId)
+
+	if err != nil {
+		return err
+	}
+
+	// Delete the follow Request because of the UNIQUE constraint on the Follow Request table
+	err = sr.DeleteFollowRequest(followerUserID, followingUserId)
 	if err != nil {
 		return err
 	}
@@ -125,7 +144,7 @@ func (sr *FollowRequestRepository) AcceptFollowingRequest(followRequestId int) e
 	return nil
 }
 func (sr *FollowRequestRepository) GetFollowRequestersForAnUser(userId int) ([]*User, error) {
-	query := "SELECT * FROM follow_requests WHERE following_user_id = ?"
+	query := "SELECT * FROM follow_requests WHERE following_user_id = ? AND status = 'Pending'"
 
 	rows, err := sr.db.Query(query, userId)
 	if err != nil {
