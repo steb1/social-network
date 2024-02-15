@@ -8,6 +8,8 @@ import config from "@/config";
 import { useEffect, useState } from "react";
 import { GroupCover } from "@/app/components/groupCover";
 import { Modal } from "../components/modal";
+import { Event } from "../components/event";
+import { AddEvent } from "../components/addEvent";
 
 export async function fetchGroupDetail (setPosts , setGroup, setEvents, setRequests, setMessages, setServerError, groupId) {
     let  token = document.cookie.split("=")[1]
@@ -30,7 +32,7 @@ export async function fetchGroupDetail (setPosts , setGroup, setEvents, setReque
             setMessages(data.Message)
             setPosts(data.Post)
             setRequests(data.request)
-            setEvents(data.event)
+            setEvents(data.events)
             setGroup(data.group)
 
           } else {
@@ -55,6 +57,7 @@ const GroupDetail = ( { params }  ) => {
     let [posts, setPosts] = useState([])
     let [request, setRequest] = useState([])
     let [messages, setMessages] = useState([])
+    let [tab, setTab] = useState(1)
 
     
     const [serverError, setServerError] = useState(null);
@@ -75,20 +78,36 @@ const GroupDetail = ( { params }  ) => {
             </div>
             <div className="flex flex-col w-full mx-4">
               <div className="mt-36 w-full mr-20">
-                <GroupCover groupInfo={group}/>
+                <GroupCover groupInfo={group} setTab={setTab} tab={ tab }/>
               </div>
               <div className="flex flex-row">
-                  <div className=" flex flex-col gap-5 mx-auto ">
-                      <AddStory/>
-                      <Modal groupId={group.group_id} setPosts={setPosts} setGroup={setGroup} setEvents={setEvents} setRequests={setRequest} setMessages={setMessages} setServerError={setServerError}/>
                       
-                      {posts && posts.length > 0 ? (
+                  <div id="content" className=" flex flex-col gap-5 mx-auto ">
+                        {posts && posts.length > 0 && tab === 1 && <AddStory />}
+                        {events && events.length > 0 && tab === 3 && <AddEvent />}
+                        
+                        <Modal groupId={group.group_id} setPosts={setPosts} setGroup={setGroup} setEvents={setEvents} setRequests={setRequest} setMessages={setMessages} setServerError={setServerError}/>
+                        {posts && posts.length > 0 && tab == 1 ?(
+                                                  
                           posts.map((post) => (
                             <PostText key={post.PostID} post={post} setPost={setPosts} setGroup={setGroup} setEvents={setEvents} setRequest={setRequest} setMessages={setMessages} setServerError={setServerError} />
                           ))
-                        ) : (
-                          <p>No Posts available.</p>
-                      )}
+                        ) :  tab == 2 ? (
+                          <p> Messages </p>
+                      ) : events && events.length > 0 && tab == 3 ? (
+                        events.map((event) => (
+                        <div className="mx-auto ">
+                          <Event key={event.event_id} event={event} setPost={setPosts} setGroup={setGroup} setEvents={setEvents} setRequest={setRequest} setMessages={setMessages} setServerError={setServerError}  />
+                        </div>
+                        ))
+                      ) : tab == 4 ? (
+                        <p> Members </p>
+                      ) : tab == 5 ? (
+                        <p> Requests </p>
+                      ) : tab == 5 ? (
+                        <p> Requests </p>
+                      ) : 'Not data avaible.' }
+                      
                   </div>
                   <div className="mt-10 right-0 mb-10">
                     <GroupRightBar/>
@@ -99,5 +118,7 @@ const GroupDetail = ( { params }  ) => {
     </div>
     )
 }
+
+
 
 export default GroupDetail
