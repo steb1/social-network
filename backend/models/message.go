@@ -21,24 +21,19 @@ func NewMessageRepository(db *sql.DB) *MessageRepository {
 	}
 }
 
-
 // CreateMessage adds a new message to the database
-func (mr *MessageRepository) CreateMessage(message *Message) error {
+func (mr *MessageRepository) CreateMessage(SenderID, ReceiverID int, Content, SentTime string) error {
 	query := `
 		INSERT INTO messages (sender_id, receiver_id, content, sent_time)
 		VALUES (?, ?, ?, ?)
 	`
-	result, err := mr.db.Exec(query, message.SenderID, message.ReceiverID, message.Content, message.SentTime)
+	result, err := mr.db.Exec(query, SenderID, ReceiverID, Content, SentTime)
 	if err != nil {
 		return err
 	}
 
-	lastInsertID, err := result.LastInsertId()
-	if err != nil {
-		return err
-	}
+	_, _ = result.RowsAffected()
 
-	message.MessageID = int(lastInsertID)
 	return nil
 }
 

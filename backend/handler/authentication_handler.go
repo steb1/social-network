@@ -49,9 +49,9 @@ func SigninHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 	if r.Method == "OPTIONS" {
-		// Preflight request, respond with a 200 OK
 		return
 	}
+
 	request := new(LoginRequest)
 
 	var apiError ApiError
@@ -239,6 +239,10 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	}
 
+	if avatarFilename == "" {
+		avatarFilename = "blankProfile.png"
+	}
+
 	user.LastName = lastname
 	user.FirstName = firstname
 	user.Nickname = nickname
@@ -277,9 +281,9 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	WriteJSON(w, http.StatusOK, response)
 }
 
-func HomeHandler(w http.ResponseWriter, r *http.Request) {
+func CheckAutheHandler(w http.ResponseWriter, r *http.Request) {
 	sessionToken := r.Header.Get("Authorization")
-	_, ok := models.SessionRepo.SessionExists(sessionToken)
+	userSesion, ok := models.SessionRepo.SessionExists(sessionToken)
 	if !ok {
 		var apiError ApiError
 		apiError.Error = "Unauthorized"
@@ -287,6 +291,17 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("no exist")
 		return
 	}
+	userId, _ := strconv.Atoi(userSesion.UserID)
+	user, err := models.UserRepo.GetUserByID(userId)
+	if err != nil {
+		log.Println("🚀 ~ funcCheckAutheHandler ~ err:", err)
+		var apiError ApiError
+		apiError.Error = "Unauthorized"
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	}
 
-	WriteJSON(w, http.StatusOK, ApiSuccess{Message: "Connected."})
+	user.Password = ""
+
+	WriteJSON(w, http.StatusOK, user)
 }

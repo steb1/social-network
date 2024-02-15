@@ -6,9 +6,10 @@ import (
 	"io"
 	"mime/multipart"
 	"os"
-	"server/lib"
 	"strconv"
 	"time"
+
+	"server/lib"
 )
 
 type PostItems struct {
@@ -98,7 +99,7 @@ func (pr *PostRepository) CreatePost(post *Post, photo multipart.File, categorie
 func (pr *PostRepository) GetPost(postID int) (*Post, error) {
 	query := "SELECT * FROM posts WHERE post_id = ?"
 	var post Post
-	err := pr.db.QueryRow(query, postID).Scan(&post.PostID, &post.Title, &post.Category, &post.Content, &post.CreatedAt, &post.AuthorID, &post.ImageURL, &post.Visibility)
+	err := pr.db.QueryRow(query, postID).Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.AuthorID, &post.ImageURL, &post.Visibility)
 	if err != nil {
 		return nil, err
 	}
@@ -252,7 +253,7 @@ ORDER BY
 
 // GetUserOwnPosts retrieves posts owned by a specific user from the database
 func (pr *PostRepository) GetUserOwnPosts(userID int) ([]*Post, error) {
-	rows, err := pr.db.Query("SELECT post_id, title, category, content, created_at, author_id, image_url, visibility FROM post WHERE author_id = ?", userID)
+	rows, err := pr.db.Query("SELECT * FROM posts WHERE author_id = ?", userID)
 	if err != nil {
 		return nil, err
 	}
@@ -261,7 +262,7 @@ func (pr *PostRepository) GetUserOwnPosts(userID int) ([]*Post, error) {
 	var posts []*Post
 	for rows.Next() {
 		var post Post
-		err := rows.Scan(&post.PostID, &post.Title, &post.Category, &post.Content, &post.CreatedAt, &post.AuthorID, &post.ImageURL, &post.Visibility)
+		err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.AuthorID, &post.ImageURL, &post.Visibility, &post.HasImage)
 		if err != nil {
 			return nil, err
 		}
@@ -278,7 +279,7 @@ func (pr *PostRepository) UpdatePost(post *Post) error {
 		SET title = ?, category = ?, content = ?, created_at = ?, author_id = ?, image_url = ?, visibility = ?
 		WHERE post_id = ?
 	`
-	_, err := pr.db.Exec(query, post.Title, post.Category, post.Content, post.CreatedAt, post.AuthorID, post.ImageURL, post.Visibility, post.PostID)
+	_, err := pr.db.Exec(query, post.Title, post.Content, post.CreatedAt, post.AuthorID, post.ImageURL, post.Visibility, post.PostID)
 	if err != nil {
 		return err
 	}
