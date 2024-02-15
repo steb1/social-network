@@ -4,8 +4,8 @@ import AddStory from "../components/addStory";
 import { PostImage, PostText, PostImageSlider, PostPlaceholder } from "../components/posts";
 import { Modal } from "../components/modal";
 import { Rightbar } from "../components/rightbar";
-import "../../public/assets/js/script.js";
-import "../../public/assets/js/simplebar.js";
+import "../../public/js/script.js";
+import "../../public/js/simplebar.js";
 
 const HomePage = () => {
 	return (

@@ -10,43 +10,6 @@ const MainMessage = () => {
 							<div className="p-4 border-b dark:border-slate-700">
 								<div className="flex mt-2 items-center justify-between">
 									<h1 className="text-2xl font-bold text-black ml-1 dark:text-white"> Chats </h1>
-
-									<div className="flex items-center gap-2.5">
-										<button className="group">
-											<ion-icon name="settings-outline" className="text-2xl flex group-aria-expanded:rotate-180"></ion-icon>
-										</button>
-										<div className="md:w-[270px] w-full" uk-dropdown="pos: bottom-left; offset:10; animation: uk-animation-slide-bottom-small">
-											<nav>
-												<a href="#">
-													{" "}
-													<ion-icon className="text-2xl shrink-0 -ml-1" name="checkmark-outline"></ion-icon> Mark all as read{" "}
-												</a>
-												<a href="#">
-													{" "}
-													<ion-icon className="text-2xl shrink-0 -ml-1" name="notifications-outline"></ion-icon> notifications setting{" "}
-												</a>
-												<a href="#">
-													{" "}
-													<ion-icon className="text-xl shrink-0 -ml-1" name="volume-mute-outline"></ion-icon> Mute notifications{" "}
-												</a>
-											</nav>
-										</div>
-
-										<button className="">
-											<ion-icon name="checkmark-circle-outline" className="text-2xl flex"></ion-icon>
-										</button>
-
-										<button type="button" className="md:hidden" uk-toggle="target: #side-chat ; cls: max-md:-translate-x-full">
-											<ion-icon name="chevron-down-outline"></ion-icon>
-										</button>
-									</div>
-								</div>
-
-								<div className="relative mt-4">
-									<div className="absolute left-3 bottom-1/2 translate-y-1/2 flex">
-										<ion-icon name="search" className="text-xl"></ion-icon>
-									</div>
-									<input type="text" placeholder="Search" className="w-full !pl-10 !py-2 !rounded-lg" />
 								</div>
 							</div>
 
