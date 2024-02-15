@@ -177,7 +177,7 @@ func (ur *UserRepository) GetUserByID(userID int) (*User, error) {
 	return user, nil
 }
 
-func (ur *UserRepository) GetIDFromUsernameOrEmail(usernameOrEmail string) (int, error) {
+func (ur *UserRepository) GetIDFromUsernameOrEmail(usernameOrEmail string) int {
 	query := `
 	SELECT id_user FROM users WHERE nickname = ? OR email = ?
 `
@@ -186,12 +186,12 @@ func (ur *UserRepository) GetIDFromUsernameOrEmail(usernameOrEmail string) (int,
 	if err != nil {
 		log.Println("🚀 ~ func ~ err:", err)
 		if err == sql.ErrNoRows {
-			return 0, nil
+			return 0
 		}
-		return 0, err
+		return 0
 	}
 
-	return userId, nil
+	return userId
 }
 
 // GetUserByNickname retrieves a user from the database based on their nickname

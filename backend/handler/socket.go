@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"sort"
@@ -129,14 +128,14 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 
 				// Validate and save message
 				if !lib.IsBlank(messagepattern.Text) && !lib.IsBlank(messagepattern.Sender) && !lib.IsBlank(messagepattern.Receiver) {
-					models.MessageRepo.CreateMessage(UserId, models.UserRepo.GetIDFromUsernameOrEmail(messagepattern.Receiver), messagepattern.Text)
+					models.MessageRepo.CreateMessage(UserId, models.UserRepo.GetIDFromUsernameOrEmail(messagepattern.Receiver), messagepattern.Text, messagepattern.Time)
 				} else {
 					log.Println("Cannot send empty messages.")
 					// SEND ERROR
 				}
 
 				// Send the message to the specified user
-				tosend, exists := connections[Tools.GetIDFromUsername(messagepattern.Receiver)]
+				tosend, exists := connections[models.UserRepo.GetIDFromUsernameOrEmail(messagepattern.Receiver)]
 				if !exists {
 					log.Println("No connected user:", messagepattern.Receiver)
 					log.Println("Error: User not connected")
@@ -155,7 +154,7 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 				}
 			case "getusersonline":
 				for _, user := range connections {
-					sendCurrentUsers(user, Tools.GetIDFromUsername(user.Nickname))
+					sendCurrentUsers(user, models.UserRepo.GetIDFromUsernameOrEmail(user.Nickname))
 				}
 			case "typeinprogress":
 				// TODO C'ets repetitif les 2 lignes laa
@@ -171,7 +170,7 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 				messagepattern.Sender = sender
 				messagepattern.Receiver = receiver
 
-				tosend, exists := connections[Tools.GetIDFromUsername(receiver)]
+				tosend, exists := connections[models.UserRepo.GetIDFromUsernameOrEmail(receiver)]
 				if !exists {
 					continue
 				}
@@ -193,7 +192,7 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 				messagepattern.Sender = sender
 				messagepattern.Receiver = receiver
 
-				tosend, exists := connections[Tools.GetIDFromUsername(receiver)]
+				tosend, exists := connections[models.UserRepo.GetIDFromUsernameOrEmail(receiver)]
 				if !exists {
 					continue
 				}
@@ -210,38 +209,38 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 
 func notifyUserJoined() {
 	for _, user := range connections {
-		sendCurrentUsers(user, Tools.GetIDFromUsername(user.Nickname))
+		sendCurrentUsers(user, models.UserRepo.GetIDFromUsernameOrEmail(user.Nickname))
 	}
 }
 
 func sendCurrentUsers(tosend *UserInfo, user_id int) {
-	var users []UserByConnection
-	usernames, err := controllers.GetUsersByLastTimeYouTalkedTo(user_id)
-	if err != nil {
-		fmt.Println("Il y a erreur ohhh")
-	}
-	/**** ONLINE and OFFLINE ***/
-	for _, username := range usernames {
-		var user UserByConnection
-		user.Username = username
-		if _, found := connections[Tools.GetIDFromUsername(username)]; !found {
-			user.Connected = false
-		} else {
-			user.Connected = true
-		}
-		users = append(users, user)
-	}
+	// var users []UserByConnection
+	// usernames, err := controllers.GetUsersByLastTimeYouTalkedTo(user_id)
+	// if err != nil {
+	// 	fmt.Println("Error")
+	// }
+	// /**** ONLINE and OFFLINE ***/
+	// for _, username := range usernames {
+	// 	var user UserByConnection
+	// 	user.Username = username
+	// 	if _, found := connections[models.UserRepo.GetIDFromUsernameOrEmail(username)]; !found {
+	// 		user.Connected = false
+	// 	} else {
+	// 		user.Connected = true
+	// 	}
+	// 	users = append(users, user)
+	// }
 
-	err = EnvoyerMessage(tosend, "userPartitionConnection", users)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	// err = EnvoyerMessage(tosend, "userPartitionConnection", users)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return
+	// }
 }
 
 func notifyUserLeft(ID int) {
 	for _, user := range connections {
-		sendCurrentUsers(user, Tools.GetIDFromUsername(user.Nickname))
+		sendCurrentUsers(user, models.UserRepo.GetIDFromUsernameOrEmail(user.Nickname))
 	}
 }
 
@@ -274,7 +273,7 @@ func PartitionUsersByConnection(allUsers []string, connections map[int]*UserInfo
 	connectedUsers := make([]string, 0, len(allUsers))
 
 	for _, user := range allUsers {
-		if _, found := connections[Tools.GetIDFromUsername(user)]; !found {
+		if _, found := connections[models.UserRepo.GetIDFromUsernameOrEmail(user)]; !found {
 			nonConnectedUsers = append(nonConnectedUsers, user)
 		} else {
 			connectedUsers = append(connectedUsers, user)
