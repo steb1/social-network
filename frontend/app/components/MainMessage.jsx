@@ -1,5 +1,8 @@
 import React from "react";
 import SideBarPreviewChat from "../messages/SideBarPreviewChat";
+import LeftMessage from "../messages/LeftMessage";
+import RightMessage from "../messages/RightMessage";
+import DateMessage from "../messages/DateMessage";
 
 const MainMessage = () => {
 	return (
@@ -42,7 +45,7 @@ const MainMessage = () => {
 
 							<div className="flex items-center gap-2">
 								<button type="button" className="hover:bg-slate-100 p-1.5 rounded-full" uk-toggle="target: .rightt ; cls: hidden">
-									<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
+									<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
 										<path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
 									</svg>
 								</button>
@@ -64,77 +67,12 @@ const MainMessage = () => {
 							</div>
 
 							<div className="text-sm font-medium space-y-6">
-								<div className="flex gap-3">
-									<img src="assets/images/avatars/avatar-2.jpg" alt="" className="w-9 h-9 rounded-full shadow" />
-									<div className="px-4 py-2 rounded-[20px] max-w-sm bg-secondery"> Hi, I’m John </div>
-								</div>
-
-								<div className="flex gap-2 flex-row-reverse items-end">
-									<img src="assets/images/avatars/avatar-3.jpg" alt="" className="w-5 h-5 rounded-full shadow" />
-									<div className="px-4 py-2 rounded-[20px] max-w-sm bg-gradient-to-tr from-sky-500 to-blue-500 text-white shadow"> I’m Lisa. welcome John</div>
-								</div>
-
-								<div className="flex justify-center ">
-									<div className="font-medium text-gray-500 text-sm dark:text-white/70">April 8,2023,6:30 AM</div>
-								</div>
-
-								<div className="flex gap-3">
-									<img src="assets/images/avatars/avatar-2.jpg" alt="" className="w-9 h-9 rounded-full shadow" />
-									<div className="px-4 py-2 rounded-[20px] max-w-sm bg-secondery"> I’m selling a photo of a sunset. It’s a print on canvas, signed by the photographer. Do you like it? 😊 </div>
-								</div>
-
-								<div className="flex gap-2 flex-row-reverse items-end">
-									<img src="assets/images/avatars/avatar-3.jpg" alt="" className="w-4 h-4 rounded-full shadow" />
-									<div className="px-4 py-2 rounded-[20px] max-w-sm bg-gradient-to-tr from-sky-500 to-blue-500 text-white shadow"> Wow, it’s beautiful. How much ? 😍 </div>
-								</div>
-
-								<div className="flex justify-center ">
-									<div className="font-medium text-gray-500 text-sm dark:text-white/70">April 8,2023,6:30 AM</div>
-								</div>
-
-								<div className="flex gap-3">
-									<img src="assets/images/avatars/avatar-2.jpg" alt="" className="w-9 h-9 rounded-full shadow" />
-									<div className="px-4 py-2 rounded-[20px] max-w-sm bg-secondery"> I’m glad you like it. I’m asking for $200 🤑</div>
-								</div>
-
-								<div className="flex gap-2 flex-row-reverse items-end">
-									<img src="assets/images/avatars/avatar-3.jpg" alt="" className="w-5 h-5 rounded-full shadow" />
-									<div className="px-4 py-2 rounded-[20px] max-w-sm bg-gradient-to-tr from-sky-500 to-blue-500 text-white shadow"> $200? Too steep. Can you lower the price a bit? 😕</div>
-								</div>
-
-								<div className="flex gap-3">
-									<img src="assets/images/avatars/avatar-2.jpg" alt="" className="w-9 h-9 rounded-full shadow" />
-									<div className="px-4 py-2 rounded-[20px] max-w-sm bg-secondery"> Well, I can’t go too low because I paid a lot. But I’m willing to negotiate. What’s your offer? 🤔 </div>
-								</div>
-
-								<div className="flex gap-2 flex-row-reverse items-end">
-									<img src="assets/images/avatars/avatar-3.jpg" alt="" className="w-5 h-5 rounded-full shadow" />
-									<div className="px-4 py-2 rounded-[20px] max-w-sm bg-gradient-to-tr from-sky-500 to-blue-500 text-white shadow"> Sorry, can’t pay more than $150. 😅</div>
-								</div>
-
-								<div className="flex justify-center ">
-									<div className="font-medium text-gray-500 text-sm dark:text-white/70">April 8,2023,6:30 AM</div>
-								</div>
-
-								<div className="flex gap-3">
-									<img src="assets/images/avatars/avatar-2.jpg" alt="" className="w-9 h-9 rounded-full shadow" />
-									<div className="px-4 py-2 rounded-[20px] max-w-sm bg-secondery"> $150? Too low. Photo worth more. 😬</div>
-								</div>
-
-								<div className="flex gap-2 flex-row-reverse items-end">
-									<img src="assets/images/avatars/avatar-3.jpg" alt="" className="w-5 h-5 rounded-full shadow" />
-									<div className="px-4 py-2 rounded-[20px] max-w-sm bg-gradient-to-tr from-sky-500 to-blue-500 text-white shadow"> Too high. I Can’t . How about $160? Final offer. 😬 </div>
-								</div>
-
-								<div className="flex gap-3">
-									<img src="assets/images/avatars/avatar-2.jpg" alt="" className="w-9 h-9 rounded-full shadow" />
-									<div className="px-4 py-2 rounded-[20px] max-w-sm bg-secondery"> Fine, fine. You’re hard to please. I’ll take $160, but only because I like you. 😍</div>
-								</div>
-
-								<div className="flex gap-2 flex-row-reverse items-end">
-									<img src="assets/images/avatars/avatar-3.jpg" alt="" className="w-5 h-5 rounded-full shadow" />
-									<div className="px-4 py-2 rounded-[20px] max-w-sm bg-gradient-to-tr from-sky-500 to-blue-500 text-white shadow"> Great, thank you. I appreciate it. I love this photo and can’t wait to hang it. 😩 </div>
-								</div>
+								<LeftMessage />
+								<RightMessage />
+								<DateMessage />
+								<LeftMessage />
+								<RightMessage />
+								<DateMessage />
 							</div>
 						</div>
 

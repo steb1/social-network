@@ -12,7 +12,7 @@ const SideBarPreviewChat = () => {
 					<div className="mr-auto text-sm text-black dark:text-white font-medium">Jesse Steeve</div>
 					<div className="text-xs font-light text-gray-500 dark:text-white/70">09:40AM</div>
 					{/* If message read remove this next line */}
-					<div class="w-2.5 h-2.5 bg-blue-600 rounded-full dark:bg-slate-700"></div>
+					<div className="w-2.5 h-2.5 bg-blue-600 rounded-full dark:bg-slate-700"></div>
 				</div>
 				<div className="font-medium overflow-hidden text-ellipsis text-sm whitespace-nowrap">Love your photos 😍</div>
 			</div>
