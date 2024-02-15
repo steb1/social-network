@@ -1,5 +1,8 @@
 package handler
 
+// TODO CE CODE N'EST PAS BON (OFT IL EST BON MAIS C'EST MOSH)
+// TODO JE VAIS CLEAN APRES PARDONEZZZZZZ
+
 import (
 	"encoding/json"
 	"log"
