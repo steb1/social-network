@@ -6,6 +6,10 @@ import (
 	"log"
 	"net/http"
 	"sort"
+	"strconv"
+
+	"server/lib"
+	"server/models"
 
 	"github.com/gorilla/websocket"
 )
@@ -51,21 +55,32 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	UserId, _ := strconv.Atoi(session.UserID)
+	user, _ := models.UserRepo.GetUserByID(UserId)
+
+	var nicknameOrEmail string
+
+	if user.Nickname != "" {
+		nicknameOrEmail = user.Nickname
+	} else {
+		nicknameOrEmail = user.Email
+	}
+
 	userInfo := UserInfo{
-		Nickname: Tools.GetUsernameFromID(session.UserID),
+		Nickname: nicknameOrEmail,
 		Conn:     conn,
 		IsAlive:  true,
 	}
 
-	existingUser, isin := connections[session.UserID]
+	existingUser, isin := connections[UserId]
 
 	if isin {
 		existingUser.Conn = conn
-		sendCurrentUsers(existingUser, session.UserID)
+		sendCurrentUsers(existingUser, UserId)
 	} else {
-		connections[session.UserID] = &userInfo
+		connections[UserId] = &userInfo
 		notifyUserJoined()
-		sendCurrentUsers(&userInfo, session.UserID)
+		sendCurrentUsers(&userInfo, UserId)
 	}
 
 	log.Println(connections, len(connections))
@@ -113,8 +128,8 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 				// TODO: Verifier si le receiver existe dans le BD
 
 				// Validate and save message
-				if !Tools.IsBlank(messagepattern.Text) && !Tools.IsBlank(messagepattern.Sender) && !Tools.IsBlank(messagepattern.Receiver) {
-					controllers.SaveMessage(session.UserID, Tools.GetIDFromUsername(messagepattern.Receiver), messagepattern.Text)
+				if !lib.IsBlank(messagepattern.Text) && !lib.IsBlank(messagepattern.Sender) && !lib.IsBlank(messagepattern.Receiver) {
+					models.MessageRepo.CreateMessage(UserId, models.UserRepo.GetIDFromUsernameOrEmail(messagepattern.Receiver), messagepattern.Text)
 				} else {
 					log.Println("Cannot send empty messages.")
 					// SEND ERROR
