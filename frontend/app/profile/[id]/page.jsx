@@ -8,56 +8,49 @@ import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
 const Profile = async ({ params: { id } }) => {
-    const cookieStore = cookies();
-    let profileData = null;
+	const cookieStore = cookies();
+	let profileData = null;
 
-    try {
-        const response = await fetch(`${config.serverApiUrl}profile?id=${id}`, {
-            method: "GET",
-            headers: {
-                Authorization: cookieStore.get("social-network").value,
-            },
-        });
+	try {
+		const response = await fetch(`${config.serverApiUrl}profile?id=${id}`, {
+			method: "GET",
+			headers: {
+				Authorization: cookieStore.get("social-network").value,
+			},
+		});
 
-        if (response.ok) {
-            profileData = await response.json();
-        } else {
-            return notFound();
-        }
-    } catch {
-        return notFound();
-    }
+		if (response.ok) {
+			profileData = await response.json();
+		} else {
+			return notFound();
+		}
+	} catch {
+		return notFound();
+	}
 
-    let Visibility = "";
+	let Visibility = "";
 
-    if (profileData.accountType === "Private") {
-        Visibility =
-            profileData.id_requester == profileData.user_id
-                ? "Public"
-                : // if followers array exists and is not null
-                  profileData.followers && Array.isArray(profileData.followers) && profileData.followers.length > 0
-                  ? profileData.followers.some((follower) => follower.user_id == profileData.id_requester)
-                      ? "Public"
-                      : "Private"
-                  : "Private";
-    }
-    //TODO : When the request is pending
-    console.log(profileData);
-    return (
-        <div id='wrapper' className='pt-15 space-x-2'>
-            {/* Header */}
-            <Header />
+	if (profileData.accountType === "Private") {
+		Visibility =
+			profileData.id_requester == profileData.user_id
+				? "Public"
+				: // if followers array exists and is not null
+					profileData.followers && Array.isArray(profileData.followers) && profileData.followers.length > 0
+					? profileData.followers.some((follower) => follower.user_id == profileData.id_requester)
+						? "Public"
+						: "Private"
+					: "Private";
+	}
+	//TODO : When the request is pending
+	return (
+		<div id="wrapper">
+			<Header />
 
-            <div className='flex mt-5'>
-                {/* Fixed Sidebar */}
-                <div className='fixed mt-2 left-0 top-12 max-sm:hidden max-md:hidden max-lg:hidden  overflow-y-visible touch-none h-full'>
-                    <Sidebar />
-                </div>
+			<Sidebar />
 
-                <MainProfile props={profileData} Visibility={Visibility} FollowStatus={profileData.followStatus} />
-            </div>
-        </div>
-    );
+			<MainProfile props={profileData} Visibility={Visibility} FollowStatus={profileData.followStatus} />
+		</div>
+	);
 };
 
 export default authMiddleware(Profile, config.serverApiUrl + "checkAuth");

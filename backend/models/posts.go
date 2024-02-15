@@ -106,7 +106,7 @@ func (pr *PostRepository) GetUserOwnPosts(userID int) ([]*Post, error) {
 	var posts []*Post
 	for rows.Next() {
 		var post Post
-		err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.AuthorID, &post.Visibility, &post.HasImage)
+		err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.AuthorID, &post.ImageURL, &post.Visibility, &post.HasImage)
 		if err != nil {
 			return nil, err
 		}
