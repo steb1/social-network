@@ -1,6 +1,8 @@
 package models
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
 // Event structure represents the "events" table
 type Event struct {
@@ -12,17 +14,14 @@ type Event struct {
 }
 
 type EventItem struct {
-	EventID     int    `json:"event_id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	EventDate   string `json:"event_date"`
-	GroupID     int    `json:"group_id"`
-	Attendance  int 	`json:"attendance"`
-	IsRegistered bool
-	
+	EventID      int    `json:"event_id"`
+	Title        string `json:"title"`
+	Description  string `json:"description"`
+	EventDate    string `json:"event_date"`
+	GroupID      int    `json:"group_id"`
+	Attendance   int    `json:"attendance"`
+	IsRegistered int
 }
-
-
 
 type EventRepository struct {
 	db *sql.DB
@@ -99,7 +98,7 @@ func (er *EventRepository) DeleteEvent(eventID int) error {
 }
 
 // GetAllEventsByGroupID retrieves all events for a specific group from the database
-func (er *EventRepository) GetAllEventsByGroupID(groupID int) ([]Event, error) {
+func (er *EventRepository) GetAllEventsByGroupID(groupID, userID int) ([]EventItem, error) {
 	query := `
 		SELECT event_id, title, description, event_date, group_id
 		FROM events
@@ -126,10 +125,27 @@ func (er *EventRepository) GetAllEventsByGroupID(groupID int) ([]Event, error) {
 		return nil, err
 	}
 
-	return events, nil
+	var eventItems []EventItem
+
+	for i := 0; i < len(events); i++ {
+		var eventItem EventItem
+
+		eventItem.Title = events[i].Title
+		eventItem.EventID = events[i].EventID
+		eventItem.Description = events[i].Description
+		eventItem.EventDate = events[i].EventDate
+		eventItem.GroupID = events[i].GroupID
+		eventItem.Attendance, _ = AttendanceRepo.GetAttendanceCountByEventID(events[i].EventID)
+		attendance, err := AttendanceRepo.IsRegistered(events[i].EventID, userID)
+
+		eventItem.IsRegistered = 1
+		if err == nil {
+			eventItem.IsRegistered = attendance.AttendanceOption
+		}
+
+		eventItems = append(eventItems, eventItem)
+
+	}
+
+	return eventItems, nil
 }
-
-
-
-
-

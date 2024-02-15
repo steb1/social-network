@@ -279,9 +279,8 @@ func HandleGetGroupDetail(w http.ResponseWriter, r *http.Request) {
 
 		GroupData.Group = *group
 
-		events, _ := models.EventRepo.GetAllEventsByGroupID(intGroupId)
+		events, _ := models.EventRepo.GetAllEventsByGroupID(intGroupId, userId)
 		
-
 		Members, _ := models.MembershipRepo.GetAllUsersByGroupID(intGroupId)	
 
 		Requests, _ := models.MembershipRepo.GetAllRequestByGroupID(intGroupId)	

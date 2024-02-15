@@ -238,8 +238,12 @@ async function handleCreateEvent(e, setPosts, setGroup, setEvents, setRequests, 
     let EventDate = document.getElementById("EventDate")
     let EventTitle = document.getElementById("EventTitle")
 
+    const currentDate = new Date();
+    const selectedDate = new Date(EventDate.value);
 
-    if (!DescriptionEvent || !EventTime || !EventDate || !EventTitle || !DescriptionEvent.value.trim()  || !EventDate.value.trim() || !EventTitle.value.trim() ) {
+
+    if (!DescriptionEvent || !EventTime || !EventDate || !EventTitle || !DescriptionEvent.value.trim()  || !EventDate.value.trim() || !EventTitle.value.trim() || selectedDate < currentDate) {
+        alert("La date ne peut pas être dans le passé. Veuillez sélectionner une date future.");
         return
     }
 
