@@ -161,3 +161,37 @@ func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(followResponse)
 	WriteJSON(w, http.StatusOK, followResponse)
 }
+func GetPendingRequests(w http.ResponseWriter, r *http.Request) {
+	addCorsHeader(w)
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+	var apiError ApiError
+
+	sessionToken := r.Header.Get("Authorization")
+	session, err := models.SessionRepo.GetSession(sessionToken)
+	if err != nil {
+		fmt.Println(err.Error())
+		apiError.Error = "Go connect first !"
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	}
+
+	userId, err := strconv.Atoi(session.UserID)
+	if err != nil {
+		apiError.Error = "Error getting user."
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	}
+	users, err := models.FollowRequestRepo.GetFollowRequestersForAnUser(userId)
+	if err != nil {
+		log.Println(err.Error())
+		apiError.Error = "An error occurred."
+		WriteJSON(w, http.StatusBadRequest, apiError)
+		return
+	}
+
+	WriteJSON(w, http.StatusOK, users)
+
+}
