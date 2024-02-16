@@ -1,5 +1,6 @@
 "use client";
 import config from "@/config";
+import { Modal } from "../components/modal";
 import React, { useEffect, useState } from "react";
 
 const fetchAllPosts = async (setPosts, setServerError) => {
@@ -106,6 +107,7 @@ export const PostText = () => {
 
 	return (
 		<>
+		<Modal setPosts={setPosts} posts={posts}/>
 			{posts.map((post) => (
 				<div key={post.post_id} className="bg-white rounded-xl shadow-sm text-sm font-medium border1 dark:bg-dark2">
 					{/* post heading */}
