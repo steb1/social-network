@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"server/lib"
+	"time"
 )
 
 // Comment structure represents the "comments" table
@@ -13,6 +14,8 @@ type Comment struct {
 	AuthorID  int    `json:"author_id"`
 	PostID    int    `json:"post_id"`
 	CreatedAt string `json:"created_at"`
+	Likes     int    `json:"like"`
+	IsLiked   bool   `json:"is_liked"`
 	User      *User
 }
 
@@ -27,12 +30,12 @@ func NewCommentRepository(db *sql.DB) *CommentRepository {
 }
 
 // CreateComment adds a new comment to the database
-func (cc *CommentRepository) CreateComment(comment *Comment) error {
+func (cc *CommentRepository) CreateComment(comment *Comment, createdAt time.Time) error {
 	query := `
-		INSERT INTO comment (content, author_id, post_id, created_at)
+		INSERT INTO comments (content, author_id, post_id, createdAt)
 		VALUES (?, ?, ?, ?)
 	`
-	result, err := cc.db.Exec(query, comment.Content, comment.AuthorID, comment.PostID, comment.CreatedAt)
+	result, err := cc.db.Exec(query, comment.Content, comment.AuthorID, comment.PostID, createdAt)
 	if err != nil {
 		return err
 	}
@@ -57,7 +60,7 @@ func (cc *CommentRepository) GetComment(commentID int) (*Comment, error) {
 	return &comment, nil
 }
 
-func (cc *CommentRepository) GetCommentsByPostID(postID string) ([]*Comment, error) {
+func (cc *CommentRepository) GetCommentsByPostID(postID string, currentUserID int) ([]*Comment, error) {
 	// Prepare a SQL query with a placeholder for the post ID
 	stmt, err := db.Prepare("SELECT comment_id, content, createdAt, first_name, last_name, nickname, post_id FROM comments,users WHERE comments.author_id=users.user_id and post_id = ? ORDER BY createdAt DESC")
 	if err != nil {
@@ -81,6 +84,14 @@ func (cc *CommentRepository) GetCommentsByPostID(postID string) ([]*Comment, err
 			log.Println("error scan in GetCommentsByPostID", err)
 		}
 		comment.CreatedAt = lib.FormatDateDB(comment.CreatedAt)
+		comment.Likes, err = Comment_likeRepo.GetNumberOfCommentLikes(comment.CommentID)
+		if err != nil {
+			return nil, err
+		}
+		comment.IsLiked, err = Comment_likeRepo.IsCommentLikedByCurrentUser(comment.CommentID, currentUserID)
+		if err != nil {
+			return nil, err
+		}
 		comments = append(comments, &comment)
 	}
 

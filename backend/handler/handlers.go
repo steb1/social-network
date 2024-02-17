@@ -27,6 +27,9 @@ var Routes = []Route{
 	{Path: "/api/createPost", Handler: HandleCreatePost, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/imgPost", Handler: ImageHandler, Methods: []string{"GET", "OPTIONS"}},
 	{Path: "/api/getAllPosts", Handler: HandleGetAllPosts, Methods: []string{"GET", "OPTIONS"}},
+	{Path: "/api/createComment", Handler: HandleCreateComment, Methods: []string{"POST", "OPTIONS"}},
+	{Path: "/api/likePost", Handler: HandleLikePost, Methods: []string{"POST", "OPTIONS"}},
+	{Path: "/api/likeComment", Handler: HandleLikeComment, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/getFollowers", Handler: HandleGetFollowers, Methods: []string{"GET", "OPTIONS"}},
 }
 

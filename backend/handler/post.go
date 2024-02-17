@@ -91,38 +91,54 @@ func HandleCreatePost(w http.ResponseWriter, r *http.Request) {
 		post.Category = _categories
 	}
 	postId := strconv.Itoa(post.PostID)
-	comments, _ := models.CommentRepo.GetCommentsByPostID(postId)
+	comments, _ := models.CommentRepo.GetCommentsByPostID(postId, post.AuthorID)
 	post.Comments = comments
 	post.CreatedAt = lib.FormatDateDB(createdAt.Format("2006-01-02 15:04:05"))
 	WriteJSON(w, http.StatusOK, post)
 }
+
 func HandleGetAllPosts(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodOptions {
+		HandleOptions(w, r)
+		return
+	}
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
-
 	var apiError ApiError
-	cookie, err := r.Cookie("social-network")
-	session, err := models.SessionRepo.GetSession(cookie.Value)
-	if err != nil {
+
+	cookie, errC := r.Cookie("social-network")
+	session, errS := models.SessionRepo.GetSession(cookie.Value)
+	if (errS != nil || errC != nil) {
 		apiError.Error = "Go connect first !"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
 		return
 	}
-	posts, err := models.PostRepo.GetAllPostsPublicPrivateAuth(session.UserID)
+	userId, err := strconv.Atoi(session.UserID)
 	if err != nil {
+		apiError.Error = "Error getting user."
+		WriteJSON(w, http.StatusUnauthorized, apiError)
 		return
 	}
+
+	var posts = RetreiveAllPosts(w, r, userId, apiError)
+
+	WriteJSON(w, http.StatusOK, posts)
+}
+
+func RetreiveAllPosts(w http.ResponseWriter, r *http.Request, userId int, apiError ApiError) []*models.Post {
+	posts, err := models.PostRepo.GetAllPostsPublicPrivateAuth(userId)
 	if err != nil {
 		fmt.Println(err)
-		apiError.Error = "Something went wrong while getting all posts"
+		apiError.Error = "Something went wrong while getting all public posts"
 		WriteJSON(w, http.StatusInternalServerError, apiError)
+		return nil
 	}
 	for i := range posts {
 		postIDStr := strconv.Itoa(posts[i].PostID)
-		comments, err := models.CommentRepo.GetCommentsByPostID(postIDStr)
+		comments, err := models.CommentRepo.GetCommentsByPostID(postIDStr, userId)
 		if err != nil {
 			fmt.Println(err)
 			apiError.Error = "Something went wrong while getting comments inside posts"
@@ -131,8 +147,7 @@ func HandleGetAllPosts(w http.ResponseWriter, r *http.Request) {
 
 		posts[i].Comments = comments
 	}
-
-	WriteJSON(w, http.StatusOK, posts)
+	return posts
 }
 
 func ImageHandler(w http.ResponseWriter, r *http.Request) {
