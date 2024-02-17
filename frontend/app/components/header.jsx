@@ -1,8 +1,8 @@
 "use client";
 import Link from "next/link";
-import Logout from "./logout";
 import config from "@/config";
 import { useEffect } from "react";
+import Logout from "./Logout";
 
 const Header = () => {
 	useEffect(() => {

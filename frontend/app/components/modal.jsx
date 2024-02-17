@@ -14,7 +14,7 @@ export const fetchFollowers = async (setFollowers) => {
 	}
 };
 
-export const Modal = () => {
+export const Modal = ({setPosts, posts}) => {
 	let [followers, setFollowers] = useState([]);
 	useEffect(() => {
 		fetchFollowers(setFollowers);
@@ -33,6 +33,7 @@ export const Modal = () => {
 			if (response.ok) {
 				console.log("post sent");
 				UIkit.modal("#create-status").hide();
+				setPosts([jsonData, ...posts]);
 				const body = document.querySelector(".post_body");
 				const checkboxes = document.querySelectorAll("input.select_category:checked");
 				body.value = "";
