@@ -107,7 +107,7 @@ const GroupDetail = ( { params }  ) => {
                         ))
                       ) : members && members.length > 0 && tab == 4 ? (
                         members.map((member, i) => (
-                          <div className="mx-auto">
+                          <div className="mx-auto pt-5">
                             <Members key={i} member={member} />
                           </div>
                         ))

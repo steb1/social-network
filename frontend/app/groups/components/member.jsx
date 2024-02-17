@@ -6,7 +6,7 @@ export const Members = ({ member }) => {
                     <img src={ !member.avatar ?  "../assets/images/avatars/avatar-5.jpg" : member.avatar } className="rounded-full ml-2" alt="" />
                 </div>
                 <div className="w-80 ">
-                    <p> { member ? member.nickname : "" } </p>
+                    <p> { member ? (member.first_name + " " + member.last_name + " (" + member.nickname + ")" ) : "" } </p>
                 </div>
             </div>
             <div className="flex flex-row w-10 h-10 px-1 my-auto gap-3  items-center rounded-full" >
