@@ -134,10 +134,10 @@ func (cm *MembershipRepository) CheckGroupIsPublic(userId, groupId int) bool {
 // GetAllUsersByGroupID retrieves all users for a specific group from the memberships table
 func (cm *MembershipRepository) GetAllUsersByGroupID(groupID int) ([]User, error) {
 	query := `
-		SELECT u.user_id, u.email, u.password, u.first_name, u.last_name, u.birthdate, u.avatar, u.nickname, u.about_me, u.account_type
+		SELECT u.user_id, u.email, u.password, u.first_name, u.last_name, u.date_of_birth, u.avatar, u.nickname, u.about_me
 		FROM users u
 		INNER JOIN memberships m ON u.user_id = m.user_id
-		WHERE m.group_id = ? "
+		WHERE m.group_id = ? 
 	`
 
 	rows, err := cm.db.Query(query, groupID)
@@ -151,7 +151,7 @@ func (cm *MembershipRepository) GetAllUsersByGroupID(groupID int) ([]User, error
 		var user User
 		err := rows.Scan(
 			&user.UserID, &user.Email, &user.Password, &user.FirstName, &user.LastName,
-			&user.DateOfBirth, &user.Avatar, &user.Nickname, &user.AboutMe, &user.AccountType,
+			&user.DateOfBirth, &user.Avatar, &user.Nickname, &user.AboutMe,
 		)
 		if err != nil {
 			return nil, err

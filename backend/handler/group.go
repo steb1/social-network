@@ -282,7 +282,9 @@ func HandleGetGroupDetail(w http.ResponseWriter, r *http.Request) {
 
 		events, _ := models.EventRepo.GetAllEventsByGroupID(intGroupId, userId)
 		
-		Members, _ := models.MembershipRepo.GetAllUsersByGroupID(intGroupId)	
+		Members, err := models.MembershipRepo.GetAllUsersByGroupID(intGroupId)	
+
+		fmt.Println(err , " --------- err ",Members, "------ Members")
 
 		Requests, _ := models.MembershipRepo.GetAllRequestByGroupID(intGroupId)	
 
@@ -301,7 +303,6 @@ func HandleGetGroupDetail(w http.ResponseWriter, r *http.Request) {
 		response["IsOwner"] = IsOwner
 		
 		lib.WriteJSONResponse(w, response)
-		fmt.Println(GroupData)
 	}
 }
 

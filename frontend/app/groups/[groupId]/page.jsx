@@ -11,8 +11,9 @@ import { Modal } from "../components/modal";
 import { Event } from "../components/event";
 import { AddEvent } from "../components/addEvent";
 import { Requests } from "../components/requests";
+import { Members } from "../components/member";
 
-export async function fetchGroupDetail (setPosts , setGroup, setEvents, setRequests, setMessages, setServerError, groupId, setIsOwner) {
+export async function fetchGroupDetail (setPosts , setGroup, setEvents, setRequests, setMessages, setServerError, groupId, setIsOwner, setMembers) {
     let  token = document.cookie.split("=")[1]
     try {
         const response = await fetch(config.serverApiUrl + "getGroupDetail", {
@@ -29,13 +30,14 @@ export async function fetchGroupDetail (setPosts , setGroup, setEvents, setReque
           if (contentType && contentType.includes("application/json")) {
 
             const data = await response.json();
-            console.log(data.IsOwner, "-------------- data");
+            console.log(data, "-------------- data");
             setMessages(data.Messages)
             setPosts(data.Post)
             setRequests(data.requests)
             setEvents(data.events)
             setGroup(data.group)
             setIsOwner(data.IsOwner)
+            setMembers(data.members)
 
           } else {
             console.error("Response is not in JSON format");
@@ -61,11 +63,12 @@ const GroupDetail = ( { params }  ) => {
     let [messages, setMessages] = useState([])
     let [tab, setTab] = useState(1)
     let [isowner, setIsowner] = useState(false)
+    let [members, setMembers] = useState([])
     
     const [serverError, setServerError] = useState(null);
 
     useEffect(() => {
-        fetchGroupDetail(setPosts, setGroup, setEvents, setRequest, setMessages, setServerError, params.groupId, setIsowner)
+        fetchGroupDetail(setPosts, setGroup, setEvents, setRequest, setMessages, setServerError, params.groupId, setIsowner, setMembers)
         
     }, [])
 
@@ -102,10 +105,10 @@ const GroupDetail = ( { params }  ) => {
                           <Event key={event.event_id} event={event} setPosts={setPosts} setGroup={setGroup} setEvents={setEvents} setRequests={setRequest} setMessages={setMessages} setServerError={setServerError} groupId={group.group_id} />
                         </div>
                         ))
-                      ) : group.members && group.members.length > 0 && tab == 4 ? (
-                        group.members.map((member) => (
-                          <div className="mx-auto ">
-                            <p> { member} </p>
+                      ) : members && members.length > 0 && tab == 4 ? (
+                        members.map((member, i) => (
+                          <div className="mx-auto">
+                            <Members key={i} member={member} />
                           </div>
                         ))
                       ) : requests && requests.length > 0 && tab == 5 ? (
