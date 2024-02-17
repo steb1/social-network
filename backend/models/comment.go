@@ -121,3 +121,29 @@ func (cc *CommentRepository) DeleteComment(commentID int) error {
 	}
 	return nil
 }
+
+// GetAllComments retrieves all comments for a given post from the database.
+func (cc *CommentRepository) GetAllComments(postID int) ([]Comment, error) {
+	query := "SELECT * FROM comment WHERE post_id = ?"
+	rows, err := cc.db.Query(query, postID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var comments []Comment
+	for rows.Next() {
+		var comment Comment
+		err := rows.Scan(&comment.CommentID, &comment.Content, &comment.AuthorID, &comment.PostID, &comment.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		comments = append(comments, comment)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return comments, nil
+}

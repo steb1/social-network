@@ -29,7 +29,6 @@ func (pc *PostCategorieRepository) CreatePostCategory(post_id int, categories []
 	`
 	for _, v := range categories {
 		_, err := pc.db.Exec(query, v, post_id)
-
 		if err != nil {
 			log.Println(err.Error())
 		}
@@ -38,7 +37,7 @@ func (pc *PostCategorieRepository) CreatePostCategory(post_id int, categories []
 }
 
 // GetPostCategory retrieves a post category from the database by ID
-func (pc *PostCategorieRepository) GetPostCategory(postId int) ([]string) {
+func (pc *PostCategorieRepository) GetPostCategory(postId int) []string {
 	rows, err := db.Query("SELECT c.name FROM posts p JOIN post_categories pc ON p.post_id = pc.post_id JOIN categories c ON pc.category_id = c.category_id WHERE p.post_id = ?", postId)
 	if err != nil {
 		log.Fatal(err)
@@ -52,7 +51,6 @@ func (pc *PostCategorieRepository) GetPostCategory(postId int) ([]string) {
 	}
 	return categories
 }
-
 
 // UpdatePostCategory updates an existing post category in the database
 func (pc *PostCategorieRepository) UpdatePostCategory(postCategory *PostCategory) error {
