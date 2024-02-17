@@ -92,7 +92,7 @@ func (cm *MembershipRepository) DeleteMembership(membershipID int) error {
 }
 
 func (cm *MembershipRepository) CheckIfMembershispExist(userId, groupId int) bool {
-	query := "SELECT * FROM memberships WHERE group_id = ? AND user_id = ? AND membership_status !='accepted'"
+	query := "SELECT * FROM memberships WHERE group_id = ? AND user_id = ?"
 	var membership Membership
 	err := cm.db.QueryRow(query, groupId, userId).Scan(&membership.MembershipID, &membership.UserID, &membership.GroupID, &membership.JoinedAt, &membership.InvitationStatus, &membership.MembershipStatus)
 	if err != nil {
