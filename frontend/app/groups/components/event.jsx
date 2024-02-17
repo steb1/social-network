@@ -7,21 +7,36 @@ export const Event = ( { event, setPosts , setGroup, setEvents, setRequests, set
         <figure className=" "><img src="https://hire4event.com/blogs/wp-content/uploads/2019/05/Event-Management-Proposal-Hire4event.jpg" alt="Shoes" /></figure>
         <div className="card-body">
             <h2 className="card-title">
-            {event.title}
+           Title : {event.title}
             <div className="badge badge-secondary">NEW</div>
             </h2>
-            <p> { event.description }</p>
+            <p> Description :  { event.description }</p>
             <p> Attendance : { event.attendance > 0 ? event.attendance : "0" } people. </p>
             <div className="card-actions justify-end">
-            <div className="badge left-0"> {formatDate(event.event_date)}</div> 
+            <div className="badge "> {formatDate(event.event_date)}</div> 
             </div>
-            { event.IsRegistered == 0 ? "Registered" : event.IsRegistered == 2 ? "You not going" : <button id={event.event_id} onClick={ (e) => HandleRegisterEvent( e, setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId ) } className="btn btn-sm"> Register </button> }
+            <div>
+            { event.IsRegistered == 0 ? <div className="badge ">You're Going </div> : event.IsRegistered == 2 ? <div className="badge text-right"> You not going </div>   :
+              <div className="w-full justify-center flex flex-col gap-3 flex-center ">
+                <div className="text-center ">Will you participate to this event ?</div>
+                <div className="flex justify-center flex-row gap-2 flex-center content-center" >
+                  <button id={event.event_id} onClick={ (e) => HandleRegisterEvent( e, setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId , "going") } className="btn btn-sm w-36    "> 
+                    Yes
+                  </button> 
+                  <button id={event.event_id} onClick={ (e) => HandleRegisterEvent( e, setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId, "notgoing" ) } className="btn btn-sm w-36"> 
+                    No
+                  </button> 
+                 </div>
+              </div>
+             
+             }
+            </div>
         </div>
         </div>
     )
 }
 
-async function HandleRegisterEvent  ( e, setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId ) {
+async function HandleRegisterEvent  ( e, setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId, option ) {
     let  token = document.cookie.split("=")[1]
     if (!e.target.id || !token) {
         return
@@ -31,6 +46,7 @@ async function HandleRegisterEvent  ( e, setPosts, setGroup, setEvents, setReque
     
     const formData = new FormData();
     formData.append("eventId", eventId);
+    formData.append("option", option)
 
     if (token) {
         // Use the token as needed
@@ -58,6 +74,7 @@ async function HandleRegisterEvent  ( e, setPosts, setGroup, setEvents, setReque
             console.error("Response is not in JSON format");
           }
         } else {
+
           const errorResponse = await response.json();
           const errorMessage = errorResponse.error || "An error occurred.";
           console.error("No Group retrieved:", errorMessage);

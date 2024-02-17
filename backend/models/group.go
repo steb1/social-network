@@ -90,7 +90,7 @@ func (gr *GroupRepository) DeleteGroup(groupID int) error {
 }
 
 func (gr *GroupRepository) GetAllPublicGroup(userid int) []Group {
-	rows, err := gr.db.Query("SELECT * FROM groups WHERE creator_id != ?", userid)
+	rows, err := gr.db.Query("SELECT * FROM groups WHERE creator_id != ? ORDER BY group_id DESC", userid)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -118,9 +118,38 @@ func (gr *GroupRepository) GetAllPublicGroup(userid int) []Group {
 
 	return groups
 }
+func (gr *GroupRepository) SubcribedGroups(userid int) []Group {
+	rows, err := gr.db.Query("SELECT * FROM groups WHERE creator_id != ? ORDER BY group_id DESC", userid)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	var groups []Group
+
+	for rows.Next() {
+		var group Group
+		err := rows.Scan(&group.GroupID, &group.Title, &group.Description, &group.CreatorID)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		exist := MembershipRepo.CheckIfSubscribed(userid, group.GroupID, "accepted")
+
+		if exist {
+			groups = append(groups, group)
+		}
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	return groups
+}
 
 func (gr *GroupRepository) GetUserOwnGroups(userid int) []Group {
-	rows, err := gr.db.Query("SELECT * FROM groups WHERE creator_id = ?", userid)
+	rows, err := gr.db.Query("SELECT * FROM groups WHERE creator_id = ? ORDER BY group_id DESC", userid)
 	if err != nil {
 		log.Fatal(err)
 	}

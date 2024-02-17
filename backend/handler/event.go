@@ -64,7 +64,6 @@ func HandleCreateEvent(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Is hereee")
 
 	existMember := models.MembershipRepo.CheckIfIsMember(userId, intGroupId)
-	fmt.Println(existMember)
 
 	_, err = models.GroupRepo.IsOwner(intGroupId, userId)
 	IsOwner := false
@@ -141,6 +140,7 @@ func HandleRegisterEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	eventID := r.FormValue("eventId")
+	option := r.FormValue("option")
 	intEventId, err := strconv.Atoi(fmt.Sprintf("%v", eventID))
 
 
@@ -159,7 +159,6 @@ func HandleRegisterEvent(w http.ResponseWriter, r *http.Request) {
 	
 
 	existMember := models.MembershipRepo.CheckIfIsMember(userId, event.GroupID)
-	fmt.Println(existMember)
 
 	_, err = models.GroupRepo.IsOwner(event.GroupID, userId)
 
@@ -169,41 +168,62 @@ func HandleRegisterEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if IsOwner || existMember {
-		Attendance, err := models.AttendanceRepo.IsRegistered(intEventId, userId)
+		_, err := models.AttendanceRepo.IsRegistered(intEventId, userId)
 
 		if err != nil {
-			var Attendance models.Attendance
-
-			Attendance.EventID = intEventId
-			Attendance.UserID = userId
-			Attendance.AttendanceOption = 0
-
-			err = models.AttendanceRepo.CreateAttendance(&Attendance)
-
-			if err != nil {
-				WriteJSON(w, http.StatusUnauthorized, apiError)
-				return
+			if (option == "going" ) {
+				var Attendance models.Attendance
+	
+				Attendance.EventID = intEventId
+				Attendance.UserID = userId
+				Attendance.AttendanceOption = 0
+	
+				err = models.AttendanceRepo.CreateAttendance(&Attendance)
+	
+				if err != nil {
+					WriteJSON(w, http.StatusUnauthorized, apiError)
+					return
+				}
+	
+				response := make(map[string]interface{})
+	
+				response["ok"] = true 
+	
+				lib.WriteJSONResponse(w, response)
+			} else {
+				var Attendance models.Attendance
+	
+				Attendance.EventID = intEventId
+				Attendance.UserID = userId
+				Attendance.AttendanceOption = 2
+	
+				err = models.AttendanceRepo.CreateAttendance(&Attendance)
+	
+				if err != nil {
+					WriteJSON(w, http.StatusUnauthorized, apiError)
+					return
+				}
+	
+				response := make(map[string]interface{})
+	
+				response["ok"] = true 
+	
+				lib.WriteJSONResponse(w, response)
 			}
-
-			response := make(map[string]interface{})
-
-			response["ok"] = true 
-
-			lib.WriteJSONResponse(w, response)
 		} else {
-			
-			err = models.AttendanceRepo.DeleteAttendance(Attendance.AttendanceID)
 
-			if err != nil {
+			// err = models.AttendanceRepo.DeleteAttendance(Attendance.AttendanceID)
+
+			// if err != nil {
 				http.Error(w, "Erreur group doesn't exist", http.StatusBadRequest)
 				return
-			}
+			// }
 
-			response := make(map[string]interface{})
+			// response := make(map[string]interface{})
 
-			response["ok"] = true 
+			// response["ok"] = true 
 
-			lib.WriteJSONResponse(w, response)
+			// lib.WriteJSONResponse(w, response)
 		}
 	}
 

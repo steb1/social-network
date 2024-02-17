@@ -56,6 +56,17 @@ func (cm *MembershipRepository) GetMembership(membershipID int) (*Membership, er
 	return &membership, nil
 }
 
+// GetMembership retrieves a membership from the database by membership_id
+func (cm *MembershipRepository) GetMembershipbyGroupAndUserId(groupId, userID int) (*Membership, error) {
+	query := "SELECT * FROM memberships WHERE group_id = ? AND user_id = ? "
+	var membership Membership
+	err := cm.db.QueryRow(query, groupId, userID).Scan(&membership.MembershipID, &membership.UserID, &membership.GroupID, &membership.JoinedAt, &membership.InvitationStatus, &membership.MembershipStatus)
+	if err != nil {
+		return nil, err
+	}
+	return &membership, nil
+}
+
 // UpdateMembership updates an existing membership in the database
 func (cm *MembershipRepository) UpdateMembership(membership *Membership) error {
 	query := `
@@ -81,7 +92,7 @@ func (cm *MembershipRepository) DeleteMembership(membershipID int) error {
 }
 
 func (cm *MembershipRepository) CheckIfMembershispExist(userId, groupId int) bool {
-	query := "SELECT * FROM memberships WHERE group_id = ? AND user_id = ?"
+	query := "SELECT * FROM memberships WHERE group_id = ? AND user_id = ? AND membership_status !='accepted'"
 	var membership Membership
 	err := cm.db.QueryRow(query, groupId, userId).Scan(&membership.MembershipID, &membership.UserID, &membership.GroupID, &membership.JoinedAt, &membership.InvitationStatus, &membership.MembershipStatus)
 	if err != nil {
@@ -90,15 +101,22 @@ func (cm *MembershipRepository) CheckIfMembershispExist(userId, groupId int) boo
 	}
 	return true
 }
-func (cm *MembershipRepository) CheckIfIsMember(userId, groupId int) bool {
-	query := "SELECT * FROM memberships WHERE group_id = ? AND user_id = ? AND InvitationStatus != 'pending'"
+func (cm *MembershipRepository) CheckIfSubscribed(userId, groupId int, option string) bool {
+	query := "SELECT * FROM memberships WHERE group_id = ? AND user_id = ? AND membership_status= ?"
 	var membership Membership
-	err := cm.db.QueryRow(query, groupId, userId).Scan(&membership.MembershipID, &membership.UserID, &membership.GroupID, &membership.JoinedAt, &membership.InvitationStatus, &membership.MembershipStatus)
+	err := cm.db.QueryRow(query, groupId, userId, option).Scan(&membership.MembershipID, &membership.UserID, &membership.GroupID, &membership.JoinedAt, &membership.InvitationStatus, &membership.MembershipStatus)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("(----------- slnk )", err)
 		return false
 	}
 	return true
+}
+func (cm *MembershipRepository) CheckIfIsMember(userId, groupId int) bool {
+	query := "SELECT * FROM memberships WHERE group_id = ? AND user_id = ? AND membership_status != 'pending'"
+	var membership Membership
+	err := cm.db.QueryRow(query, groupId, userId).Scan(&membership.MembershipID, &membership.UserID, &membership.GroupID, &membership.JoinedAt, &membership.InvitationStatus, &membership.MembershipStatus)
+	
+	return err == nil
 }
 
 func (cm *MembershipRepository) CheckGroupIsPublic(userId, groupId int) bool {
@@ -149,10 +167,10 @@ func (cm *MembershipRepository) GetAllUsersByGroupID(groupID int) ([]User, error
 }
 func (cm *MembershipRepository) GetAllRequestByGroupID(groupID int) ([]User, error) {
 	query := `
-		SELECT u.user_id, u.email, u.password, u.first_name, u.last_name, u.birthdate, u.avatar, u.nickname, u.about_me, u.account_type
+		SELECT u.user_id, u.email, u.password, u.first_name, u.last_name, u.date_of_birth, u.avatar, u.nickname, u.about_me, u.account_type
 		FROM users u
 		INNER JOIN memberships m ON u.user_id = m.user_id
-		WHERE m.group_id = ? AND m.InvitationStatus = "pending"
+		WHERE m.group_id = ? AND m.membership_status = "pending"
 	`
 
 	rows, err := cm.db.Query(query, groupID)

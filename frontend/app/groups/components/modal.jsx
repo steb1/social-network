@@ -242,8 +242,10 @@ async function handleCreateEvent(e, setPosts, setGroup, setEvents, setRequests, 
     const selectedDate = new Date(EventDate.value);
 
 
+
+
     if (!DescriptionEvent || !EventTime || !EventDate || !EventTitle || !DescriptionEvent.value.trim()  || !EventDate.value.trim() || !EventTitle.value.trim() || selectedDate < currentDate) {
-        alert("La date ne peut pas être dans le passé. Veuillez sélectionner une date future.");
+        alert("Please fill the form properly");
         return
     }
 
