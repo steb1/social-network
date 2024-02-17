@@ -1,6 +1,10 @@
 package models
 
-import "database/sql"
+import (
+	"database/sql"
+	"fmt"
+	"log"
+)
 
 // Group structure represents the "groups" table
 type Group struct {
@@ -19,7 +23,6 @@ func NewGroupRepository(db *sql.DB) *GroupRepository {
 		db: db,
 	}
 }
-
 
 // CreateGroup adds a new group to the database
 func (gr *GroupRepository) CreateGroup(group *Group) error {
@@ -51,6 +54,16 @@ func (gr *GroupRepository) GetGroup(groupID int) (*Group, error) {
 	}
 	return &group, nil
 }
+// GetGroup retrieves a group from the database by group_id
+func (gr *GroupRepository) IsOwner(groupID, user_id int) (*Group, error) {
+	query := "SELECT * FROM groups WHERE group_id = ? AND Creator_id = ?"
+	var group Group
+	err := gr.db.QueryRow(query, groupID, user_id).Scan(&group.GroupID, &group.Title, &group.Description, &group.CreatorID)
+	if err != nil {
+		return nil, err
+	}
+	return &group, nil
+}
 
 // UpdateGroup updates an existing group in the database
 func (gr *GroupRepository) UpdateGroup(group *Group) error {
@@ -74,4 +87,100 @@ func (gr *GroupRepository) DeleteGroup(groupID int) error {
 		return err
 	}
 	return nil
+}
+
+func (gr *GroupRepository) GetAllPublicGroup(userid int) []Group {
+	rows, err := gr.db.Query("SELECT * FROM groups WHERE creator_id != ? ORDER BY group_id DESC", userid)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	var groups []Group
+
+	for rows.Next() {
+		var group Group
+		err := rows.Scan(&group.GroupID, &group.Title, &group.Description, &group.CreatorID)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		exist := MembershipRepo.CheckIfMembershispExist(userid, group.GroupID)
+
+		if !exist {
+			groups = append(groups, group)
+		}
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	return groups
+}
+func (gr *GroupRepository) SubcribedGroups(userid int) []Group {
+	rows, err := gr.db.Query("SELECT * FROM groups WHERE creator_id != ? ORDER BY group_id DESC", userid)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	var groups []Group
+
+	for rows.Next() {
+		var group Group
+		err := rows.Scan(&group.GroupID, &group.Title, &group.Description, &group.CreatorID)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		exist := MembershipRepo.CheckIfSubscribed(userid, group.GroupID, "accepted")
+
+		if exist {
+			groups = append(groups, group)
+		}
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	return groups
+}
+
+func (gr *GroupRepository) GetUserOwnGroups(userid int) []Group {
+	rows, err := gr.db.Query("SELECT * FROM groups WHERE creator_id = ? ORDER BY group_id DESC", userid)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	var groups []Group
+
+	for rows.Next() {
+		var group Group
+		err := rows.Scan(&group.GroupID, &group.Title, &group.Description, &group.CreatorID)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		groups = append(groups, group)
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	return groups
+}
+
+func (gr *GroupRepository) CheckGroupExist(name string) bool {
+	query := "SELECT * FROM groups WHERE title = ?"
+	var group Group
+	err := gr.db.QueryRow(query, name).Scan(&group.GroupID, &group.Title, &group.Description, &group.CreatorID)
+	fmt.Println(err, "----------- sql")
+	if err == nil {
+		return false
+	}
+	return true
 }

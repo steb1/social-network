@@ -52,6 +52,15 @@ var Routes = []Route{
 	{Path: "/api/toggleProfilePrivacy", Handler: ToggleProfilePrivacy, Methods: []string{"POST", "GET", "OPTIONS"}},
 	{Path: "/api/follow", Handler: SubscriptionHandler, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/pendingrequests", Handler: HandlePendingRequests, Methods: []string{"GET", "POST", "OPTIONS"}},
+	{Path: "/api/createPost", Handler: HandleCreatePost, Methods: []string{"POST", "OPTIONS"}},
+	{Path: "/api/getAllGroups", Handler: HandleGetAllGroups, Methods: []string{"GET", "OPTIONS"}},
+	{Path: "/api/createMembership", Handler: HandleCreateMembership, Methods: []string{"POST", "OPTIONS"}},
+	{Path: "/api/createGroup", Handler: HandleCreateGroup, Methods: []string{"POST", "OPTIONS"}},
+	{Path: "/api/getGroupDetail", Handler: HandleGetGroupDetail, Methods: []string{"POST", "OPTIONS"}},
+	{Path: "/api/createGroupPost", Handler: HandleCreateGroupPost, Methods: []string{"POST", "OPTIONS"}},
+	{Path: "/api/createEvent", Handler: HandleCreateEvent, Methods: []string{"POST", "OPTIONS"}},
+	{Path: "/api/registerEvent", Handler: HandleRegisterEvent, Methods: []string{"POST", "OPTIONS"}},
+	{Path: "/api/handleRequestGroup", Handler: HandleRequestGroup, Methods: []string{"POST", "OPTIONS"}},
 }
 
 func MiddlewareIsAuthenticated(handler http.HandlerFunc) http.HandlerFunc {
