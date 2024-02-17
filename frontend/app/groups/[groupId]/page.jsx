@@ -10,8 +10,9 @@ import { GroupCover } from "@/app/components/groupCover";
 import { Modal } from "../components/modal";
 import { Event } from "../components/event";
 import { AddEvent } from "../components/addEvent";
+import { Requests } from "../components/requests";
 
-export async function fetchGroupDetail (setPosts , setGroup, setEvents, setRequests, setMessages, setServerError, groupId) {
+export async function fetchGroupDetail (setPosts , setGroup, setEvents, setRequests, setMessages, setServerError, groupId, setIsOwner) {
     let  token = document.cookie.split("=")[1]
     try {
         const response = await fetch(config.serverApiUrl + "getGroupDetail", {
@@ -28,12 +29,13 @@ export async function fetchGroupDetail (setPosts , setGroup, setEvents, setReque
           if (contentType && contentType.includes("application/json")) {
 
             const data = await response.json();
-            console.log(data, "-------------- data");
-            setMessages(data.Message)
+            console.log(data.IsOwner, "-------------- data");
+            setMessages(data.Messages)
             setPosts(data.Post)
-            setRequests(data.request)
+            setRequests(data.requests)
             setEvents(data.events)
             setGroup(data.group)
+            setIsOwner(data.IsOwner)
 
           } else {
             console.error("Response is not in JSON format");
@@ -55,22 +57,22 @@ const GroupDetail = ( { params }  ) => {
     let [group, setGroup] = useState([])
     let [events, setEvents] = useState([])
     let [posts, setPosts] = useState([])
-    let [request, setRequest] = useState([])
+    let [requests, setRequest] = useState([])
     let [messages, setMessages] = useState([])
     let [tab, setTab] = useState(1)
-
+    let [isowner, setIsowner] = useState(false)
     
     const [serverError, setServerError] = useState(null);
 
     useEffect(() => {
-        fetchGroupDetail(setPosts, setGroup, setEvents, setRequest, setMessages, setServerError, params.groupId)
+        fetchGroupDetail(setPosts, setGroup, setEvents, setRequest, setMessages, setServerError, params.groupId, setIsowner)
         
     }, [])
 
     return (
     <div className="flex flex-col">
         <div className="">
-            <Header/>
+            <Header/> 
         </div>
         <div className="flex flex-row">
             <div className="mt-10 ">
@@ -78,13 +80,13 @@ const GroupDetail = ( { params }  ) => {
             </div>
             <div className="flex flex-col w-full mx-4">
               <div className="mt-36 w-full mr-20">
-                <GroupCover groupInfo={group} setTab={setTab} tab={ tab }/>
+                <GroupCover groupInfo={group} setTab={setTab} tab={ tab } isowner={isowner} />
               </div>
               <div className="flex flex-row">
                       
                   <div id="content" className=" flex flex-col gap-5 mx-auto ">
-                        {posts && posts.length > 0 && tab === 1 && <AddStory />}
-                        {events && events.length > 0 && tab === 3 && <AddEvent />}
+                        {tab === 1 && <AddStory />}
+                        {tab === 3 && <AddEvent />}
                         
                         <Modal groupId={group.group_id} setPosts={setPosts} setGroup={setGroup} setEvents={setEvents} setRequests={setRequest} setMessages={setMessages} setServerError={setServerError}/>
                         {posts && posts.length > 0 && tab == 1 ?(
@@ -100,12 +102,18 @@ const GroupDetail = ( { params }  ) => {
                           <Event key={event.event_id} event={event} setPosts={setPosts} setGroup={setGroup} setEvents={setEvents} setRequests={setRequest} setMessages={setMessages} setServerError={setServerError} groupId={group.group_id} />
                         </div>
                         ))
-                      ) : tab == 4 ? (
-                        <p> Members </p>
-                      ) : tab == 5 ? (
-                        <p> Requests </p>
-                      ) : tab == 5 ? (
-                        <p> Requests </p>
+                      ) : group.members && group.members.length > 0 && tab == 4 ? (
+                        group.members.map((member) => (
+                          <div className="mx-auto ">
+                            <p> { member} </p>
+                          </div>
+                        ))
+                      ) : requests && requests.length > 0 && tab == 5 ? (
+                        requests.map((request, i) => (
+                          <div className="mx-auto pt-5">
+                              <Requests key={i} request={request} setPosts={setPosts} setGroup={setGroup} setEvents={setEvents} setRequests={setRequest} setMessages={setMessages} setServerError={setServerError} groupId={group.group_id}/>
+                          </div>
+                        ))
                       ) : 'Not data avaible.' }
                       
                   </div>

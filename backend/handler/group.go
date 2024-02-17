@@ -46,11 +46,14 @@ func HandleGetAllGroups(w http.ResponseWriter, r *http.Request) {
 	}
 	publicGroups := models.GroupRepo.GetAllPublicGroup(userId)
 	ownGroups := models.GroupRepo.GetUserOwnGroups(userId)
+	subcribedGroups := models.GroupRepo.SubcribedGroups(userId)
 
 	response := make(map[string]interface{})
 
 	response["publicGroups"] = publicGroups
 	response["ownGroups"] = ownGroups
+	response["subcribedGroups"] = subcribedGroups
+
 
 	if ok {
 		lib.WriteJSONResponse(w, response)
@@ -83,7 +86,6 @@ func HandleCreateMembership(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("is hereee")
 
 	var requestBody map[string]interface{}
 	err = json.NewDecoder(r.Body).Decode(&requestBody)
@@ -180,7 +182,6 @@ func HandleCreateGroup(w http.ResponseWriter, r *http.Request) {
 
 
 	exist := models.GroupRepo.CheckGroupExist(fmt.Sprintf("%v", name))
-	fmt.Println(userId)
 
 	if exist {
 		var Newgroup models.Group
@@ -267,14 +268,14 @@ func HandleGetGroupDetail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	exist := models.MembershipRepo.CheckIfIsMember(userId, group.GroupID)
-	fmt.Println(exist)
 	_ , err = models.GroupRepo.IsOwner(intGroupId, userId)
 	 IsOwner := false
 	if err == nil {
 		IsOwner = true
 	}
+	fmt.Println(exist, " ---- exist")
 	if exist || err == nil {
-		fmt.Println("eeeeeeeee")
+		
 		var GroupData GroupData
 
 		GroupData.Group = *group
@@ -300,6 +301,7 @@ func HandleGetGroupDetail(w http.ResponseWriter, r *http.Request) {
 		response["IsOwner"] = IsOwner
 		
 		lib.WriteJSONResponse(w, response)
+		fmt.Println(GroupData)
 	}
 }
 
@@ -340,9 +342,6 @@ func HandleCreateGroupPost(w http.ResponseWriter, r *http.Request) {
 	// Access the form fields
 	content := r.FormValue("content")
 	groupID := r.FormValue("groupId")
-
-	fmt.Println("Is hereee")
-
 	
 
 	intGroupId, err := strconv.Atoi(fmt.Sprintf("%v", groupID))
@@ -358,7 +357,6 @@ func HandleCreateGroupPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	exist := models.MembershipRepo.CheckIfIsMember(userId, intGroupId)
-	fmt.Println(exist)
 	
 	_ , err = models.GroupRepo.IsOwner(intGroupId, userId)
 	 IsOwner := false
@@ -377,9 +375,6 @@ func HandleCreateGroupPost(w http.ResponseWriter, r *http.Request) {
 		PostGroup.HasImage = 1
 		PostGroup.ImageURL = ""
 
-		// if !ok___ {
-		// 	PostGroup.HasImage = 0
-		// }
 		PostGroup.ImageURL = lib.UploadImage(r)
 
 		content := content
@@ -400,3 +395,4 @@ func HandleCreateGroupPost(w http.ResponseWriter, r *http.Request) {
 		 lib.WriteJSONResponse(w, response)
 	}
 }
+
