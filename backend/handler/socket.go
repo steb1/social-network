@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 	"sort"
-	"strconv"
 
 	"server/lib"
 	"server/models"
@@ -46,7 +45,11 @@ type MessagePattern struct {
 }
 
 func SocketHandler(w http.ResponseWriter, r *http.Request) {
-	session, _ := IsAuthenticated(r)
+	// session, ok := IsAuthenticated(r)
+	// fmt.Println("🚀 ~ funcSocketHandler ~ err:", ok)
+	// if !ok {
+	// 	log.Println("no ok")
+	// }
 
 	log.Println("socket request")
 
@@ -57,8 +60,8 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	UserId, _ := strconv.Atoi(session.UserID)
-	user, _ := models.UserRepo.GetUserByID(UserId)
+	// 1, _ := strconv.Atoi(1)
+	user, _ := models.UserRepo.GetUserByID(1)
 
 	var nicknameOrEmail string
 
@@ -74,15 +77,15 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 		IsAlive:  true,
 	}
 
-	existingUser, isin := connections[UserId]
+	existingUser, isin := connections[1]
 
 	if isin {
 		existingUser.Conn = conn
-		sendCurrentUsers(existingUser, UserId)
+		sendCurrentUsers(existingUser, 1)
 	} else {
-		connections[UserId] = &userInfo
+		connections[1] = &userInfo
 		notifyUserJoined()
-		sendCurrentUsers(&userInfo, UserId)
+		sendCurrentUsers(&userInfo, 1)
 	}
 
 	log.Println(connections, len(connections))
@@ -131,7 +134,7 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 
 				// Validate and save message
 				if !lib.IsBlank(messagepattern.Text) && !lib.IsBlank(messagepattern.Sender) && !lib.IsBlank(messagepattern.Receiver) {
-					models.MessageRepo.CreateMessage(UserId, models.UserRepo.GetIDFromUsernameOrEmail(messagepattern.Receiver), messagepattern.Text, messagepattern.Time)
+					models.MessageRepo.CreateMessage(1, models.UserRepo.GetIDFromUsernameOrEmail(messagepattern.Receiver), messagepattern.Text, messagepattern.Time)
 				} else {
 					log.Println("Cannot send empty messages.")
 					// SEND ERROR
@@ -211,9 +214,9 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func notifyUserJoined() {
-	for _, user := range connections {
-		sendCurrentUsers(user, models.UserRepo.GetIDFromUsernameOrEmail(user.Nickname))
-	}
+	// for _, user := range connections {
+	// 	sendCurrentUsers(user, models.UserRepo.GetIDFromUsernameOrEmail(user.Nickname))
+	// }
 }
 
 func sendCurrentUsers(tosend *UserInfo, user_id int) {
