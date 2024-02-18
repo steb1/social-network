@@ -5,6 +5,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"sort"
@@ -45,11 +46,11 @@ type MessagePattern struct {
 }
 
 func SocketHandler(w http.ResponseWriter, r *http.Request) {
-	// session, ok := IsAuthenticated(r)
-	// fmt.Println("🚀 ~ funcSocketHandler ~ err:", ok)
-	// if !ok {
-	// 	log.Println("no ok")
-	// }
+	session, ok := IsAuthenticated(r)
+	fmt.Println("🚀 ~ funcSocketHandler ~ err:", ok)
+	if !ok {
+		log.Println("no ok")
+	}
 
 	log.Println("socket request")
 

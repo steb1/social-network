@@ -37,7 +37,6 @@ const Messages = async ({ params: { to } }) => {
 
 	const existingChatter = AbletoTalk.find((user) => user.nickname === to || user.email === to);
 	const Chatter = AbletoTalk.filter((user) => user.nickname === to || user.email === to);
-	console.log("🚀 ~ Messages ~ Chatter:", Chatter);
 
 	if (!existingChatter && to !== nickname_requester) {
 		return notFound();
@@ -47,7 +46,7 @@ const Messages = async ({ params: { to } }) => {
 		<div id="wrapper">
 			<Header />
 			<Sidebar />
-			<MainMessage AbletoTalk={AbletoTalk} Chatter={Chatter} />
+			<MainMessage AbletoTalk={AbletoTalk} Chatter={Chatter} Sender={nickname_requester} />
 		</div>
 	);
 };

@@ -5,22 +5,21 @@ import LeftMessage from "../messages/LeftMessage";
 import RightMessage from "../messages/RightMessage";
 import DateMessage from "../messages/DateMessage";
 import { useState } from "react";
-export const socket = new WebSocket("ws://localhost:8080/api/socket");
 import Link from "next/link";
 import Animation from "@/app/components/animation.js";
 import authAnimation from "@/public/assets/animations/authAnimation.json";
 
-socket.onopen = function () {
-	console.log("WebSocket connection opened");
-};
+// socket.onopen = function () {
+// 	console.log("WebSocket connection opened");
+// };
 
-socket.onclose = function () {
-	console.log("WebSocket connection closed");
-};
+// socket.onclose = function () {
+// 	console.log("WebSocket connection closed");
+// };
 
-socket.onerror = function (error) {
-	console.error("WebSocket error:", error);
-};
+// socket.onerror = function (error) {
+// 	console.error("WebSocket error:", error);
+// };
 
 const MainMessage = ({ AbletoTalk, Chatter }) => {
 	const [messageInput, setMessageInput] = useState("");
