@@ -123,6 +123,16 @@ func IsAuthenticated(r *http.Request) (models.Session, bool) {
 	return models.Session{}, false
 }
 
+func IsTokenValid(sessionToken string) (models.Session, bool) {
+	if sessionToken != "" {
+		userSession, exists := models.SessionRepo.SessionExists(sessionToken)
+		if exists && !lib.IsExpired(userSession.Expiry) {
+			return userSession, true
+		}
+	}
+	return models.Session{}, false
+}
+
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST")
