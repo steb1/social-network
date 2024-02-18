@@ -47,6 +47,8 @@ var Routes = []Route{
 	{Path: "/api/toggleProfilePrivacy", Handler: ToggleProfilePrivacy, Methods: []string{"POST", "GET", "OPTIONS"}},
 	{Path: "/api/follow", Handler: SubscriptionHandler, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/pendingrequests", Handler: HandlePendingRequests, Methods: []string{"GET", "POST", "OPTIONS"}},
+	{Path: "/api/socket", Handler: SocketHandler, Methods: []string{"GET", "POST", "OPTIONS"}},
+	{Path: "/api/followersWees", Handler: GetFollowersWees, Methods: []string{"GET", "POST", "OPTIONS"}},
 }
 
 func MiddlewareIsAuthenticated(handler http.HandlerFunc) http.HandlerFunc {

@@ -9,20 +9,75 @@ import (
 )
 
 type UserProfileResponse struct {
-	IDRequester  string         `json:"id_requester"`
-	UserID       int            `json:"user_id"`
-	FirstName    string         `json:"firstName"`
-	LastName     string         `json:"lastName"`
-	Nickname     string         `json:"nickname"`
-	Email        string         `json:"email"`
-	DateOfBirth  string         `json:"dateOfBirth"`
-	Avatar       string         `json:"avatar"`
-	AboutMe      string         `json:"aboutMe"`
-	AccountType  string         `json:"accountType"`
-	FollowStatus string         `json:"followStatus"`
-	UserPosts    []*models.Post `json:"userPosts"`
-	Followers    []*models.User `json:"followers"`
-	Followings   []*models.User `json:"followings"`
+	IDRequester       string         `json:"id_requester"`
+	NicknameRequester string         `json:"nickname_requester"`
+	UserID            int            `json:"user_id"`
+	FirstName         string         `json:"firstName"`
+	LastName          string         `json:"lastName"`
+	Nickname          string         `json:"nickname"`
+	Email             string         `json:"email"`
+	DateOfBirth       string         `json:"dateOfBirth"`
+	Avatar            string         `json:"avatar"`
+	AboutMe           string         `json:"aboutMe"`
+	AccountType       string         `json:"accountType"`
+	FollowStatus      string         `json:"followStatus"`
+	UserPosts         []*models.Post `json:"userPosts"`
+	Followers         []*models.User `json:"followers"`
+	Followings        []*models.User `json:"followings"`
+}
+
+func GetFollowersWees(w http.ResponseWriter, r *http.Request) {
+	session, ok := IsAuthenticated(r)
+
+	if !ok {
+		var apiError ApiError
+		apiError.Error = "StatusUnauthorized"
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	}
+
+	id, _ := strconv.Atoi(session.UserID)
+
+	user, err := models.UserRepo.GetUserByID(id)
+	if err != nil {
+		log.Println("🚀 ~ funcHandleGetProfileGetUserByID ~ err:", err)
+		var apiError ApiError
+		apiError.Error = "Not found user"
+		WriteJSON(w, http.StatusNotFound, apiError)
+		return
+	}
+
+	followers, err := models.SubscriptionRepo.GetFollowers(user.UserID)
+	if err != nil {
+		log.Println("🚀 ~ funcHandleGetProfileGetFollowers ~ err:", err)
+		var apiError ApiError
+		apiError.Error = "Not found followers"
+		WriteJSON(w, http.StatusInternalServerError, apiError)
+		return
+	}
+
+	followings, err := models.SubscriptionRepo.GetFollowing(user.UserID)
+	if err != nil {
+		log.Println("🚀 ~ funcHandleGetProfileGetFollowing ~ err:", err)
+		var apiError ApiError
+		apiError.Error = "Not found followings"
+		WriteJSON(w, http.StatusInternalServerError, apiError)
+		return
+	}
+
+	UN := user.Nickname
+	if UN == "" {
+		UN = user.Email
+	}
+
+	// Create a UserProfileResponse without the password field
+	userProfile := UserProfileResponse{
+		NicknameRequester: UN,
+		Followers:         followers,
+		Followings:        followings,
+	}
+
+	WriteJSON(w, http.StatusOK, userProfile)
 }
 
 func HandleGetProfile(w http.ResponseWriter, r *http.Request) {
