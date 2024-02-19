@@ -3,6 +3,7 @@ import config from "@/config";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { PendingList } from "../components/PendingList";
+import Layout from "../components/Layout";
 
 async function Notifications() {
     const cookieStore = cookies();
@@ -29,9 +30,9 @@ async function Notifications() {
     }
 
     return (
-        <>
+        <Layout>
             <PendingList Persons={persons} cookie={cookieStore.get("social-network").value} />
-        </>
+        </Layout>
     );
 }
 export default authMiddleware(Notifications, config.serverApiUrl + "checkAuth");

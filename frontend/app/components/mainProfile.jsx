@@ -1,6 +1,6 @@
 import "../../public/js/script.js";
 import "../../public/js/simplebar.js";
-import PrivateAccountUI from "./Privateaccount.jsx";
+
 import Link from "next/link";
 import ButtonTogglePrivacy from "./buttonTogglePrivacy.jsx";
 import { cookies } from "next/headers";
@@ -9,6 +9,7 @@ import DisplayPostImage from "./DisplayPostImage.jsx";
 import DisplayPostWithoutImage from "./DisplayPostWithoutImage.jsx";
 import NoPostUI from "./NoPostUI.jsx";
 import FollowButton from "./FollowButton.jsx";
+import PrivateAccountUI from "./privateaccount.jsx";
 
 const MainProfile = ({ props, Visibility, FollowStatus }) => {
     const cookieStore = cookies();
