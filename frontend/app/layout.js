@@ -7,9 +7,6 @@ import "../public/js/script.js";
 import "../public/js/simplebar.js";
 import "../public/js/uikit.min.js";
 
-import Sidebar from "./components/sidebar";
-import Header from "./components/header";
-
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -22,11 +19,7 @@ export default function RootLayout({ children }) {
         <html lang='en'>
             <head></head>
             <body className={inter.className}>
-                <div id='wrapper'>
-                    <Header />
-                    <Sidebar />
-                    <main>{children}</main>
-                </div>
+                {children}
                 <script src='/js/uikit.min.js'></script>
                 <script src='/js/simplebar.js'></script>
                 <script src='/js/script.js'></script>

@@ -1,6 +1,7 @@
 import React from "react";
 import { cookies } from "next/headers";
 import AllGroup from "./components/AllGroup";
+import Layout from "../components/Layout";
 
 export async function fetchAllGroups() {
     const cookieStore = cookies();
@@ -41,9 +42,11 @@ const Group = async () => {
     const data = await fetchAllGroups();
     console.log(data);
     return (
-        <div>
-            <AllGroup DataGroup={data} />
-        </div>
+        <Layout>
+            <div>
+                <AllGroup DataGroup={data} />
+            </div>
+        </Layout>
     );
 };
 

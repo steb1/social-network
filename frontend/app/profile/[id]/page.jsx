@@ -3,6 +3,7 @@ import config from "@/config";
 import MainProfile from "@/app/components/mainProfile";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
+import Layout from "../../components/Layout";
 
 const Profile = async ({ params: { id } }) => {
     const cookieStore = cookies();
@@ -40,9 +41,9 @@ const Profile = async ({ params: { id } }) => {
     }
     //TODO : When the request is pending
     return (
-        <>
+        <Layout>
             <MainProfile props={profileData} Visibility={Visibility} FollowStatus={profileData.followStatus} />
-        </>
+        </Layout>
     );
 };
 
