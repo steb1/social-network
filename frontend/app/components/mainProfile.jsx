@@ -1,6 +1,6 @@
 import "../../public/js/script.js";
 import "../../public/js/simplebar.js";
-import PrivateAccountUI from "./Privateaccount.jsx";
+import PrivateAccountUI from "./privateaccount.jsx";
 import Link from "next/link";
 import ButtonTogglePrivacy from "./buttonTogglePrivacy.jsx";
 import { cookies } from "next/headers";

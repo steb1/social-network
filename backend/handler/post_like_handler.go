@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"server/models"
 	"strconv"
@@ -45,7 +44,6 @@ func HandleLikePost(w http.ResponseWriter, r *http.Request) {
 		WriteJSON(w, http.StatusInternalServerError, apiError)
 		return
 	}
-	fmt.Println("is liked", isLiked, postLike)
 	if isLiked {
 		// Post is already liked, handle unlike logic
 		if err := models.PostLikeRepo.DeletePostLike(postLike.PostID, postLike.AuthorID); err != nil {
@@ -76,10 +74,6 @@ func HandleLikePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleLikeComment(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodOptions {
-		HandleOptions(w, r)
-		return
-	}
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")

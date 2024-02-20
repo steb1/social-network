@@ -45,7 +45,6 @@ func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 	var followResponse FollowResponse
 	sessionToken := r.Header.Get("Authorization")
 	session, err := models.SessionRepo.GetSession(sessionToken)
-	fmt.Println(sessionToken)
 	if err != nil {
 		fmt.Println(err.Error())
 		apiError.Error = "Go connect first !"
@@ -98,7 +97,6 @@ func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 		models.FollowRequestRepo.DeleteFollowRequest(followerUserID, followingUserId)
 		followResponse.Message = fmt.Sprintf("User id %d, unfollowed.", followingUserId)
 		followResponse.Type = "Unfollow"
-		fmt.Println(followResponse)
 		WriteJSON(w, http.StatusOK, followResponse)
 		return
 	}
@@ -111,7 +109,6 @@ func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		followResponse.Message = fmt.Sprintf("User id %d, unfollowed.", followingUserId)
 		followResponse.Type = "Unfollow"
-		fmt.Println(followResponse)
 		WriteJSON(w, http.StatusOK, followResponse)
 		return
 	}
@@ -146,7 +143,6 @@ func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		followResponse.Message = fmt.Sprintf("User id %d well followed.", followingUserId)
 		followResponse.Type = "Followed"
-		fmt.Println(followResponse)
 		WriteJSON(w, http.StatusOK, followResponse)
 		return
 	}
@@ -158,7 +154,6 @@ func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = models.FollowRequestRepo.CreateFollowRequest(&followResquest)
 	if err != nil {
-		fmt.Println("coucou")
 		log.Printf("%s", err.Error())
 		apiError.Error = "Error making following request to the user."
 		WriteJSON(w, http.StatusBadRequest, apiError)
@@ -167,7 +162,6 @@ func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 
 	followResponse.Message = "Following request well received."
 	followResponse.Type = "Pending"
-	fmt.Println(followResponse)
 	WriteJSON(w, http.StatusOK, followResponse)
 }
 
@@ -210,7 +204,6 @@ func AcceptOrRejectPendingRequests(w http.ResponseWriter, r *http.Request) {
 	}
 	userId, err := strconv.Atoi(session.UserID)
 	if err != nil {
-		fmt.Println("token")
 		apiError.Error = "Error getting user."
 		WriteJSON(w, http.StatusUnauthorized, apiError)
 		return
@@ -222,7 +215,6 @@ func AcceptOrRejectPendingRequests(w http.ResponseWriter, r *http.Request) {
 		WriteJSON(w, http.StatusBadRequest, apiError)
 		return
 	}
-	fmt.Println(request)
 
 	ok, _ := models.FollowRequestRepo.HasPendingRequestFromAnUser(request.FollowerUserId, userId)
 	if !ok {
@@ -261,7 +253,6 @@ func AcceptOrRejectPendingRequests(w http.ResponseWriter, r *http.Request) {
 }
 func HandlePendingRequests(w http.ResponseWriter, r *http.Request) {
 	addCorsHeader(w)
-	fmt.Println("coucou")
 	if r.Method == http.MethodOptions {
 		w.WriteHeader(http.StatusOK)
 		return

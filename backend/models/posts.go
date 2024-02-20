@@ -236,9 +236,12 @@ ORDER BY
 		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.HasImage, &post.User.Nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email); err != nil {
 			return nil, err
 		}
+		postIDStr := strconv.Itoa(post.PostID)
 		post.CreatedAt = lib.FormatDateDB(post.CreatedAt)
 		post.Category = PostCategoryRepo.GetPostCategory(post.PostID)
 		post.Likes, err = PostLikeRepo.GetNumberOfLikes(post.PostID)
+		comments, err := CommentRepo.GetCommentsByPostID(postIDStr, userId)
+		post.Comments = comments
 		if err != nil {
 			return nil, err
 		}

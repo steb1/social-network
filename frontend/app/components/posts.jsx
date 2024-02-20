@@ -1,5 +1,6 @@
 "use client";
 import config from "@/config";
+import { Modal } from "../components/modal";
 import React, { useEffect, useState } from "react";
 
 const fetchAllPosts = async (setPosts, setServerError) => {
@@ -39,9 +40,11 @@ export const PostText = () => {
 			console.log("Comment exceeds character limit (400 characters)");
 			return;
 		}
+		const commentImg = form.querySelector(`input[name="media_post_c"][id="chooseImageC-${post_id}"]`).files[0];
 
 		const formDataJson = new FormData(form);
 		formDataJson.append("post_id", post_id);
+		formDataJson.append("media_post_c", commentImg);
 
 		const response = await fetch(config.serverApiUrl + "createComment", {
 			method: "POST",
@@ -106,6 +109,7 @@ export const PostText = () => {
 
 	return (
 		<>
+		<Modal setPosts={setPosts} posts={posts}/>
 			{posts.map((post) => (
 				<div key={post.post_id} className="bg-white rounded-xl shadow-sm text-sm font-medium border1 dark:bg-dark2">
 					{/* post heading */}
@@ -123,37 +127,6 @@ export const PostText = () => {
 								</h4>{" "}
 							</a>
 							<div className="text-xs text-gray-500 dark:text-white/80"> {post.created_at}</div>
-						</div>
-						<div className="-mr-1">
-							<button type="button" className="button__ico w-8 h-8" aria-haspopup="true" aria-expanded="false">
-								{" "}
-								<ion-icon className="text-xl md hydrated" name="ellipsis-horizontal" role="img" aria-label="ellipsis horizontal" />{" "}
-							</button>
-							<div className="w-[245px] uk-dropdown" uk-dropdown="pos: bottom-right; animation: uk-animation-scale-up uk-transform-origin-top-right; animate-out: true; mode: click">
-								<nav>
-									<a href="#">
-										{" "}
-										<ion-icon className="text-xl shrink-0 md hydrated" name="bookmark-outline" role="img" aria-label="bookmark outline" /> Add to favorites{" "}
-									</a>
-									<a href="#">
-										{" "}
-										<ion-icon className="text-xl shrink-0 md hydrated" name="notifications-off-outline" role="img" aria-label="notifications off outline" /> Mute Notification{" "}
-									</a>
-									<a href="#">
-										{" "}
-										<ion-icon className="text-xl shrink-0 md hydrated" name="flag-outline" role="img" aria-label="flag outline" /> Report this post{" "}
-									</a>
-									<a href="#">
-										{" "}
-										<ion-icon className="text-xl shrink-0 md hydrated" name="share-outline" role="img" aria-label="share outline" /> Share your profile{" "}
-									</a>
-									<hr />
-									<a href="#" className="text-red-400 hover:!bg-red-50 dark:hover:!bg-red-500/50">
-										{" "}
-										<ion-icon className="text-xl shrink-0 md hydrated" name="stop-circle-outline" role="img" aria-label="stop circle outline" /> Unfollow{" "}
-									</a>
-								</nav>
-							</div>
 						</div>
 					</div>
 					<div className="sm:px-4 p-2.5 pt-0">
@@ -195,14 +168,6 @@ export const PostText = () => {
 							</button>
 							<span>{post.Comments.length}</span>
 						</div>
-						<button type="button" className="button-icon ml-auto">
-							{" "}
-							<ion-icon className="text-xl" name="paper-plane-outline" />{" "}
-						</button>
-						<button type="button" className="button-icon">
-							{" "}
-							<ion-icon className="text-xl" name="share-outline" />{" "}
-						</button>
 					</div>
 					{/* comments */}
 					<div className="sm:p-4 p-2.5 border-t border-gray-100 font-normal space-y-3 relative dark:border-slate-700/40">
@@ -215,7 +180,18 @@ export const PostText = () => {
 									<a href="timeline.html" className="text-black font-medium inline-block dark:text-white">
 										{comment.User.first_name} {comment.User.last_name}
 									</a>
-									<p className="mt-0.5 break-all w-4/5">{comment.content}</p>
+									<p className="mt-0.5 break-all w-4/5">{comment.content}
+										{/* comment image */}
+										{comment.has_image === 1 ? (
+											<div>
+												<div className="relative w-full lg:h-96 h-full sm:px-4">
+													<img src={`${config.serverApiUrl}/imgComment?id=${comment.comment_id}`} className="sm:rounded-lg w-full h-full object-cover p-1" />
+												</div>
+											</div>
+										) : (
+											""
+											)}
+									</p>
 									{/* Like Button for Comment */}
 									<div className="flex items-center absolute top-1 right-1 gap-2 text-xs font-semibold">
 										<button type="button" onClick={() => handleCommentLikeClick(comment.comment_id)} className={`button-icon ${comment.is_liked ? "bg-red-100 text-red-500" : "bg-gray-200"} dark:bg-slate-700`}>
@@ -231,7 +207,17 @@ export const PostText = () => {
 					<div className="sm:px-4 sm:py-3 p-2.5 border-t border-gray-100 flex items-center gap-1 dark:border-slate-700/40">
 						<img src="assets/images/avatars/avatar-7.jpg" className="w-6 h-6 rounded-full" />
 						<form onSubmit={() => handleSubmitComment(post.post_id)} id={`create-comment-form-${post.post_id}`} className="flex-1 relative overflow-hidden h-10 create-comment-form">
-							<textarea placeholder="Add Comment...." name="comment_body" rows={1} className="w-full resize-none !bg-transparent px-4 py-2 focus:!border-transparent focus:!ring-transparent" aria-haspopup="true" aria-expanded="false" defaultValue={""} />
+							<textarea placeholder="Add Comment...." name="comment_body" rows={1} className="w-[calc(87.3333%)] resize-none !bg-transparent px-4 py-2 focus:!border-transparent focus:!ring-transparent" aria-haspopup="true" aria-expanded="false" defaultValue={""} />
+							<label for="chooseImageC" class="flex items-center w-[calc(20.3333%)] absolute top-1 right-1 gap-2 font-semibold  cursor-pointer hover:bg-opacity-80 p-1 px-1.5 rounded-xl transition-all bg-pink-100/60 hover:bg-pink-100 dark:bg-white/10 dark:hover:bg-white/20">
+								<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 stroke-pink-600 fill-pink-200/70" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+									<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+									<path d="M15 8h.01"></path>
+									<path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z"></path>
+									<path d="M3.5 15.5l4.5 -4.5c.928 -.893 2.072 -.893 3 0l5 5"></path>
+									<path d="M14 14l1 -1c.928 -.893 2.072 -.893 3 0l2.5 2.5"></path>
+								</svg>
+								<input name="media_post_c" id={`chooseImageC-${post.post_id}`} type="file" className="file-input file-input-bordered file-input-xs w-0 bg-transparent" />
+							</label>
 						</form>
 						<button onClick={() => handleSubmitComment(post.post_id)} className="text-sm rounded-full py-1.5 px-3.5 bg-secondery">
 							Send

@@ -31,3 +31,4 @@
 -- VALUES 
 --         ('2', '12', '1'),
 --         ('2', '14', '1');
+-- ALTER TABLE comments ADD COLUMN has_image INTEGER NOT NULL DEFAULT 0;

@@ -100,10 +100,6 @@ func HandleCreatePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleGetAllPosts(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodOptions {
-		HandleOptions(w, r)
-		return
-	}
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
@@ -137,17 +133,6 @@ func RetreiveAllPosts(w http.ResponseWriter, r *http.Request, userId int, apiErr
 		apiError.Error = "Something went wrong while getting all public posts"
 		WriteJSON(w, http.StatusInternalServerError, apiError)
 		return nil
-	}
-	for i := range posts {
-		postIDStr := strconv.Itoa(posts[i].PostID)
-		comments, err := models.CommentRepo.GetCommentsByPostID(postIDStr, userId)
-		if err != nil {
-			fmt.Println(err)
-			apiError.Error = "Something went wrong while getting comments inside posts"
-			WriteJSON(w, http.StatusInternalServerError, apiError)
-		}
-
-		posts[i].Comments = comments
 	}
 	return posts
 }
