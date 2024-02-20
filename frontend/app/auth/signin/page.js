@@ -3,10 +3,10 @@ import Animation from "../../components/animation";
 import authAnimation from "../../../public/assets/animations/authAnimation.json";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import config from "@/config";
-import authMiddleware from "@/middleware/authMiddleware";
 import * as Yup from "yup";
+import { checkAuth } from "../utils";
 
 // Using Yup librairy schema to validate the form
 const validationSchema = Yup.object().shape({
@@ -16,6 +16,7 @@ const validationSchema = Yup.object().shape({
 
 const SigninPage = () => {
     const router = useRouter();
+
     const [serverError, setServerError] = useState(null); // State pour stocker le message d'erreur du serveur
 
     const formik = useFormik({

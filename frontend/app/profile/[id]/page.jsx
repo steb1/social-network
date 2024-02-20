@@ -1,6 +1,6 @@
 import React from "react";
 import config from "@/config";
-import MainProfile from "@/app/components/mainProfile";
+import MainProfile from "@/app/profile/[id]/components/mainProfile";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import Layout from "../../components/Layout";
@@ -11,6 +11,7 @@ const Profile = async ({ params: { id } }) => {
 
     try {
         const response = await fetch(`${config.serverApiUrl}profile?id=${id}`, {
+            cache: "no-cache",
             method: "GET",
             headers: {
                 Authorization: cookieStore.get("social-network").value,

@@ -6,9 +6,9 @@ import (
 )
 
 const (
-	StatusPending  = "Pending"
-	StatusAccepted = "Accepted"
-	StatusRejected = "Rejected"
+	StatusPending  = "pending"
+	StatusAccepted = "accepted"
+	StatusRejected = "rejected"
 )
 
 // FollowRequest structure represents the "subscriptions" table
@@ -73,7 +73,7 @@ func (sr *FollowRequestRepository) HasPendingRequestFromAnUser(requesterUserId, 
 			FROM follow_requests
 			WHERE follower_user_id = ?
   			AND following_user_id = ?
-  			AND status = 'Pending';
+  			AND status = 'pending';
 
 	`
 	var total int
@@ -144,7 +144,7 @@ func (sr *FollowRequestRepository) RejectFollowingRequest(followerUserID, follow
 	return nil
 }
 func (sr *FollowRequestRepository) GetFollowRequestersForAnUser(userId int) ([]*User, error) {
-	query := "SELECT * FROM follow_requests WHERE following_user_id = ? AND status = 'Pending'"
+	query := "SELECT * FROM follow_requests WHERE following_user_id = ? AND status = 'pending'"
 
 	rows, err := sr.db.Query(query, userId)
 	if err != nil {

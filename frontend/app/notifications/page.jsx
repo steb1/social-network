@@ -10,6 +10,7 @@ async function Notifications() {
     let persons;
     try {
         const response = await fetch(`${config.serverApiUrl}pendingrequests`, {
+            cache: "no-cache",
             method: "GET",
             headers: {
                 Authorization: cookieStore.get("social-network").value,
@@ -31,7 +32,9 @@ async function Notifications() {
 
     return (
         <Layout>
-            <PendingList Persons={persons} cookie={cookieStore.get("social-network").value} />
+            <div className='2xl:ml-[--w-side]  xl:ml-[--w-side-sm] p-2.5 h-0 mt-0'>
+                <PendingList Persons={persons} cookie={cookieStore.get("social-network").value} />
+            </div>
         </Layout>
     );
 }

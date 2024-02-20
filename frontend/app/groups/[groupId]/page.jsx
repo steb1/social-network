@@ -1,6 +1,5 @@
 "use client";
-import Header from "../components/header";
-import Sidebar from "../components/sidebar";
+
 import AddStory from "../../components/addStory";
 import { GroupRightBar } from "@/app/groups/components/groupRightBar";
 import { PostText } from "../components/posts";
@@ -90,13 +89,9 @@ const GroupDetail = ({ params }) => {
 
     return (
         <div className='flex flex-col'>
-            <div className=''>
-                <Header />
-            </div>
+            <div className=''>{/* // Header  */}</div>
             <div className='flex flex-row'>
-                <div className='mt-10 '>
-                    <Sidebar />
-                </div>
+                <div className='mt-10 '>{/* <sidebar /> */}</div>
                 <div className='flex flex-col w-full mx-4'>
                     <div className='mt-36 w-full mr-20'>
                         <GroupCover groupInfo={group} setTab={setTab} tab={tab} isowner={isowner} />
