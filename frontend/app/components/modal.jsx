@@ -14,7 +14,7 @@ export const fetchFollowers = async (setFollowers) => {
 	}
 };
 
-export const Modal = () => {
+export const Modal = ({setPosts, posts}) => {
 	let [followers, setFollowers] = useState([]);
 	useEffect(() => {
 		fetchFollowers(setFollowers);
@@ -33,6 +33,7 @@ export const Modal = () => {
 			if (response.ok) {
 				console.log("post sent");
 				UIkit.modal("#create-status").hide();
+				setPosts([jsonData, ...posts]);
 				const body = document.querySelector(".post_body");
 				const checkboxes = document.querySelectorAll("input.select_category:checked");
 				body.value = "";
@@ -558,7 +559,7 @@ export const Modal = () => {
 							</dialog>
 						</div>
 						<div className="p-5 flex justify-between items-center">
-							<select id="selectVisibility" onChange={displayFriend} name="visibility" className="select select-bordered select-bordered w-26 max-w-xs">
+							<select id="selectVisibility" onChange={displayFriend} name="visibility" className="select select-bordered w-26 max-w-xs">
 								<option disabled defaultValue="Public">
 									Audience
 								</option>
@@ -566,7 +567,7 @@ export const Modal = () => {
 								<option value="private">Private</option>
 								<option value="almost private">Almost private</option>
 							</select>
-							<select name="followers" id="friend" className="select hidden select-bordered select-bordered w-26 max-w-xs" multiple>
+							<select name="followers" id="friend" className="select hidden select-bordered w-26 max-w-xs" multiple>
 								<option disabled defaultValue="option1">
 									Select Friends
 								</option>

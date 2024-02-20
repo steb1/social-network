@@ -2,8 +2,13 @@ package models
 
 import (
 	"database/sql"
+	"fmt"
+	"io"
 	"log"
+	"mime/multipart"
+	"os"
 	"server/lib"
+	"strconv"
 	"time"
 )
 
@@ -16,6 +21,7 @@ type Comment struct {
 	CreatedAt string `json:"created_at"`
 	Likes     int    `json:"like"`
 	IsLiked   bool   `json:"is_liked"`
+	HasImage  int    `json:"has_image"`
 	User      *User
 }
 
@@ -30,22 +36,42 @@ func NewCommentRepository(db *sql.DB) *CommentRepository {
 }
 
 // CreateComment adds a new comment to the database
-func (cc *CommentRepository) CreateComment(comment *Comment, createdAt time.Time) error {
+func (cc *CommentRepository) CreateComment(comment *Comment, photo multipart.File, createdAt time.Time) error {
 	query := `
-		INSERT INTO comments (content, author_id, post_id, createdAt)
-		VALUES (?, ?, ?, ?)
+		INSERT INTO comments (content, author_id, post_id, createdAt, has_image)
+		VALUES (?, ?, ?, ?, ?)
 	`
-	result, err := cc.db.Exec(query, comment.Content, comment.AuthorID, comment.PostID, createdAt)
+	imageUrl := strconv.Itoa(comment.HasImage)
+	result, err := cc.db.Exec(query, comment.Content, comment.AuthorID, comment.PostID, createdAt, imageUrl)
 	if err != nil {
 		return err
 	}
-
 	lastInsertID, err := result.LastInsertId()
 	if err != nil {
 		return err
 	}
-
 	comment.CommentID = int(lastInsertID)
+
+	if comment.HasImage == 0 {
+		return nil
+	}
+	defer photo.Close()
+	if err := os.MkdirAll("imgComment", os.ModePerm); err != nil {
+		fmt.Println("Error creating imgComment directory:", err)
+		return nil
+	}
+	fichierSortie, err := os.Create(fmt.Sprintf("imgComment/%d.jpg", comment.CommentID))
+	if err != nil {
+		lib.HandleError(err, "Creating comment image.")
+	}
+	defer fichierSortie.Close()
+
+	_, err = io.Copy(fichierSortie, photo)
+	if err != nil {
+		fmt.Println("err", err)
+		return nil
+	}
+
 	return nil
 }
 
@@ -62,7 +88,7 @@ func (cc *CommentRepository) GetComment(commentID int) (*Comment, error) {
 
 func (cc *CommentRepository) GetCommentsByPostID(postID string, currentUserID int) ([]*Comment, error) {
 	// Prepare a SQL query with a placeholder for the post ID
-	stmt, err := db.Prepare("SELECT comment_id, content, createdAt, first_name, last_name, nickname, post_id FROM comments,users WHERE comments.author_id=users.user_id and post_id = ? ORDER BY createdAt DESC")
+	stmt, err := db.Prepare("SELECT comment_id, content, createdAt, first_name, last_name, nickname, post_id, has_image FROM comments,users WHERE comments.author_id=users.user_id and post_id = ? ORDER BY createdAt DESC")
 	if err != nil {
 		log.Println("error while preparing", err)
 	}
@@ -79,7 +105,7 @@ func (cc *CommentRepository) GetCommentsByPostID(postID string, currentUserID in
 	for rows.Next() {
 		var comment Comment
 		comment.User = &User{}
-		err := rows.Scan(&comment.CommentID, &comment.Content, &comment.CreatedAt, &comment.User.FirstName, &comment.User.LastName, &comment.User.Nickname, &comment.PostID)
+		err := rows.Scan(&comment.CommentID, &comment.Content, &comment.CreatedAt, &comment.User.FirstName, &comment.User.LastName, &comment.User.Nickname, &comment.PostID, &comment.HasImage)
 		if err != nil {
 			log.Println("error scan in GetCommentsByPostID", err)
 		}
