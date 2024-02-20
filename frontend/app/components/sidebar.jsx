@@ -2,29 +2,37 @@ import Link from "next/link";
 import React from "react";
 import config from "@/config";
 import { cookies } from "next/headers";
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 
 const Sidebar = async () => {
     const cookieStore = cookies();
     let user = null;
-
-    try {
-        const response = await fetch(`${config.serverApiUrl}checkAuth`, {
-            method: "GET",
-            headers: {
-                Authorization: cookieStore.get("social-network").value,
-            },
-        });
-
-        if (response.ok) {
-            user = await response.json();
-        } else {
-            console.log("Redirect to login page");
-            return;
-        }
-    } catch {
-        console.log("Internal Server error.");
+    const cookie = cookieStore.get("social-network") ?? "";
+    if (cookie === "") {
+        redirect("/auth/signin");
         return;
+    }
+    if (cookie != "") {
+        try {
+            const response = await fetch(`${config.serverApiUrl}checkAuth`, {
+                method: "GET",
+                headers: {
+                    Authorization: cookie.value,
+                },
+            });
+            if (response.status === 401) {
+                cookies().delete("social-network");
+                //redirect("/auth/signin");
+            }
+            if (response.ok) {
+                user = await response.json();
+            }
+        } catch (error) {
+            console.log(error);
+            //redirect("/auth/signin");
+        }
+    } else {
+        // redirect("/auth/signin");
     }
 
     return (

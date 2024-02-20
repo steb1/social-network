@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 
 export const fetchFollowers = async (setFollowers) => {
     const response = await fetch(config.serverApiUrl + "getFollowers", {
+        cache: "no-cache",
         method: "GET",
         credentials: "include",
     });

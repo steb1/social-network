@@ -5,8 +5,8 @@ import authAnimation from "../../../public/assets/animations/authAnimation.json"
 import { useRouter } from "next/navigation";
 import { useFormik } from "formik";
 import config from "@/config";
-import authMiddleware from "@/middleware/authMiddleware";
 import * as Yup from "yup";
+import { checkAuth } from "../utils";
 
 // Using Yup librairy schema to validate the form
 const validationSchema = Yup.object().shape({
@@ -32,6 +32,9 @@ const validationSchema = Yup.object().shape({
 
 const SignupPage = () => {
     const router = useRouter();
+
+    console.log(checkAuth);
+
     const [serverLog, setServerLog] = useState({
         message: null,
         isErr: false,

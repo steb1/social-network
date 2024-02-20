@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 const fetchAllPosts = async (setPosts, setServerError) => {
     try {
         const response = await fetch(config.serverApiUrl + "getAllPosts", {
+            cache: "no-cache",
             method: "GET",
             credentials: "include",
         });
