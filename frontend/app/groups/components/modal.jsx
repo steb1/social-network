@@ -1,7 +1,29 @@
 import config from "@/config";
-import { fetchGroupDetail } from "../[groupId]/page";
+import { fetchGroupDetail } from "./groupDetail";
 
-export const Modal = ( { groupId, setPosts , setGroup, setEvents, setRequests, setMessages, setServerError} ) => {
+export const Modal = ( { groupId, setPosts , setGroup, setEvents, setRequests, setMessages, setServerError,  setIsOwner, setMembers } ) => {
+  
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    const NewformData = new FormData(e.currentTarget);
+    NewformData.append("groupId", groupId);
+  
+    const response = await fetch(config.serverApiUrl + "createGroupPost", {
+      method: "POST",
+      credentials: "include",
+      body: NewformData,
+    }); 
+    try {
+      const jsonData = await response.json();
+      if (response.ok) {
+        console.log("post sent");
+        UIkit.modal("#create-status").hide();
+        fetchGroupDetail(setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId, setIsOwner, setMembers)
+      }
+    } catch (error) {
+      console.error("Erreur lors de la lecture de la réponse JSON :", error);
+    }
+  };
     return (
         <div>            
         {/* open chat box */}
@@ -99,33 +121,67 @@ export const Modal = ( { groupId, setPosts , setGroup, setEvents, setRequests, s
             </div>
         </div>
         {/* create status */}
-        <div className="hidden lg:p-20 uk- open" id="create-status" uk-modal="">
-            <div className="uk-modal-dialog tt relative overflow-hidden mx-auto bg-white shadow-xl rounded-lg md:w-[520px] w-full dark:bg-dark2">
-            <div className="text-center py-4 border-b mb-0 dark:border-slate-700">
-                <h2 className="text-sm font-medium text-black"> Create Status </h2>
-                {/* close button */}
-                <button type="button" className="button-icon absolute top-0 right-0 m-2.5 uk-modal-close">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-                </button>
-            </div>
-            <div className="space-y-5 mt-3 p-2">
-                <textarea id="groupPostContent" className="w-full !text-black placeholder:!text-black !bg-white !border-transparent focus:!border-transparent focus:!ring-transparent !font-normal !text-xl   dark:!text-white dark:placeholder:!text-white dark:!bg-slate-800"   rows={6} placeholder="What do you have in mind?" defaultValue={""} />
-            </div>
-            <div className="flex items-center gap-2 text-sm py-2 px-4 font-medium flex-wrap">
-                <button type="button" className="flex items-center gap-1.5 bg-sky-50 text-sky-600 rounded-full py-1 px-2 border-2 border-sky-100 dark:bg-sky-950 dark:border-sky-900">  
-                <ion-icon name="image" className="text-base" />  
-                 <input id="groupPostFile" type="file" className="file-input file-input-bordered file-input-xs w-full max-w-xs" />
-                </button>
-            </div>
-            <div className="p-5 flex justify-between items-center">
-                <div className="flex items-center gap-2"> 
-                <button type="button" id={groupId} onClick={(e) =>  handleCreateGroupPost(e, setPosts, setGroup, setEvents, setRequests, setMessages, setServerError)} className="button bg-blue-500 text-white py-2 px-12 text-[14px] uk-modal-close"> Create</button>
-                </div>
-            </div>
-            </div>
-        </div>
+        <div className="hidden lg:p-20 uk- open closed" id="create-status" uk-modal="">
+				<form id="create-Grouppost-form" encType="multipart/form-data" onSubmit={handleFormSubmit} action="">
+					<div className="uk-modal-dialog tt relative overflow-hidden mx-auto bg-white shadow-xl rounded-lg md:w-[520px] w-full dark:bg-dark2">
+						<div className="text-center py-4 border-b mb-0 dark:border-slate-700">
+							<h2 className="text-sm font-medium text-black"> Create Status </h2>
+							{/* close button */}
+							<button type="button" className="button-icon absolute top-0 right-0 m-2.5 uk-modal-close">
+								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+									<path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+								</svg>
+							</button>
+						</div>
+						<div className="space-y-5 mt-3 p-2">
+							<textarea name="body" className="post_body w-full !text-black placeholder:!text-black !bg-white !border-transparent focus:!border-transparent focus:!ring-transparent !font-normal !text-xl   dark:!text-white dark:placeholder:!text-white dark:!bg-slate-800" rows={6} placeholder="What do you have in mind?" defaultValue={""} />
+						</div>
+						<div className="flex items-center gap-2 text-sm py-2 px-4 font-medium flex-wrap">
+							<button type="button" className="flex items-center gap-1.5 bg-sky-50 text-sky-600 rounded-full py-1 px-2 border-2 border-sky-100 dark:bg-sky-950 dark:border-sky-900">
+								<ion-icon name="image" className="text-base" />
+								<input name="media_post" type="file" className="file-input file-input-bordered file-input-xs w-full max-w-xs" />
+							</button>
+							<div className="btn" onClick={() => document.getElementById("my_modal_1").showModal()}>
+								Categories
+							</div>
+							<dialog id="my_modal_1" className="modal">
+								<div className="modal-box w-[400px]">
+									<div className="modal-action flex flex-col dark:border-slate-700">
+										<div className="p-5 flex justify-between items-center">
+											<input className="checkbox checkbox-info select_category" type="checkbox" name="category" id="Technology" value="Technology" />
+											<label htmlFor="Technology">Technology</label>
+											<input className="checkbox checkbox-info select_category" type="checkbox" name="category" id="Health" value="Health" />
+											<label htmlFor="Health">Health</label>
+											<input className="checkbox checkbox-info select_category" type="checkbox" name="category" id="Politic" value="Politics" />
+											<label htmlFor="Politic">Politics</label>
+										</div>
+										<div className="p-5 flex justify-between items-center">
+											<input className="checkbox checkbox-info select_category" type="checkbox" name="category" id="Sport" value="Sports" />
+											<label htmlFor="Sport">Sports</label>
+											<input className="checkbox checkbox-info select_category" type="checkbox" name="category" id="Religion" value="Religion" />
+											<label htmlFor="Religion">Religion</label>
+											<input className="checkbox checkbox-info select_category" type="checkbox" name="category" id="Other" value="Others" />
+											<label htmlFor="Other">Others</label>
+										</div>
+										<form method="dialog">
+											{/* if there is a button in form, it will close the modal */}
+											<button className="btn">Close</button>
+										</form>
+									</div>
+								</div>
+							</dialog>
+						</div>
+						<div className="p-5 flex justify-between items-center">							
+							<div className="flex items-center gap-2">
+								<button type="submit" id="but" className="button bg-blue-500 text-white py-2 px-12 text-[14px]">
+									{" "}
+									Create
+								</button>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
         {/* create event */}
         <div className="hidden lg:p-20 uk- open" id="create-event" uk-modal="">
             <div className="uk-modal-dialog tt relative overflow-hidden mx-auto bg-white shadow-xl rounded-lg md:w-[520px] w-full dark:bg-dark2">
@@ -171,61 +227,6 @@ export const Modal = ( { groupId, setPosts , setGroup, setEvents, setRequests, s
     )
 }
 
-async function handleCreateGroupPost (e, setPosts, setGroup, setEvents, setRequests, setMessages, setServerError) {
-    let  token = document.cookie.split("=")[1]
-    if (!e.target.id) {
-        return
-    }
-
-    let content = document.getElementById("groupPostContent")
-    let file = document.getElementById("groupPostFile")
-
-
-    if (!content.value.trim()) {
-        return
-    }
-
-    let groupId = e.target.id
-
-    const formData = new FormData();
-    formData.append("file", file.files[0]);
-    formData.append("content", content.value);
-    formData.append("groupId", groupId);
-      
-      if (token) {
-        // Use the token as needed
-        console.log('Token:', token);
-      } else {
-        console.log('Token not found in cookies');
-      }
-
-      try {
-        const response = await fetch(config.serverApiUrl + "createGroupPost", {
-          method: "POST",
-          headers: {
-            'Authorization': token,
-          },
-          credentials: "include",
-          body: formData,
-        });
-      
-        if (response.ok) {
-          const contentType = response.headers.get("content-type");
-          if (contentType && contentType.includes("application/json")) {
-            const data = await response.json();
-            fetchGroupDetail(setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId)
-          } else {
-            console.error("Response is not in JSON format");
-          }
-        } else {
-          const errorResponse = await response.json();
-          const errorMessage = errorResponse.error || "An error occurred.";
-          console.error("No Group retrieved:", errorMessage);
-        }
-      } catch (error) {
-        console.error("Error while fetching groups:", error);
-      }
-}
 
 async function handleCreateEvent(e, setPosts, setGroup, setEvents, setRequests, setMessages, setServerError) {
     let  token = document.cookie.split("=")[1]

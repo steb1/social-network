@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func HandleCreateComment(w http.ResponseWriter, r *http.Request) {
+func HandleCreateCommentGroup(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodOptions {
 		HandleOptions(w, r)
 		return
@@ -18,7 +18,7 @@ func HandleCreateComment(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
-	var comment models.Comment
+	var comment models.CommentGroup
 	var apiError ApiError
 
 	cookie, errC := r.Cookie("social-network")
@@ -43,7 +43,7 @@ func HandleCreateComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	comment.PostID = postID
-	createdAt := time.Now()
+	comment.CreatedAt =  time.Now().String()
 	userId, err := strconv.Atoi(session.UserID)
 	if err != nil {
 		apiError.Error = "Error getting user."
@@ -51,23 +51,11 @@ func HandleCreateComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	comment.AuthorID = userId
-	errors := models.CommentRepo.CreateComment(&comment, createdAt)
-	if errors != nil {
-		fmt.Println(errors)
+	_, err = models.CommentGroupRepo.CreateCommentGroup(comment)
+	if err != nil {
+		fmt.Println(err)
 		apiError.Error = "An error occured while creating comment."
 		WriteJSON(w, http.StatusInternalServerError, apiError)
 		return
 	}
-
-	posts := RetreiveAllPosts(w, r, comment.AuthorID, apiError)
-
-	var successResponse struct {
-		Message string         `json:"message"`
-		Posts   []*models.Post `json:"posts"`
-	}
-
-	successResponse.Message = "Comment created!"
-	successResponse.Posts = posts
-
-	WriteJSON(w, http.StatusOK, successResponse)
 }

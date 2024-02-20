@@ -82,18 +82,12 @@ func (repo *PostGroupLikeRepository) UpdatePostGroupLike(postGroupLike PostGroup
 	return nil
 }
 
-// DeletePostGroupLike deletes a post group like from the database by its ID
-func (repo *PostGroupLikeRepository) DeletePostGroupLike(likeID int) error {
-	_, err := repo.db.Exec(`
-		DELETE FROM post_groups_likes
-		WHERE post_like_id = ?
-	`, likeID)
-
+func (plr *PostGroupLikeRepository) DeletePostGroupLike(postID, AuthorID int) error {
+	query := "DELETE FROM post_groups_likes WHERE post_id = ? AND author_id= ?"
+	_, err := plr.db.Exec(query, postID, AuthorID)
 	if err != nil {
-		log.Println("Error deleting post group like:", err)
 		return err
 	}
-
 	return nil
 }
 
@@ -114,12 +108,10 @@ func (repo *PostGroupLikeRepository) CountLikesByPostID(postID int) (int, error)
 	return likeCount, nil
 }
 
-func  (plr *PostGroupLikeRepository) IsLiked(postID, user_id int) (*PostGroupLike, error) {
-	query := "SELECT * FROM post_groups_likes WHERE PostID = ? AND AuthorID = ?"
+func  (plr *PostGroupLikeRepository) IsLiked(postID, user_id int) (bool) {
+	query := "SELECT * FROM post_groups_likes WHERE post_id = ? AND author_id = ?"
 	var postLike PostGroupLike
 	err := plr.db.QueryRow(query, postID, user_id).Scan(&postLike.PostLikeID, &postLike.AuthorID, &postLike.PostID, &postLike.Rate)
-	if err != nil {
-		return nil, err
-	}
-	return &postLike, nil
+	
+	return err == nil
 }

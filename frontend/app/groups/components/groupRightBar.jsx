@@ -45,16 +45,16 @@ export const GroupRightBar = () => {
                 </div>
                 <div className="grid grid-cols-2 gap-1 text-center text-sm mt-4 mb-2 rounded-lg overflow-hidden">
                     <div className="relative w-full aspect-[4/3]">
-                    <img src="../assets/images/avatars/avatar-5.jpg" alt className="object-cover w-full h-full inset-0" />
+                    <img src="../assets/images/avatars/avatar-5.jpg" alt="" className="object-cover w-full h-full inset-0" />
                     </div> 
                     <div className="relative w-full aspect-[4/3]">
-                    <img src="../assets/images/avatars/avatar-7.jpg" alt className="object-cover w-full h-full inset-0" />
+                    <img src="../assets/images/avatars/avatar-7.jpg" alt="" className="object-cover w-full h-full inset-0" />
                     </div> 
                     <div className="relative w-full aspect-[4/3]">
-                    <img src="../assets/images/avatars/avatar-4.jpg" alt className="object-cover w-full h-full inset-0" />
+                    <img src="../assets/images/avatars/avatar-4.jpg" alt="" className="object-cover w-full h-full inset-0" />
                     </div> 
                     <div className="relative w-full aspect-[4/3]">
-                    <img src="../assets/images/avatars/avatar-6.jpg" alt className="object-cover w-full h-full inset-0" />
+                    <img src="../assets/images/avatars/avatar-6.jpg" alt="" className="object-cover w-full h-full inset-0" />
                     </div> 
                 </div>
                 </div>
@@ -67,7 +67,7 @@ export const GroupRightBar = () => {
                 <div className="side-list">
                     <div className="side-list-item">
                     <a href="timeline-group.html">
-                        <img src="#" alt className="side-list-image rounded-md" />
+                        <img src="#" alt="" className="side-list-image rounded-md" />
                     </a>
                     <div className="flex-1">
                         <a href="timeline-group.html"><h4 className="side-list-title">     Abstract minimal </h4></a>
@@ -77,7 +77,7 @@ export const GroupRightBar = () => {
                     </div>
                     <div className="side-list-item">
                     <a href="timeline-group.html">
-                        <img src="#" alt className="side-list-image rounded-md" />
+                        <img src="#" alt="" className="side-list-image rounded-md" />
                     </a>
                     <div className="flex-1">
                         <a href="timeline-group.html"><h4 className="side-list-title">     Delicious Foods</h4></a>
@@ -87,7 +87,7 @@ export const GroupRightBar = () => {
                     </div>
                     <div className="side-list-item">
                     <a href="timeline-group.html">
-                        <img src="#" alt className="side-list-image rounded-md" />
+                        <img src="#" alt="" className="side-list-image rounded-md" />
                     </a>
                     <div className="flex-1">
                         <a href="timeline-group.html"><h4 className="side-list-title">     Property Rent </h4></a>
@@ -97,7 +97,7 @@ export const GroupRightBar = () => {
                     </div>
                     <div className="side-list-item">
                     <a href="timeline-group.html">
-                        <img src="#" alt className="side-list-image rounded-md" />
+                        <img src="#" alt="" className="side-list-image rounded-md" />
                     </a>
                     <div className="flex-1">
                         <a href="timeline-group.html"><h4 className="side-list-title"> Graphic Design </h4></a>

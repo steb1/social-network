@@ -27,7 +27,7 @@ func NewCommentGroupRepository(db *sql.DB) *CommentGroupRepository {
 // CreateCommentGroup creates a new comment group in the database
 func (repo *CommentGroupRepository) CreateCommentGroup(commentGroup CommentGroup) (int, error) {
 	result, err := repo.db.Exec(`
-		INSERT INTO comments_posts_group (content, author_id, post_id, created_at)
+		INSERT INTO comments_posts_group (content, author_id, post_id, createdAt)
 		VALUES (?, ?, ?, ?)
 	`, commentGroup.Content, commentGroup.AuthorID, commentGroup.PostID, commentGroup.CreatedAt)
 

@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"fmt"
 	"server/lib"
 	"time"
 )
@@ -47,7 +48,7 @@ func NewGroupPostRepository(db *sql.DB) *GroupPostRepository {
 }
 
 // CreatePostInGroup creates a new post in the specified group.
-func (gp *GroupPostRepository) CreatePostInGroup(post *GroupPost) error {
+func (gp *GroupPostRepository) CreatePostInGroup(post *GroupPost) (int64, error) {
 	query := `
 		INSERT INTO group_posts (title, content, created_at, author_id, group_id, image_url, visibility, has_image)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -55,15 +56,15 @@ func (gp *GroupPostRepository) CreatePostInGroup(post *GroupPost) error {
 
 	result, err := gp.db.Exec(query, post.Title, post.Content, post.CreatedAt, post.AuthorID, post.GroupID, post.ImageURL, post.Visibility, post.HasImage)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	_, err = result.LastInsertId()
+	n, err := result.LastInsertId()
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	return nil
+	return n ,nil
 }
 
 // GetPostByID retrieves a post by its ID.
@@ -184,13 +185,9 @@ func (pr *GroupPostRepository) GetAllPostsItems(groupid, userId int) ([]PostItem
 
 		Category := PostCategoryRepo.GetPostCategory(posts[i].PostID)
 		CountLikesForPost, _ := PostGroupLikeRepo.CountLikesByPostID(posts[i].PostID)
-		_, err = PostGroupLikeRepo.IsLiked(posts[i].PostID, userId)
+		isLiked := PostGroupLikeRepo.IsLiked(posts[i].PostID, userId)
 
-		Isliked := true
-
-		if err != nil {
-			Isliked = false
-		}
+		fmt.Println(isLiked, "-------------" , posts[i].PostID)
 
 		// TopUser, _ := UserRepo.SelectAllUsersByPost(posts[i].ID)
 		// tabTopUser := []string{}
@@ -221,7 +218,7 @@ func (pr *GroupPostRepository) GetAllPostsItems(groupid, userId int) ([]PostItem
 			Categories:    Category,
 			NumberOfLikes: CountLikesForPost,
 			NumberOfComments: len(tabAllComments) ,
-			IsLiked:       Isliked,
+			IsLiked:       isLiked,
 		}
 
 		tabPostItem = append(tabPostItem, PostItemi)

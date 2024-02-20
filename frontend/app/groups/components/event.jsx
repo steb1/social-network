@@ -1,5 +1,6 @@
 import config from "@/config";
-import { fetchGroupDetail } from "../[groupId]/page";
+import { fetchGroupDetail } from "./groupDetail";
+
 
 export const Event = ( { event, setPosts , setGroup, setEvents, setRequests, setMessages, setServerError, groupId} ) => {
     return (
@@ -36,7 +37,7 @@ export const Event = ( { event, setPosts , setGroup, setEvents, setRequests, set
     )
 }
 
-async function HandleRegisterEvent  ( e, setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId, option ) {
+async function HandleRegisterEvent ( e, setPosts, setGroup, setEvents, setRequest, setMessages, setServerError, groupId, option ) {
     let  token = document.cookie.split("=")[1]
     if (!e.target.id || !token) {
         return
@@ -69,12 +70,11 @@ async function HandleRegisterEvent  ( e, setPosts, setGroup, setEvents, setReque
           const contentType = response.headers.get("content-type");
           if (contentType && contentType.includes("application/json")) {
             const data = await response.json();
-            fetchGroupDetail(setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId)
+            fetchGroupDetail(setPosts, setGroup, setEvents, setRequest, setMessages, setServerError, groupId)
           } else {
             console.error("Response is not in JSON format");
           }
         } else {
-
           const errorResponse = await response.json();
           const errorMessage = errorResponse.error || "An error occurred.";
           console.error("No Group retrieved:", errorMessage);

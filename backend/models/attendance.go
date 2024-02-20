@@ -88,7 +88,7 @@ func (ar *AttendanceRepository) DeleteAttendance(attendanceID int) error {
 func (ar *AttendanceRepository) GetAttendanceCountByEventID(eventID int) (int, error) {
 	query := `
 		SELECT COUNT(*) FROM attendance
-		WHERE event_id = ?
+		WHERE event_id = ? AND attendance_option = 0
 	`
 
 	var count int
