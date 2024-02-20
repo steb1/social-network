@@ -1,5 +1,6 @@
 import config from "@/config"; 
-import { fetchGroupDetail } from "../[groupId]/page";
+import { fetchGroupDetail } from "./groupDetail";
+
 
 export const Requests= ( { index, request, setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId }) => {
     return (

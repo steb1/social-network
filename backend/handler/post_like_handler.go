@@ -7,8 +7,19 @@ import (
 	"server/models"
 	"strconv"
 )
+func HandleOptions(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	w.WriteHeader(http.StatusOK)
+}
 
 func HandleLikePost(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodOptions {
+		HandleOptions(w, r)
+		return
+	}
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")

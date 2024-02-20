@@ -149,14 +149,13 @@ func HandleRegisterEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+
 	event , err := models.EventRepo.GetEvent(intEventId)
 
 	if err != nil {
 		http.Error(w, "Erreur group doesn't exist", http.StatusBadRequest)
 		return
 	}
-
-	
 
 	existMember := models.MembershipRepo.CheckIfIsMember(userId, event.GroupID)
 
@@ -168,9 +167,6 @@ func HandleRegisterEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if IsOwner || existMember {
-		_, err := models.AttendanceRepo.IsRegistered(intEventId, userId)
-
-		if err != nil {
 			if (option == "going" ) {
 				var Attendance models.Attendance
 	
@@ -210,21 +206,7 @@ func HandleRegisterEvent(w http.ResponseWriter, r *http.Request) {
 	
 				lib.WriteJSONResponse(w, response)
 			}
-		} else {
-
-			// err = models.AttendanceRepo.DeleteAttendance(Attendance.AttendanceID)
-
-			// if err != nil {
-				http.Error(w, "Erreur group doesn't exist", http.StatusBadRequest)
-				return
-			// }
-
-			// response := make(map[string]interface{})
-
-			// response["ok"] = true 
-
-			// lib.WriteJSONResponse(w, response)
-		}
+		
 	}
 
 
