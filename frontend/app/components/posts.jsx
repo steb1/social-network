@@ -320,8 +320,8 @@ export const PostText = () => {
                 defaultValue={""}
               />
               <label
-                for="chooseImageC"
-                class="flex items-center w-[calc(20.3333%)] absolute top-1 right-1 gap-2 font-semibold  cursor-pointer hover:bg-opacity-80 p-1 px-1.5 rounded-xl transition-all bg-pink-100/60 hover:bg-pink-100 dark:bg-white/10 dark:hover:bg-white/20"
+                for={`chooseImageC-${post.post_id}`}
+                class="flex items-center w-[calc(9%)] absolute top-1 right-1 gap-2 font-semibold  cursor-pointer hover:bg-opacity-80 p-1 px-1.5 rounded-xl transition-all bg-pink-100/60 hover:bg-red-300 dark:bg-white/10 dark:hover:bg-white/20"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -339,13 +339,13 @@ export const PostText = () => {
                   <path d="M3.5 15.5l4.5 -4.5c.928 -.893 2.072 -.893 3 0l5 5"></path>
                   <path d="M14 14l1 -1c.928 -.893 2.072 -.893 3 0l2.5 2.5"></path>
                 </svg>
-                <input
-                  name="media_post_c"
-                  id={`chooseImageC-${post.post_id}`}
-                  type="file"
-                  className="file-input file-input-bordered file-input-xs w-0 bg-transparent"
-                />
               </label>
+              <input
+                name="media_post_c"
+                id={`chooseImageC-${post.post_id}`}
+                type="file"
+                className="file-input hidden file-input-bordered file-input-xs w-0 bg-transparent"
+              />
             </form>
             <button
               onClick={() => handleSubmitComment(post.post_id)}
