@@ -21,6 +21,7 @@ const Messages = async ({ params: { to } }) => {
 	}
 
 	const { nickname_requester, avatar, followers, followings } = await response.json();
+	console.log("🚀 ~ Messages ~ nickname_requester:", nickname_requester);
 
 	const AbletoTalk =
 		followers && followings
@@ -35,10 +36,10 @@ const Messages = async ({ params: { to } }) => {
 				? followers || followings
 				: null;
 
-	const existingChatter = AbletoTalk.find((user) => user.nickname === to || user.email === to);
-	const Chatter = AbletoTalk.filter((user) => user.nickname === to || user.email === to);
+	const existingChatter = AbletoTalk && AbletoTalk.find((user) => user.nickname === to || user.email === to);
+	const Chatter = AbletoTalk && AbletoTalk.filter((user) => user.nickname === to || user.email === to);
 
-	if (!existingChatter && to !== nickname_requester) {
+	if (!existingChatter && to !== nickname_requester.trim()) {
 		return notFound();
 	}
 
