@@ -21,7 +21,6 @@ const Messages = async ({ params: { to } }) => {
 	}
 
 	const { nickname_requester, avatar, followers, followings } = await response.json();
-	console.log("🚀 ~ Messages ~ nickname_requester:", nickname_requester);
 
 	const AbletoTalk =
 		followers && followings
