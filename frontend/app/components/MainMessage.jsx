@@ -12,6 +12,7 @@ import socket from "@/public/js/socket";
 import ReactDOM from "react-dom";
 import EmojiPicker, { EmojiClickData, SkinTones, EmojiStyle } from "emoji-picker-react";
 import TypingIndicator from "../messages/TypingIndicator";
+import SideBarPreviewGroupChat from "../messages/SideBarPreviewGroupChat";
 
 const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender }) => {
 	const [messageInput, setMessageInput] = useState("");
@@ -94,7 +95,10 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender }) => {
 								</div>
 							</div>
 
-							<div className="space-y-2 p-2 overflow-y-auto md:h-[calc(100vh-204px)] h-[calc(100vh-130px)]">{AbletoTalk && AbletoTalk.map((user) => <SideBarPreviewChat key={user.user_id} PrenomNom={`${user.first_name} ${user.last_name}`} avatar={user.avatar} To={user.nickname ? user.nickname : user.email} />)}</div>
+							<div className="space-y-2 p-2 overflow-y-auto md:h-[calc(100vh-204px)] h-[calc(100vh-130px)]">
+								{AbletoTalk && AbletoTalk.map((user) => <SideBarPreviewChat key={user.user_id} PrenomNom={`${user.first_name} ${user.last_name}`} avatar={user.avatar} To={user.nickname ? user.nickname : user.email} />)}
+								<SideBarPreviewGroupChat />
+							</div>
 						</div>
 
 						<div id="side-chat" className="bg-slate-100/40 backdrop-blur w-full h-full dark:bg-slate-800/40 z-40 fixed inset-0 max-md:-translate-x-full md:hidden" uk-toggle="target: #side-chat ; cls: max-md:-translate-x-full"></div>
@@ -146,7 +150,10 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender }) => {
 										</div>
 									</div>
 
-									<div id="cms" ref={cmsRef} className="text-sm font-medium space-y-6"></div>
+									<div id="cms" ref={cmsRef} className="text-sm font-medium space-y-6">
+										{/* //TODO RANGE LES Messages */}
+										{/* TU range puis tu appeles le component date  */}
+									</div>
 								</div>
 
 								<div className="flex items-center md:gap-4 gap-2 md:p-3 p-2 overflow-hidden">

@@ -42,6 +42,8 @@ const Messages = async ({ params: { to } }) => {
 		return notFound();
 	}
 
+	// TODO: Passe comme props les messages à MainMessage
+
 	return (
 		<div id="wrapper">
 			<Header />
