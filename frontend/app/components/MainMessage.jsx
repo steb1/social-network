@@ -96,7 +96,7 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender }) => {
 							</div>
 
 							<div className="space-y-2 p-2 overflow-y-auto md:h-[calc(100vh-204px)] h-[calc(100vh-130px)]">
-								{AbletoTalk ? AbletoTalk.map((user) => <SideBarPreviewChat key={user.user_id} PrenomNom={`${user.first_name} ${user.last_name}`} avatar={user.avatar} To={user.nickname ? user.nickname : user.email} />) : <p>No chatter avalaible follows someone or wait someone to follow you</p>}
+								{AbletoTalk ? AbletoTalk.map((user) => <SideBarPreviewChat key={user.user_id} PrenomNom={`${user.first_name} ${user.last_name}`} avatar={user.avatar} To={user.nickname ? user.nickname : user.email} />) : <p className="text-justify font-bold">No chatter avalaible follows someone or wait someone to follow you</p>}
 								<SideBarPreviewGroupChat />
 							</div>
 						</div>
@@ -105,7 +105,7 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender }) => {
 					</div>
 
 					<div className="flex-1">
-						{!Chatter ? (
+						{!Chatter || !Chatter.length ? (
 							<>
 								<Animation animationData={authAnimation} />
 							</>
@@ -188,7 +188,7 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender }) => {
 						)}
 					</div>
 
-					{!Chatter ? null : (
+					{!Chatter || !Chatter.length ? null : (
 						<>
 							<div className="rightt w-full h-full absolute top-0 right-0 z-10 hidden transition-transform">
 								<div className="w-[360px] border-l shadow-lg h-screen bg-white absolute right-0 top-0 uk-animation-slide-right-medium delay-200 z-50 dark:bg-dark2 dark:border-slate-700">
