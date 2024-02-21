@@ -19,7 +19,7 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender }) => {
 
 	useEffect(() => {
 		socket.onopen = function () {
-			console.log("Ws Open");
+			// console.log("Ws Open");
 		};
 
 		socket.onmessage = async function (event) {
@@ -195,8 +195,6 @@ const handleSendMessage = async (messageInput, Sender, Chatter, AvatarSender, cm
 		text: messageInput,
 		time: Date.now(),
 	};
-
-	alert(message.time);
 
 	await sendMessage(socket, "messageforuser", message);
 
