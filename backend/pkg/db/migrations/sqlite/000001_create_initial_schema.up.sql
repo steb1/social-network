@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS "users" (
 
 CREATE TABLE IF NOT EXISTS "groups" (
   "group_id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-  "title" text NOT NULL,
+  "title" text NOT NULL UNIQUE,
   "description" text NOT NULL,
   "creator_id" integer NOT NULL,
   FOREIGN KEY (creator_id) REFERENCES "users" (user_id)
@@ -39,6 +39,19 @@ CREATE TABLE IF NOT EXISTS "posts" (
   "visibility" text NOT NULL,
   "has_image" INTEGER NOT NULL,
   FOREIGN KEY (author_id) REFERENCES "users" (user_id)
+);
+CREATE TABLE IF NOT EXISTS "group_posts" (
+  "post_id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+  "title" text NOT NULL ,
+  "content" text NOT NULL,
+  "created_at" datetime NOT NULL DEFAULT(CURRENT_TIMESTAMP),
+  "author_id" integer NOT NULL,
+  "group_id" integer NOT NULL,
+  "image_url" text,
+  "visibility" text NOT NULL,
+  "has_image" INTEGER NOT NULL,
+  FOREIGN KEY (author_id) REFERENCES "users" (user_id)
+  FOREIGN KEY (group_id) REFERENCES "groups" (group_id)
 );
 
 CREATE TABLE IF NOT EXISTS "categories" (
@@ -103,6 +116,24 @@ CREATE TABLE IF NOT EXISTS "comments" (
   FOREIGN KEY (author_id) REFERENCES "users" (user_id),
   FOREIGN KEY (post_id) REFERENCES "posts" (post_id)
 );
+CREATE TABLE IF NOT EXISTS "comments_posts_group" (
+  "comment_id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+  "content" text NOT NULL,
+  "author_id" integer NOT NULL,
+  "post_id" integer NOT NULL,
+  "createdAt" datetime NOT NULL DEFAULT(CURRENT_TIMESTAMP),
+  FOREIGN KEY (author_id) REFERENCES "users" (user_id),
+  FOREIGN KEY (post_id) REFERENCES "group_posts" (post_id)
+);
+
+CREATE TABLE IF NOT EXISTS "comment_group_likes" (
+  "comment_like_id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+  "author_id" integer NOT NULL,
+  "comment_id" integer NOT NULL,
+  "rate" integer NOT NULL,
+  FOREIGN KEY (author_id) REFERENCES "users" (user_id),
+  FOREIGN KEY (comment_id) REFERENCES "commentsPostsGroup" (comment_id)
+);
 
 CREATE TABLE IF NOT EXISTS "post_likes" (
   "post_like_id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -110,7 +141,16 @@ CREATE TABLE IF NOT EXISTS "post_likes" (
   "post_id" integer NOT NULL,
   "rate" integer NOT NULL,
   FOREIGN KEY (author_id) REFERENCES "users" (user_id),
-  FOREIGN KEY (post_id) REFERENCES "posts" (post_id)
+  FOREIGN KEY (post_id) REFERENCES "group_posts" (post_id)
+);
+
+CREATE TABLE IF NOT EXISTS "post_groups_likes" (
+  "post_like_id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+  "author_id" integer NOT NULL,
+  "post_id" integer NOT NULL,
+  "rate" integer NOT NULL,
+  FOREIGN KEY (author_id) REFERENCES "users" (user_id),
+  FOREIGN KEY (post_id) REFERENCES "group_posts" (post_id)
 );
 
 CREATE TABLE IF NOT EXISTS "comment_likes" (
@@ -120,6 +160,14 @@ CREATE TABLE IF NOT EXISTS "comment_likes" (
   "rate" integer NOT NULL,
   FOREIGN KEY (author_id) REFERENCES "users" (user_id),
   FOREIGN KEY (comment_id) REFERENCES "comments" (comment_id)
+);
+CREATE TABLE IF NOT EXISTS "comments_group_likes" (
+  "comment_like_id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+  "author_id" integer NOT NULL,
+  "comment_id" integer NOT NULL,
+  "rate" integer NOT NULL,
+  FOREIGN KEY (author_id) REFERENCES "users" (user_id),
+  FOREIGN KEY (comment_id) REFERENCES "comments_posts_group" (comment_id)
 );
 
 CREATE TABLE IF NOT EXISTS "notifications" (
@@ -140,6 +188,7 @@ CREATE TABLE IF NOT EXISTS "messages" (
   FOREIGN KEY (sender_id) REFERENCES "users" (user_id),
   FOREIGN KEY (receiver_id) REFERENCES "users" (user_id)
 );
+
 
 CREATE TABLE IF NOT EXISTS "group_chats" (
   "group_chat_id" integer PRIMARY KEY AUTOINCREMENT,

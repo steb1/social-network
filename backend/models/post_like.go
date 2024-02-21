@@ -44,6 +44,16 @@ func (plr *PostLikeRepository) GetPostLike(postLikeID int) (*PostLike, error) {
 	}
 	return &postLike, nil
 }
+// GetPostLike retrieves a post like from the database by post_like_id
+// func  (plr *PostLikeRepository) IsLiked(postID, user_id int) (*PostLike, error) {
+// 	query := "SELECT * FROM post_likes WHERE PostID = ? AND AuthorID = ?"
+// 	var postLike PostLike
+// 	err := plr.db.QueryRow(query, postID, user_id).Scan(&postLike.PostLikeID, &postLike.AuthorID, &postLike.PostID, &postLike.Rate)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return &postLike, nil
+// }
 
 // GetNumberOfLikes retrieves the number of likes for a given post ID
 func (plr *PostLikeRepository) GetNumberOfLikes(postID int) (int, error) {
@@ -104,10 +114,26 @@ func (pr *PostRepository) GetUserLikedPosts(userID int) ([]*Post, error) {
 
 // DeletePostLike removes a post like from the database by post_like_id
 func (plr *PostLikeRepository) DeletePostLike(postID, AuthorID int) error {
-	query := "DELETE FROM post_likes WHERE post_id = ? AND author_id= ?"
+	query := "DELETE FROM post_groups_likes WHERE post_id = ? AND author_id= ?"
 	_, err := plr.db.Exec(query, postID, AuthorID)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+// CountLikesForPost retrieves the number of likes for a given post_id
+func (plr *PostLikeRepository) CountLikesForPost(postID int) (int, error) {
+	query := `
+		SELECT COUNT(*) FROM post_likes
+		WHERE post_id = ?
+	`
+
+	var count int
+	err := plr.db.QueryRow(query, postID).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
 }
