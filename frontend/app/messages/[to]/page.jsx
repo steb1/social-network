@@ -9,7 +9,7 @@ import { notFound } from "next/navigation";
 const Messages = async ({ params: { to } }) => {
     const cookieStore = cookies();
 
-    const response = await fetch(`${config.serverApiUrl}followersWees`, {
+    const response = await fetch(`${config.serverApiUrl}messageResponse?to=${to}`, {
         method: "GET",
         headers: {
             Authorization: cookieStore.get("social-network").value,
@@ -35,12 +35,7 @@ const Messages = async ({ params: { to } }) => {
               ? followers || followings
               : null;
 
-    const existingChatter = AbletoTalk && AbletoTalk.find((user) => user.nickname === to || user.email === to);
     const Chatter = AbletoTalk && AbletoTalk.filter((user) => user.nickname === to || user.email === to);
-
-    if (!existingChatter && to !== nickname_requester) {
-        return notFound();
-    }
 
     // TODO: Passe comme props les messages à MainMessage
 
