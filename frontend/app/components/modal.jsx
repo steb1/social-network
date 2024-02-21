@@ -536,19 +536,19 @@ export const Modal = ({setPosts, posts}) => {
 									<div className="modal-action flex flex-col dark:border-slate-700">
 										<div className="p-5 flex justify-between items-center">
 											<input className="checkbox checkbox-info select_category" type="checkbox" name="category" id="Technology" value="Technology" />
-											<label for="Technology">Technology</label>
+											<label htmlFor="Technology">Technology</label>
 											<input className="checkbox checkbox-info select_category" type="checkbox" name="category" id="Health" value="Health" />
-											<label for="Health">Health</label>
+											<label htmlFor="Health">Health</label>
 											<input className="checkbox checkbox-info select_category" type="checkbox" name="category" id="Politic" value="Politics" />
-											<label for="Politic">Politics</label>
+											<label htmlFor="Politic">Politics</label>
 										</div>
 										<div className="p-5 flex justify-between items-center">
 											<input className="checkbox checkbox-info select_category" type="checkbox" name="category" id="Sport" value="Sports" />
-											<label for="Sport">Sports</label>
+											<label htmlFor="Sport">Sports</label>
 											<input className="checkbox checkbox-info select_category" type="checkbox" name="category" id="Religion" value="Religion" />
-											<label for="Religion">Religion</label>
+											<label htmlFor="Religion">Religion</label>
 											<input className="checkbox checkbox-info select_category" type="checkbox" name="category" id="Other" value="Others" />
-											<label for="Other">Others</label>
+											<label htmlFor="Other">Others</label>
 										</div>
 										<form method="dialog">
 											{/* if there is a button in form, it will close the modal */}
