@@ -4,29 +4,48 @@ import SideBarPreviewChat from "../messages/SideBarPreviewChat";
 import LeftMessage from "../messages/LeftMessage";
 import RightMessage from "../messages/RightMessage";
 import DateMessage from "../messages/DateMessage";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Animation from "@/app/components/animation.js";
 import authAnimation from "@/public/assets/animations/authAnimation.json";
+import socket from "@/public/js/socket";
+import ReactDOM from "react-dom";
+import EmojiPicker, { EmojiClickData, SkinTones, EmojiStyle } from "emoji-picker-react";
 
-// socket.onopen = function () {
-// 	console.log("WebSocket connection opened");
-// };
-
-// socket.onclose = function () {
-// 	console.log("WebSocket connection closed");
-// };
-
-// socket.onerror = function (error) {
-// 	console.error("WebSocket error:", error);
-// };
-
-const MainMessage = ({ AbletoTalk, Chatter }) => {
+// Composant principal de la messagerie
+const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender }) => {
 	const [messageInput, setMessageInput] = useState("");
+	const cmsRef = useRef();
+
+	useEffect(() => {
+		socket.onopen = function () {
+			console.log("Ws Open");
+		};
+
+		socket.onmessage = async function (event) {
+			const message = JSON.parse(event.data);
+			switch (message.command) {
+				case "messageforuser":
+					if (message.body.sender !== Chatter[0].nickname && message.body.sender !== Chatter[0].email) {
+						return;
+					}
+
+					const cms = document.getElementById("cms");
+					cms && ReactDOM.render(ReactDOM.createPortal(<LeftMessage Avatar={Chatter[0].avatar} Content={message.body.text} />, cms), document.createElement("div"));
+					cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+
+				default:
+			}
+		};
+	}, []);
 
 	const handleSendMessageClick = () => {
-		handleSendMessage(messageInput);
+		handleSendMessage(messageInput, Sender, Chatter, AvatarSender, cmsRef);
 		setMessageInput("");
+	};
+
+	const handleEmojiClick = (emojiData, event) => {
+		handleSendMessage(emojiData.emoji, Sender, Chatter, AvatarSender, cmsRef);
 	};
 
 	return (
@@ -93,14 +112,7 @@ const MainMessage = ({ AbletoTalk, Chatter }) => {
 										</div>
 									</div>
 
-									<div className="text-sm font-medium space-y-6">
-										<LeftMessage />
-										<RightMessage />
-										<DateMessage />
-										<LeftMessage />
-										<RightMessage />
-										<DateMessage />
-									</div>
+									<div id="cms" ref={cmsRef} className="text-sm font-medium space-y-6"></div>
 								</div>
 
 								<div className="flex items-center md:gap-4 gap-2 md:p-3 p-2 overflow-hidden">
@@ -110,30 +122,7 @@ const MainMessage = ({ AbletoTalk, Chatter }) => {
 										</button>
 										<div className="dropbar p-2" uk-drop="stretch: x; target: #message__wrap ;animation: uk-animation-scale-up uk-transform-origin-bottom-left ;animate-out: true; pos: top-left ; offset:2; mode: click ; duration: 200 ">
 											<div className="sm:w-60 bg-white shadow-lg border rounded-xl  pr-0 dark:border-slate-700 dark:bg-dark3">
-												<h4 className="text-sm font-semibold p-3 pb-0">Send Imogi</h4>
-
-												<div className="grid grid-cols-5 overflow-y-auto max-h-44 p-3 text-center text-xl">
-													<div className="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 😊 </div>
-													<div className="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 🤩 </div>
-													<div className="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 😎</div>
-													<div className="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 🥳 </div>
-													<div className="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 😂 </div>
-													<div className="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 🥰 </div>
-													<div className="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 😡 </div>
-													<div className="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 😊 </div>
-													<div className="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 🤩 </div>
-													<div className="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 😎</div>
-													<div className="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 🥳 </div>
-													<div className="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 😂 </div>
-													<div className="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 🥰 </div>
-													<div className="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 😡 </div>
-													<div className="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 🤔 </div>
-													<div className="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 😊 </div>
-													<div className="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 🤩 </div>
-													<div className="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 😎</div>
-													<div className="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 🥳 </div>
-													<div className="hover:bg-secondery p-1.5 rounded-md hover:scale-125 cursor-pointer duration-200"> 😂 </div>
-												</div>
+												<EmojiPicker onEmojiClick={handleEmojiClick} />
 											</div>
 										</div>
 									</div>
@@ -194,37 +183,28 @@ const MainMessage = ({ AbletoTalk, Chatter }) => {
 
 export default MainMessage;
 
-const handleSendMessage = async (messageInput) => {
-	// TODO déclarer les variables nécessaires telles que sender, tosend, userData, socket, etc.
-
-	alert("send message");
+const handleSendMessage = async (messageInput, Sender, Chatter, AvatarSender, cmsRef) => {
+	if (messageInput.trim() === "") {
+		alert("No empty message");
+		return;
+	}
 
 	const message = {
-		sender: "niangoos",
-		receiver: "yayediop",
+		sender: Sender,
+		receiver: Chatter[0].nickname || Chatter[0].email,
 		text: messageInput,
 		time: Date.now(),
 	};
 
-	// if (message.text.trim() === "") {
-	// 	// // Gestion de l'erreur si le message est vide
-	// 	// func.DisplayError("The message is empty");
-	// 	// setTimeout(() => {
-	// 	// 	document.getElementById("errortxtfield").innerHTML = "";
-	// 	// }, 1000);
-	// 	return;
-	// }
-
-	// if (message.receiver !== userData.username) {
-	// 	 TODO Ajouter un message right
-	// }
-
-	// const chatDiv = document.getElementById("chat-messages");
-	// chatDiv.insertBefore(newMessageDiv, document.getElementById("lstchild"));
+	alert(message.time);
 
 	await sendMessage(socket, "messageforuser", message);
-	// await func.sendMessage(socket, "getusersonline", "");
-	// chatDiv.scrollTop = chatDiv.scrollHeight;
+
+	// TODO: Handle the response from the server before appending the message if the message succesfully sent to the chatter before append
+
+	const cms = document.getElementById("cms");
+	cms && ReactDOM.render(ReactDOM.createPortal(<RightMessage Avatar={AvatarSender} Content={message.text} />, cms), document.createElement("div"));
+	cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
 };
 
 export async function sendMessage(socket, command, body) {

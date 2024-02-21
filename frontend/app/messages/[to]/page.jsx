@@ -20,7 +20,7 @@ const Messages = async ({ params: { to } }) => {
 		return notFound();
 	}
 
-	const { nickname_requester, followers, followings } = await response.json();
+	const { nickname_requester, avatar, followers, followings } = await response.json();
 
 	const AbletoTalk =
 		followers && followings
@@ -46,7 +46,7 @@ const Messages = async ({ params: { to } }) => {
 		<div id="wrapper">
 			<Header />
 			<Sidebar />
-			<MainMessage AbletoTalk={AbletoTalk} Chatter={Chatter} Sender={nickname_requester} />
+			<MainMessage AbletoTalk={AbletoTalk} Chatter={Chatter} Sender={nickname_requester} AvatarSender={avatar} />
 		</div>
 	);
 };
