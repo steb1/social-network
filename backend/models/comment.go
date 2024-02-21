@@ -1,6 +1,11 @@
 package models
 
-import "database/sql"
+import (
+	"database/sql"
+	"log"
+	"server/lib"
+	"time"
+)
 
 // Comment structure represents the "comments" table
 type Comment struct {
@@ -9,6 +14,9 @@ type Comment struct {
 	AuthorID  int    `json:"author_id"`
 	PostID    int    `json:"post_id"`
 	CreatedAt string `json:"created_at"`
+	Likes     int    `json:"like"`
+	IsLiked   bool   `json:"is_liked"`
+	User      *User
 }
 
 type CommentRepository struct {
@@ -21,14 +29,13 @@ func NewCommentRepository(db *sql.DB) *CommentRepository {
 	}
 }
 
-
 // CreateComment adds a new comment to the database
-func (cc *CommentRepository) CreateComment(comment *Comment) error {
+func (cc *CommentRepository) CreateComment(comment *Comment, createdAt time.Time) error {
 	query := `
-		INSERT INTO comment (content, author_id, post_id, created_at)
+		INSERT INTO comments (content, author_id, post_id, createdAt)
 		VALUES (?, ?, ?, ?)
 	`
-	result, err := cc.db.Exec(query, comment.Content, comment.AuthorID, comment.PostID, comment.CreatedAt)
+	result, err := cc.db.Exec(query, comment.Content, comment.AuthorID, comment.PostID, createdAt)
 	if err != nil {
 		return err
 	}
@@ -53,6 +60,44 @@ func (cc *CommentRepository) GetComment(commentID int) (*Comment, error) {
 	return &comment, nil
 }
 
+func (cc *CommentRepository) GetCommentsByPostID(postID string, currentUserID int) ([]*Comment, error) {
+	// Prepare a SQL query with a placeholder for the post ID
+	stmt, err := db.Prepare("SELECT comment_id, content, createdAt, first_name, last_name, nickname, post_id FROM comments,users WHERE comments.author_id=users.user_id and post_id = ? ORDER BY createdAt DESC")
+	if err != nil {
+		log.Println("error while preparing", err)
+	}
+	defer stmt.Close()
+
+	// Execute the prepared query and scan the results into a slice of 'models.Comment'
+	rows, err := stmt.Query(postID)
+	if err != nil {
+		log.Println("error stmt query in GetCommentsByPostID", err)
+	}
+	defer rows.Close()
+
+	comments := []*Comment{}
+	for rows.Next() {
+		var comment Comment
+		comment.User = &User{}
+		err := rows.Scan(&comment.CommentID, &comment.Content, &comment.CreatedAt, &comment.User.FirstName, &comment.User.LastName, &comment.User.Nickname, &comment.PostID)
+		if err != nil {
+			log.Println("error scan in GetCommentsByPostID", err)
+		}
+		comment.CreatedAt = lib.FormatDateDB(comment.CreatedAt)
+		comment.Likes, err = Comment_likeRepo.GetNumberOfCommentLikes(comment.CommentID)
+		if err != nil {
+			return nil, err
+		}
+		comment.IsLiked, err = Comment_likeRepo.IsCommentLikedByCurrentUser(comment.CommentID, currentUserID)
+		if err != nil {
+			return nil, err
+		}
+		comments = append(comments, &comment)
+	}
+
+	return comments, nil
+}
+
 // UpdateComment updates an existing comment in the database
 func (cc *CommentRepository) UpdateComment(comment *Comment) error {
 	query := `
@@ -75,4 +120,30 @@ func (cc *CommentRepository) DeleteComment(commentID int) error {
 		return err
 	}
 	return nil
+}
+
+// GetAllComments retrieves all comments for a given post from the database.
+func (cc *CommentRepository) GetAllComments(postID int) ([]Comment, error) {
+	query := "SELECT * FROM comment WHERE post_id = ?"
+	rows, err := cc.db.Query(query, postID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var comments []Comment
+	for rows.Next() {
+		var comment Comment
+		err := rows.Scan(&comment.CommentID, &comment.Content, &comment.AuthorID, &comment.PostID, &comment.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		comments = append(comments, comment)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return comments, nil
 }

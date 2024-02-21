@@ -2,6 +2,7 @@ package lib
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"mime/multipart"
 	"unicode"
@@ -97,6 +98,21 @@ func ValidateRequest(req *http.Request, res http.ResponseWriter, url, method str
 		return false
 	}
 	return true
+}
+
+func WriteJSONResponse(w http.ResponseWriter, data interface{}) {
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	w.Header().Set("Access-Control-Allow-Methods", "POST,OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	w.Header().Set("Content-Type", "application/json")
+
+	// Encode and write the JSON response
+	err := json.NewEncoder(w).Encode(data)
+	if err != nil {
+		http.Error(w, "Error encoding JSON response", http.StatusInternalServerError)
+		return
+	}
 }
 
 func RenderPage(basePath, pagePath string, data any, res http.ResponseWriter) {
