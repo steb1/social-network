@@ -6,9 +6,10 @@ CREATE TABLE IF NOT EXISTS "users" (
   "last_name" text NOT NULL,
   "date_of_birth" date NOT NULL,
   "avatar" text,
-  "nickname" text UNIQUE,
+  "nickname" text,
   "about_me" text
 );
+CREATE UNIQUE INDEX IF NOT EXISTS "idx_unique_nickname" ON "users" ("nickname") WHERE "nickname" != '';
 
 CREATE TABLE IF NOT EXISTS "groups" (
   "group_id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
