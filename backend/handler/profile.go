@@ -27,7 +27,7 @@ type UserProfileResponse struct {
 	Followings        []*models.User `json:"followings"`
 }
 
-func GetFollowersWees(w http.ResponseWriter, r *http.Request) {
+func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 	session, ok := IsAuthenticated(r)
 
 	if !ok {
@@ -35,6 +35,12 @@ func GetFollowersWees(w http.ResponseWriter, r *http.Request) {
 		apiError.Error = "StatusUnauthorized"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
 		return
+	}
+
+	to := r.URL.Query().Get("to")
+	exist, _ := models.UserRepo.UserExists(models.UserRepo.GetIDFromUsernameOrEmail(to))
+	if !exist {
+		WriteJSON(w, http.StatusUnauthorized, nil)
 	}
 
 	id, _ := strconv.Atoi(session.UserID)

@@ -88,7 +88,7 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender }) => {
     };
 
     const handleEmojiClick = (emojiData) => {
-        handleSendMessage(emojiData.emoji, Sender, Chatter, AvatarSender, cmsRef);
+        setMessageInput((prevMessage) => prevMessage + emojiData.emoji);
     };
 
     const debounceNoTyping = debounce(() => nontypeinprogress(Sender, Chatter), 8000);
@@ -123,7 +123,9 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender }) => {
                                         />
                                     ))
                                 ) : (
-                                    <p>No chatter avalaible follows someone or wait someone to follow you</p>
+                                    <p className='text-justify font-bold'>
+                                        No chatter avalaible follows someone or wait someone to follow you
+                                    </p>
                                 )}
                                 <SideBarPreviewGroupChat />
                             </div>
@@ -137,7 +139,7 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender }) => {
                     </div>
 
                     <div className='flex-1'>
-                        {!Chatter.length ? (
+                        {!Chatter || !Chatter.length ? (
                             <>
                                 <Animation animationData={authAnimation} />
                             </>
@@ -269,7 +271,7 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender }) => {
                         )}
                     </div>
 
-                    {!Chatter.length ? null : (
+                    {!Chatter || !Chatter.length ? null : (
                         <>
                             <div className='rightt w-full h-full absolute top-0 right-0 z-10 hidden transition-transform'>
                                 <div className='w-[360px] border-l shadow-lg h-screen bg-white absolute right-0 top-0 uk-animation-slide-right-medium delay-200 z-50 dark:bg-dark2 dark:border-slate-700'>
@@ -282,10 +284,7 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender }) => {
                                             alt=''
                                         />
                                         <div className='mt-8'>
-                                            <div className='md:text-xl text-base font-medium text-black dark:text-white'>
-                                                {" "}
-                                                {`${Chatter[0].first_name} ${Chatter[0].last_name}`}{" "}
-                                            </div>
+                                            <div className='md:text-xl text-base font-medium text-black dark:text-white'></div>
                                             <div className='text-gray-500 text-sm mt-1 dark:text-white/80'>
                                                 {Chatter[0].nickname ? "@" + Chatter[0].nickname : Chatter[0].email}
                                             </div>
