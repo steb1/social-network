@@ -77,7 +77,7 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender }) => {
 	};
 
 	const handleEmojiClick = (emojiData) => {
-		handleSendMessage(emojiData.emoji, Sender, Chatter, AvatarSender, cmsRef);
+		setMessageInput((prevMessage) => prevMessage + emojiData.emoji);
 	};
 
 	const debounceNoTyping = debounce(() => nontypeinprogress(Sender, Chatter), 8000);
