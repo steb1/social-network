@@ -48,6 +48,7 @@ var Routes = []Route{
 	{Path: "/api/follow", Handler: SubscriptionHandler, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/pendingrequests", Handler: HandlePendingRequests, Methods: []string{"GET", "POST", "OPTIONS"}},
 	{Path: "/api/socket", Handler: SocketHandler, Methods: []string{"GET", "POST", "OPTIONS"}},
+	{Path: "/api/messages", Handler: GetMessages, Methods: []string{"GET", "OPTIONS"}},
 	{Path: "/api/messageResponse", Handler: GetMessageResponse, Methods: []string{"GET", "POST", "OPTIONS"}},
 }
 

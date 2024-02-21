@@ -66,7 +66,6 @@ func (sr *FollowRequestRepository) DeleteFollowRequest(followerUserId, following
 	return nil
 }
 
-// TODO: Get pending requests
 func (sr *FollowRequestRepository) HasPendingRequestFromAnUser(requesterUserId, userId int) (bool, error) {
 	query := ` 
 	SELECT COUNT(*)
@@ -87,8 +86,6 @@ func (sr *FollowRequestRepository) HasPendingRequestFromAnUser(requesterUserId, 
 
 	return true, nil
 }
-
-//TODO: Accept following requests
 
 func (sr *FollowRequestRepository) AcceptFollowingRequest(followerUserID, followingUserId int) error {
 	query := ` 
