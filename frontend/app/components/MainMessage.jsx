@@ -11,11 +11,21 @@ import authAnimation from "@/public/assets/animations/authAnimation.json";
 import socket from "@/public/js/socket";
 import ReactDOM from "react-dom";
 import EmojiPicker, { EmojiClickData, SkinTones, EmojiStyle } from "emoji-picker-react";
+import TypingIndicator from "../messages/TypingIndicator";
 
-// Composant principal de la messagerie
 const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender }) => {
 	const [messageInput, setMessageInput] = useState("");
 	const cmsRef = useRef();
+	let isRendered = false;
+
+	const RenderType = () => {
+		if (!isRendered) {
+			const cms = document.getElementById("cms");
+			cms && ReactDOM.render(ReactDOM.createPortal(<TypingIndicator Avatar={Chatter[0].avatar} />, cms), document.createElement("div"));
+			cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+			isRendered = true;
+		}
+	};
 
 	useEffect(() => {
 		socket.onopen = function () {
@@ -24,15 +34,36 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender }) => {
 
 		socket.onmessage = async function (event) {
 			const message = JSON.parse(event.data);
+			const cms = document.getElementById("cms");
 			switch (message.command) {
 				case "messageforuser":
 					if (message.body.sender !== Chatter[0].nickname && message.body.sender !== Chatter[0].email) {
 						return;
 					}
 
-					const cms = document.getElementById("cms");
 					cms && ReactDOM.render(ReactDOM.createPortal(<LeftMessage Avatar={Chatter[0].avatar} Content={message.body.text} />, cms), document.createElement("div"));
 					cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+					break;
+				case "typeinprogress":
+					if (message.body.sender !== Chatter[0].nickname && message.body.sender !== Chatter[0].email) {
+						return;
+					}
+					RenderType();
+					break;
+				case "nontypeinprogress":
+					if (message.body.sender !== Chatter[0].nickname && message.body.sender !== Chatter[0].email) {
+						return;
+					}
+
+					if (isRendered) {
+						const indicatorElement = document.getElementById("indicator");
+						if (indicatorElement) {
+							indicatorElement.remove();
+							isRendered = false;
+						}
+					}
+
+					break;
 
 				default:
 			}
@@ -44,9 +75,12 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender }) => {
 		setMessageInput("");
 	};
 
-	const handleEmojiClick = (emojiData, event) => {
+	const handleEmojiClick = (emojiData) => {
 		handleSendMessage(emojiData.emoji, Sender, Chatter, AvatarSender, cmsRef);
 	};
+
+	const debounceNoTyping = debounce(() => nontypeinprogress(Sender, Chatter), 8000);
+	const throttleTyping = throttle(() => typeinprogress(Sender, Chatter), 3000);
 
 	return (
 		<main id="site__main" className="2xl:ml-[--w-side]  xl:ml-[--w-side-sm] p-2.5 h-[calc(100vh-var(--m-top))] mt-[--m-top]">
@@ -132,6 +166,8 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender }) => {
 											placeholder="Write your message"
 											rows="1"
 											value={messageInput}
+											onKeyDown={throttleTyping}
+											onKeyUp={debounceNoTyping}
 											onChange={(e) => setMessageInput(e.target.value)} //  update la valeur du champ de message
 											className="w-full resize-none bg-secondery rounded-full px-4 p-2"
 										></textarea>
@@ -212,4 +248,43 @@ export async function sendMessage(socket, command, body) {
 	};
 
 	socket.send(JSON.stringify(WebSocketMessage));
+}
+
+const typeinprogress = async (Sender, Chatter) => {
+	const message = {
+		sender: Sender,
+		receiver: Chatter[0].nickname || Chatter[0].email,
+	};
+	sendMessage(socket, "typeinprogress", message);
+};
+
+const nontypeinprogress = async (Sender, Chatter) => {
+	const message = {
+		sender: Sender,
+		receiver: Chatter[0].nickname || Chatter[0].email,
+	};
+	sendMessage(socket, "nontypeinprogress", message);
+};
+
+function debounce(fn, delay) {
+	let timer = null;
+	return function () {
+		let context = this;
+		let args = arguments;
+		clearTimeout(timer);
+		timer = setTimeout(function () {
+			fn.apply(context, args);
+		}, delay);
+	};
+}
+
+function throttle(fn, delay) {
+	let last = 0;
+	return function () {
+		const now = +new Date();
+		if (now - last > delay) {
+			fn.apply(this, arguments);
+			last = now;
+		}
+	};
 }
