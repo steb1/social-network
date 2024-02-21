@@ -137,7 +137,7 @@ func (cm *MembershipRepository) GetAllUsersByGroupID(groupID int) ([]User, error
 		SELECT u.user_id, u.email, u.password, u.first_name, u.last_name, u.date_of_birth, u.avatar, u.nickname, u.about_me
 		FROM users u
 		INNER JOIN memberships m ON u.user_id = m.user_id
-		WHERE m.group_id = ? 
+		WHERE m.group_id = ? AND m.membership_status = "accepted" 
 	`
 
 	rows, err := cm.db.Query(query, groupID)

@@ -1,7 +1,9 @@
 "use client"
-import { useState, useEffect } from "react";
+import Header from "../components/header";
+import Sidebar from "../components/sidebar";
+import { GroupOption } from "../components/groupOption";
 import config from "@/config";
-import { GroupOption } from "@/app/components/groupOption";
+import React, { useEffect, useState } from "react";
 
 export async function fetchAllGroups (setPublicGroups, setOwnGroups, setServerError, setSubcribedGroups)  {
     let  token = document.cookie.split("=")[1]
@@ -45,7 +47,10 @@ export async function fetchAllGroups (setPublicGroups, setOwnGroups, setServerEr
       }
 }
 
-export const DisplayGroups = () => {
+
+
+const Group = () => {
+
     const [groups, setPublicGroups] = useState([]);
     const [Owngroups, setOwnGroups] = useState([]);
     const [subcribedGroups, setSubcribedGroups] = useState([]); 
@@ -53,16 +58,23 @@ export const DisplayGroups = () => {
     const [serverError, setServerError] = useState(null);
     
     useEffect(() => {
-      fetchAllGroups(setPublicGroups, setOwnGroups, setServerError, setSubcribedGroups);
+    fetchAllGroups(setPublicGroups, setOwnGroups, setServerError, setSubcribedGroups);
     }, []);
-
+    
     return (
-        <main id="site__main" className="2xl:ml-[--w-side]  xl:ml-[--w-side-sm] p-2.5 h-0 mt-0">
-			<div className="max-w-[1065px] mx-auto max-lg:-m-2.5">
+    <div className="overflow-y-hidden">
+         <div>
+        <Header/>
+         </div>
+        <div className=" flex flex-row">
+        <div className="mt-16"> 
+            <Sidebar/>
+        </div>
+        <div className="flex flex-col flew-wrap mb-10">
           <div className="flex flex-col mt-20">
                 <h1 className="text-black text-xl font-bold">Suggestions</h1>
                 <hr className="mt-3"/>
-                <div className="carousel carousel-center w-auto p-4 space-x-4 bg-neutral rounded-box">
+                <div className="carousel carousel-center w-[1000px] p-4 space-x-4 bg-neutral rounded-box">
                   {groups ? (
                     groups.map((group) => (
                       <GroupOption key={group.id} group={group} setGroups={setPublicGroups} setServerError={setServerError} />
@@ -75,7 +87,7 @@ export const DisplayGroups = () => {
           <div className="flex flex-col mt-10">
               <h1 className="text-black text-xl font-bold">My groups</h1>
               <hr className="mt-3"/>
-              <div className="carousel carousel-center w-auto p-4 space-x-4 bg-neutral rounded-box">
+              <div className="carousel carousel-center w-[1000px] p-4 space-x-4 bg-neutral rounded-box">
               
               {Owngroups ? (
                 Owngroups.map((group) => (
@@ -98,7 +110,7 @@ export const DisplayGroups = () => {
           <div className="flex flex-col mt-10">
               <h1 className="text-black text-xl font-bold">Subcribed Groups</h1>
               <hr className="mt-3"/>
-              <div className="carousel carousel-center w-auto p-4 space-x-4 bg-neutral rounded-box">
+              <div className="carousel carousel-center w-[1000px] p-4 space-x-4 bg-neutral rounded-box">
               
               {subcribedGroups ? (
                 subcribedGroups.map((group) => (
@@ -119,7 +131,9 @@ export const DisplayGroups = () => {
               </div>
           </div> 
         </div>
-    </main>
+        </div>
+    </div>
     )
-}
+} 
 
+export default Group

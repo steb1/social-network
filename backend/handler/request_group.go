@@ -108,6 +108,7 @@ func HandleRequestGroup(w http.ResponseWriter, r *http.Request) {
 			MembershipToCreate.MembershipStatus = "accepted"
 			MembershipToCreate.UserID = intrequesterId
 			MembershipToCreate.JoinedAt = time.Now().String()
+			
 			err = models.MembershipRepo.CreateMembership(&MembershipToCreate)
 
 			if err != nil {
@@ -121,8 +122,6 @@ func HandleRequestGroup(w http.ResponseWriter, r *http.Request) {
 			response["ok"] = true
 
 			lib.WriteJSONResponse(w, response)
-
-			fmt.Println("ddd")
 
 			return
 

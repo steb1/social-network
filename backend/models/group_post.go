@@ -2,7 +2,6 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
 	"server/lib"
 	"time"
 )
@@ -20,21 +19,21 @@ type GroupPost struct {
 }
 
 type PostItemGroup struct {
-	PostID        int
-	AuthorName    string
-	Title         string
-	Content       string
-	IsLiked       bool
-	CreatedAt     string
-	AuthorID      int
-	GroupID       int
-	ImageURL      string
-	Visibility    string
-	HasImage      int
-	Categories    []string
-	ListOfComment []CommentGroup
+	PostID           int
+	AuthorName       string
+	Title            string
+	Content          string
+	IsLiked          bool
+	CreatedAt        string
+	AuthorID         int
+	GroupID          int
+	ImageURL         string
+	Visibility       string
+	HasImage         int
+	Categories       []string
+	ListOfComment    []CommentGroup
 	NumberOfComments int
-	NumberOfLikes int
+	NumberOfLikes    int
 }
 
 type GroupPostRepository struct {
@@ -64,7 +63,7 @@ func (gp *GroupPostRepository) CreatePostInGroup(post *GroupPost) (int64, error)
 		return 0, err
 	}
 
-	return n ,nil
+	return n, nil
 }
 
 // GetPostByID retrieves a post by its ID.
@@ -187,38 +186,22 @@ func (pr *GroupPostRepository) GetAllPostsItems(groupid, userId int) ([]PostItem
 		CountLikesForPost, _ := PostGroupLikeRepo.CountLikesByPostID(posts[i].PostID)
 		isLiked := PostGroupLikeRepo.IsLiked(posts[i].PostID, userId)
 
-		fmt.Println(isLiked, "-------------" , posts[i].PostID)
-
-		// TopUser, _ := UserRepo.SelectAllUsersByPost(posts[i].ID)
-		// tabTopUser := []string{}
-		// cpt := 0
-		// for l := 0; l < len(TopUser); l++ {
-		// 	if cpt < 3 {
-		// 		tabTopUser = append(tabTopUser, TopUser[l].AvatarURL)
-		// 	}
-		// 	cpt++
-		// }
-
-		// lastmodif := strings.ReplaceAll(posts[i].ModifiedDate, "T", " ")
-		// lastmodif = strings.ReplaceAll(lastmodif, "Z", "")
-		// urlImage := strings.ReplaceAll(posts[i].ImageURL, "jpg", "jpg")
-
 		PostItemi := PostItemGroup{
-			PostID:        posts[i].PostID,
-			AuthorName:    user,
-			Title:         posts[i].Title,
-			Content:       posts[i].Content,
-			CreatedAt:     lib.TimeSinceCreation(posts[i].CreatedAt.Format("2006-01-02 15:04:05")),
-			AuthorID:      posts[i].AuthorID,
-			GroupID:       posts[i].GroupID,
-			ImageURL:      posts[i].ImageURL,
-			Visibility:    posts[i].Visibility,
-			HasImage:      posts[i].HasImage,
-			ListOfComment: tabAllComments,
-			Categories:    Category,
-			NumberOfLikes: CountLikesForPost,
-			NumberOfComments: len(tabAllComments) ,
-			IsLiked:       isLiked,
+			PostID:           posts[i].PostID,
+			AuthorName:       user,
+			Title:            posts[i].Title,
+			Content:          posts[i].Content,
+			CreatedAt:        lib.TimeSinceCreation(posts[i].CreatedAt.Format("2006-01-02 15:04:05")),
+			AuthorID:         posts[i].AuthorID,
+			GroupID:          posts[i].GroupID,
+			ImageURL:         posts[i].ImageURL,
+			Visibility:       posts[i].Visibility,
+			HasImage:         posts[i].HasImage,
+			ListOfComment:    tabAllComments,
+			Categories:       Category,
+			NumberOfLikes:    CountLikesForPost,
+			NumberOfComments: len(tabAllComments),
+			IsLiked:          isLiked,
 		}
 
 		tabPostItem = append(tabPostItem, PostItemi)

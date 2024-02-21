@@ -63,7 +63,6 @@ func HandleLikePostGroup(w http.ResponseWriter, r *http.Request) {
 	} else {
 		// Post is not liked, handle like logic
 		if _, err := models.PostGroupLikeRepo.CreatePostGroupLike(postLike); err != nil {
-			fmt.Println(err, "-------- error")
 			apiError.Error = "Failed to like post"
 			WriteJSON(w, http.StatusInternalServerError, apiError)
 			return

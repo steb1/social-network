@@ -14,7 +14,7 @@ import { PostText } from "./posts"
 import config from "@/config";
 
 
-export async function fetchGroupDetail (setPosts , setGroup, setEvents, setRequests, setMessages, setServerError, groupId, setIsOwner, setMembers) {
+export async function fetchGroupDetail (setPosts , setGroup, setEvents, setRequests, setMessages, setServerError, groupId, setIsowner, setMembers) {
     let  token = document.cookie.split("=")[1]
     try {
         const response = await fetch(config.serverApiUrl + "getGroupDetail", {
@@ -31,15 +31,14 @@ export async function fetchGroupDetail (setPosts , setGroup, setEvents, setReque
           if (contentType && contentType.includes("application/json")) {
 
             const data = await response.json();
-            console.log(data, "-------------- data");
+            console.log(data, "")
             setMessages(data.Messages)
             setPosts(data.Post)
             setRequests(data.requests)
             setEvents(data.events)
             setGroup(data.group)
-            setIsOwner(data.IsOwner)
+            setIsowner(data.IsOwner)
             setMembers(data.members)
-
           } else {
             console.error("Response is not in JSON format");
             setServerError("Invalid response format");
@@ -66,6 +65,7 @@ export const GroupDetail = ( { params } ) => {
     let [tab, setTab] = useState(1)
     let [isowner, setIsowner] = useState(false)
     let [members, setMembers] = useState([])
+    let [invites, setInvites] = useState([])
     
     const [serverError, setServerError] = useState(null);
 
@@ -74,15 +74,12 @@ export const GroupDetail = ( { params } ) => {
     }, [])
 
     return (
-        <main id="site__main" className="2xl:ml-[--w-side] w-[1100px]  xl:ml-[--w-side-sm] p-2.5 h-0 mt-0">
-         <div
-            id='site__sidebar'
-            className='fixed top-0 left-0 z-[99] pt-[--m-top] overflow-hidden transition-transform xl:duration-500 max-xl:w-full max-xl:-translate-x-full'
-        ></div>
+        <div id="site__main"   className="2xl:ml-[--w-side] right-0 w-[1100px]  xl:ml-[--w-side-sm] p-2.5 h-0 mt-0">
+         <div id='site__sidebar'
+            className='fixed top-0 left-0 z-[99] pt-[--m-top] overflow-hidden transition-transform xl:duration-500 max-xl:w-full max-xl:-translate-x-full'></div>
 
-        <div className="max-w-[1065px] mx-auto max-lg:-m-2.5"></div>
         <div className="flex flex-col w-full mx-4">
-            <div className="mt-36 w-full mr-20">
+            <div className="mt-36 w-full mr-20" >
             <GroupCover groupInfo={group} setTab={setTab} tab={ tab } isowner={isowner} />
             </div>
             <div className="flex flex-row">
@@ -112,18 +109,19 @@ export const GroupDetail = ( { params } ) => {
                     ) : requests && requests.length > 0 && tab == 5 ? (
                     requests.map((request, i) => (
                         <div className="mx-auto pt-5">
-                            <Requests key={i} request={request} setPosts={setPosts} setGroup={setGroup} setEvents={setEvents} setRequests={setRequests} setMessages={setMessages} setServerError={setServerError} groupId={group.group_id}/>
+            
+                            <Requests key={i} request={request} setPosts={setPosts} setGroup={setGroup} setEvents={setEvents} setRequests={setRequests} setMessages={setMessages} setServerError={setServerError} groupId={group.group_id}  setIsowner={setIsowner} setMembers={setMembers} />
                         </div>
                     ))
                     ) : 'Not data avaible.' }
                     
                 </div>
-                <div className="mt-10 right-0 mb-10">
-                    <GroupRightBar/>
+                <div className="mt-10 right-0 mb-10 uk-position-fixed" uk-sticky="">
+                    <GroupRightBar groupId={group.group_id} invites={invites} setInvites={setInvites} members={members} groupInfo={group} />
                 </div>
             </div>
     </div>
-        </main>
+  </div>
     )
 }
 
