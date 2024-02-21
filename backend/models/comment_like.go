@@ -23,7 +23,7 @@ func NewCommentLikeRepository(db *sql.DB) *CommentLikeRepository {
 // CreateCommentLike adds a new comment like to the database
 func (clr *CommentLikeRepository) CreateCommentLike(commentLike *CommentLike) error {
 	query := `
-		INSERT INTO comment_like (author_id, comment_id, rate)
+		INSERT INTO comment_likes (author_id, comment_id, rate)
 		VALUES (?, ?, ?)
 	`
 	result, err := clr.db.Exec(query, commentLike.AuthorID, commentLike.CommentID, commentLike.Rate)
@@ -42,7 +42,7 @@ func (clr *CommentLikeRepository) CreateCommentLike(commentLike *CommentLike) er
 
 // GetCommentLike retrieves a comment like from the database by comment_like_id
 func (clr *CommentLikeRepository) GetCommentLike(commentLikeID int) (*CommentLike, error) {
-	query := "SELECT * FROM comment_like WHERE comment_like_id = ?"
+	query := "SELECT * FROM comment_likes WHERE comment_like_id = ?"
 	var commentLike CommentLike
 	err := clr.db.QueryRow(query, commentLikeID).Scan(&commentLike.CommentLikeID, &commentLike.AuthorID, &commentLike.CommentID, &commentLike.Rate)
 	if err != nil {
@@ -51,10 +51,32 @@ func (clr *CommentLikeRepository) GetCommentLike(commentLikeID int) (*CommentLik
 	return &commentLike, nil
 }
 
+// GetNumberOfCommentLikes retrieves the number of likes for a given comment ID
+func (clr *CommentLikeRepository) GetNumberOfCommentLikes(commentID int) (int, error) {
+	query := "SELECT COUNT(*) FROM comment_likes WHERE comment_id = ?"
+	var numLikes int
+	err := clr.db.QueryRow(query, commentID).Scan(&numLikes)
+	if err != nil {
+		return 0, err
+	}
+	return numLikes, nil
+}
+
+// IsCommentLikedByCurrentUser checks if the current user has liked a given comment
+func (clr *CommentLikeRepository) IsCommentLikedByCurrentUser(commentID, userID int) (bool, error) {
+	query := "SELECT EXISTS (SELECT 1 FROM comment_likes WHERE comment_id = ? AND author_id = ?)"
+	var exists bool
+	err := clr.db.QueryRow(query, commentID, userID).Scan(&exists)
+	if err != nil {
+		return false, err
+	}
+	return exists, nil
+}
+
 // UpdateCommentLike updates an existing comment like in the database
 func (clr *CommentLikeRepository) UpdateCommentLike(commentLike *CommentLike) error {
 	query := `
-		UPDATE comment_like
+		UPDATE comment_likes
 		SET author_id = ?, comment_id = ?, rate = ?
 		WHERE comment_like_id = ?
 	`
@@ -66,9 +88,9 @@ func (clr *CommentLikeRepository) UpdateCommentLike(commentLike *CommentLike) er
 }
 
 // DeleteCommentLike removes a comment like from the database by comment_like_id
-func (clr *CommentLikeRepository) DeleteCommentLike(commentLikeID int) error {
-	query := "DELETE FROM comment_like WHERE comment_like_id = ?"
-	_, err := clr.db.Exec(query, commentLikeID)
+func (clr *CommentLikeRepository) DeleteCommentLike(commentID, AuthorID int) error {
+	query := "DELETE FROM comment_likes WHERE comment_id = ? AND author_id= ?"
+	_, err := clr.db.Exec(query, commentID, AuthorID)
 	if err != nil {
 		return err
 	}

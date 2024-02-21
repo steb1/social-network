@@ -1,6 +1,10 @@
 package models
 
-import "database/sql"
+import (
+	"database/sql"
+	"log"
+	"server/lib"
+)
 
 // PostVisibility structure represents the "post_visibilities" table
 type PostVisibility struct {
@@ -20,14 +24,17 @@ func NewPostVisibilityRepository(db *sql.DB) *PostVisibilityRepository {
 }
 
 // CreatePostVisibility adds a new post visibility to the database
-func (pvr *PostVisibilityRepository) CreatePostVisibility(postVisibility *PostVisibility) error {
+func (pvr *PostVisibilityRepository) CreatePostVisibility(postId int, users []string) error {
 	query := `
 		INSERT INTO post_visibilities (post_id, user_id_authorized)
 		VALUES (?, ?)
 	`
-	_, err := pvr.db.Exec(query, postVisibility.PostID, postVisibility.UserIDAuthorized)
-	if err != nil {
-		return err
+	for _, v := range users {
+		_, err := pvr.db.Exec(query, postId, v)
+
+		if err != nil {
+			log.Println(err.Error())
+		}
 	}
 
 	return nil
@@ -42,6 +49,31 @@ func (pvr *PostVisibilityRepository) GetPostVisibility(postVisibilityID int) (*P
 		return nil, err
 	}
 	return &postVisibility, nil
+}
+
+func (pvr *PostVisibilityRepository) GetAllPostsUserAuth(user_id string) ([]*Post, error) {
+	query := `SELECT posts.post_id, title, content, created_at, visibility, has_image,
+	 nickname, first_name, last_name, email 
+	 FROM posts,post_visibilities, users 
+	 WHERE post_visibilities.post_id=posts.post_id AND posts.author_id=users.user_id AND post_visibilities.user_id_authorized=? 
+	ORDER BY created_at DESC`
+	rows, err := pvr.db.Query(query, user_id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var posts []*Post
+	for rows.Next() {
+		var post Post
+		post.User = &User{}
+		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.HasImage, &post.User.Nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email); err != nil {
+			return nil, err
+		}
+		post.CreatedAt = lib.FormatDateDB(post.CreatedAt)
+		post.Category = PostCategoryRepo.GetPostCategory(post.PostID)
+		posts = append(posts, &post)
+	}
+	return posts, nil
 }
 
 // UpdatePostVisibility updates an existing post visibility in the database
@@ -67,4 +99,3 @@ func (pvr *PostVisibilityRepository) DeletePostVisibility(postVisibilityID int) 
 	}
 	return nil
 }
-

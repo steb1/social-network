@@ -12,6 +12,7 @@ const ButtonTogglePrivacy = ({ accountType, cookie }) => {
 			const targetType = isPrivate ? "Public" : "Private";
 			const response = await fetch(`${config.serverApiUrl}toggleProfilePrivacy?type=${targetType}`, {
 				method: "GET",
+				cache: "no-cache",
 				headers: {
 					Authorization: `${cookie}`,
 				},

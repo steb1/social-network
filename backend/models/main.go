@@ -9,25 +9,29 @@ import (
 )
 
 var (
-	db                 *sql.DB
-	AttendanceRepo     *AttendanceRepository
-	UserRepo           *UserRepository
-	PostRepo           *PostRepository
-	PostCategoryRepo   *PostCategorieRepository
-	CommentRepo        *CommentRepository
-	CategoryRepo       *CategoryRepository
-	NotifRepo          *NotificationRepository
-	MessageRepo        *MessageRepository
-	Comment_likeRepo   *CommentLikeRepository
-	EventRepo          *EventRepository
-	GroupChatRepo      *GroupChatRepository
-	GroupRepo          *GroupRepository
-	MembershipRepo     *MembershipRepository
-	PostLikeRepo       *PostLikeRepository
-	PostVisibilityRepo *PostVisibilityRepository
-	SessionRepo        *SessionRepository
-	SubscriptionRepo   *SubscriptionRepository
-	FollowRequestRepo  *FollowRequestRepository
+	db                   *sql.DB
+	AttendanceRepo       *AttendanceRepository
+	UserRepo             *UserRepository
+	PostRepo             *PostRepository
+	PostCategoryRepo     *PostCategorieRepository
+	CommentRepo          *CommentRepository
+	CategoryRepo         *CategoryRepository
+	NotifRepo            *NotificationRepository
+	MessageRepo          *MessageRepository
+	Comment_likeRepo     *CommentLikeRepository
+	EventRepo            *EventRepository
+	GroupChatRepo        *GroupChatRepository
+	GroupRepo            *GroupRepository
+	MembershipRepo       *MembershipRepository
+	PostLikeRepo         *PostLikeRepository
+	PostVisibilityRepo   *PostVisibilityRepository
+	SessionRepo          *SessionRepository
+	SubscriptionRepo     *SubscriptionRepository
+	FollowRequestRepo    *FollowRequestRepository
+	GroupPostRepo        *GroupPostRepository
+	CommentGroupRepo     *CommentGroupRepository
+	CommentGroupLikeRepo *CommentGroupLikeRepository
+	PostGroupLikeRepo    *PostGroupLikeRepository
 )
 
 func init() {
@@ -68,6 +72,10 @@ func init() {
 	SessionRepo = NewSessionRepository(db)
 	SubscriptionRepo = NewSubscriptionRepository(db)
 	FollowRequestRepo = NewFollowRequestRepository(db)
+	GroupPostRepo = NewGroupPostRepository(db)
+	CommentGroupRepo = NewCommentGroupRepository(db)
+	CommentGroupLikeRepo = NewCommentGroupLikeRepository(db)
+	PostGroupLikeRepo = NewPostGroupLikeRepository(db)
 
 	log.Println("✅ Database init with success")
 }

@@ -1,11 +1,9 @@
 import React from "react";
-import authMiddleware from "@/middleware/authMiddleware";
 import config from "@/config";
-import Header from "@/app/components/header";
-import Sidebar from "@/app/components/sidebar";
-import MainProfile from "@/app/components/mainProfile";
+import MainProfile from "@/app/profile/[id]/components/mainProfile";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
+import Layout from "../../components/Layout";
 
 const Profile = async ({ params: { id } }) => {
     const cookieStore = cookies();
@@ -13,6 +11,10 @@ const Profile = async ({ params: { id } }) => {
 
     try {
         const response = await fetch(`${config.serverApiUrl}profile?id=${id}`, {
+<<<<<<< HEAD
+=======
+            cache: "no-cache",
+>>>>>>> master
             method: "GET",
             headers: {
                 Authorization: cookieStore.get("social-network").value,
@@ -43,6 +45,7 @@ const Profile = async ({ params: { id } }) => {
     }
     //TODO : When the request is pending
     return (
+<<<<<<< HEAD
         <div id='wrapper'>
             <Header />
 
@@ -50,7 +53,14 @@ const Profile = async ({ params: { id } }) => {
 
             <MainProfile props={profileData} Visibility={Visibility} FollowStatus={profileData.followStatus} />
         </div>
+=======
+        <Layout>
+            <MainProfile props={profileData} Visibility={Visibility} FollowStatus={profileData.followStatus} />
+        </Layout>
+>>>>>>> master
     );
 };
 
-export default authMiddleware(Profile, config.serverApiUrl + "checkAuth");
+export default Profile;
+
+// export default authMiddleware(Profile, config.serverApiUrl + "checkAuth");
