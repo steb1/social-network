@@ -156,51 +156,8 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 					log.Println("Error: Unable to send message to user")
 					continue
 				}
-			case "typeinprogress":
-				// TODO C'ets repetitif les 2 lignes laa
-				bodyMap, ok := message.Body.(map[string]interface{})
-				if !ok {
-					log.Println("Type de corps non pris en charge pour 'messageforuser'")
-					return
-				}
-
-				sender, _ := bodyMap["sender"].(string)
-				receiver, _ := bodyMap["receiver"].(string)
-				var messagepattern MessagePattern
-				messagepattern.Sender = sender
-				messagepattern.Receiver = receiver
-
-				tosend, exists := connections[models.UserRepo.GetIDFromUsernameOrEmail(receiver)]
-				if !exists {
-					continue
-				}
-
-				if err := EnvoyerMessage(tosend, "typeinprogress", messagepattern); err != nil {
-					log.Println("Error writing message typeinprogress to connection:", err)
-					continue
-				}
-			case "nontypeinprogress":
-				bodyMap, ok := message.Body.(map[string]interface{})
-				if !ok {
-					log.Println("Type de corps non pris en charge pour 'messageforuser'")
-					return
-				}
-
-				sender, _ := bodyMap["sender"].(string)
-				receiver, _ := bodyMap["receiver"].(string)
-				var messagepattern MessagePattern
-				messagepattern.Sender = sender
-				messagepattern.Receiver = receiver
-
-				tosend, exists := connections[models.UserRepo.GetIDFromUsernameOrEmail(receiver)]
-				if !exists {
-					continue
-				}
-
-				if err := EnvoyerMessage(tosend, "nontypeinprogress", messagepattern); err != nil {
-					log.Println("Error writing message nontypeinprogress to connection:", err)
-					continue
-				}
+			case "typeinprogress", "nontypeinprogress":
+				handleInProgressMessage(message.Command, message.Body)
 
 			}
 		}
@@ -220,4 +177,28 @@ func EnvoyerMessage(tosend *UserInfo, Command string, Body interface{}) error {
 
 	err = tosend.Conn.WriteMessage(websocket.TextMessage, jsonMessage)
 	return err
+}
+
+func handleInProgressMessage(messageType string, messageBody interface{}) {
+	bodyMap, ok := messageBody.(map[string]interface{})
+	if !ok {
+		log.Println("Type de corps non pris en charge pour", messageType)
+		return
+	}
+
+	sender, _ := bodyMap["sender"].(string)
+	receiver, _ := bodyMap["receiver"].(string)
+
+	var messagepattern MessagePattern
+	messagepattern.Sender = sender
+	messagepattern.Receiver = receiver
+
+	tosend, exists := connections[models.UserRepo.GetIDFromUsernameOrEmail(messagepattern.Receiver)]
+	if !exists {
+		return
+	}
+
+	if err := EnvoyerMessage(tosend, messageType, messagepattern); err != nil {
+		log.Println("Error writing message", messageType, "to connection:", err)
+	}
 }
