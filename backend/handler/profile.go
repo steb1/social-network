@@ -76,6 +76,7 @@ func GetFollowersWees(w http.ResponseWriter, r *http.Request) {
 		Avatar:            user.Avatar,
 		Followers:         followers,
 		Followings:        followings,
+		// TODO: LE MESSAGE ENTRE LES DEUX
 	}
 
 	WriteJSON(w, http.StatusOK, userProfile)
