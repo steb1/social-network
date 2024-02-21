@@ -14,6 +14,13 @@ type Message struct {
 	SentTime   string `json:"sent_time"`
 }
 
+type MessageResponse struct {
+	Sender   string `json:"sender"`
+	Receiver string `json:"receiver"`
+	Content  string `json:"content"`
+	SentTime string `json:"sent_time"`
+}
+
 type MessageRepository struct {
 	db *sql.DB
 }
@@ -50,6 +57,33 @@ func (mr *MessageRepository) GetMessage(messageID int) (*Message, error) {
 		return nil, err
 	}
 	return &message, nil
+}
+
+func (mr *MessageRepository) GetMessagesBetweenUsers(idUser1, idUser2, offset, limit int) ([]*MessageResponse, error) {
+	var messages []*MessageResponse
+
+	rows, err := db.Query(`SELECT content, sent_time, sender.first_name AS sender, receiver.first_name as Receiver
+							FROM messages m
+							JOIN 
+								users sender ON m.sender_id = sender.user_id
+							JOIN 
+								users receiver ON m.receiver_id = receiver.user_id
+							 WHERE (sender_id = ? AND receiver_id = ?)
+								OR (sender_id = ? AND receiver_id = ?)
+							ORDER BY sent_time DESC 
+							LIMIT ?  OFFSET ? `, idUser1, idUser2, idUser2, idUser1, limit, offset)
+	if err != nil {
+		return messages, err
+	}
+	for rows.Next() {
+		var message MessageResponse
+		err := rows.Scan(&message.Content, &message.SentTime, &message.Sender, &message.Receiver)
+		if err != nil {
+			return messages, err
+		}
+		messages = append(messages, &message)
+	}
+	return messages, nil
 }
 
 // UpdateMessage updates an existing message in the database
