@@ -73,6 +73,7 @@ func GetFollowersWees(w http.ResponseWriter, r *http.Request) {
 	// Create a UserProfileResponse without the password field
 	userProfile := UserProfileResponse{
 		NicknameRequester: UN,
+		Avatar:            user.Avatar,
 		Followers:         followers,
 		Followings:        followings,
 	}
