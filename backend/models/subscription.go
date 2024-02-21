@@ -105,6 +105,50 @@ func (sr *SubscriptionRepository) GetFollowers(userId int) ([]*User, error) {
 
 	return followers, nil
 }
+func (sr *SubscriptionRepository) GetFollowersToInvite(userId, intGroupId int) ([]*User, error) {
+	query := ` 
+        SELECT u.user_id, u.email, u.first_name, u.last_name, u.date_of_birth, u.avatar, u.nickname, u.about_me
+        FROM subscriptions s
+        JOIN users u ON s.follower_user_id = u.user_id
+        WHERE s.following_user_id = ?;
+    `
+	rows, err := sr.db.Query(query, userId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var followers []*User
+
+	for rows.Next() {
+		var follower User
+		err := rows.Scan(&follower.UserID, &follower.Email, &follower.FirstName, &follower.LastName, &follower.DateOfBirth, &follower.Avatar, &follower.Nickname, &follower.AboutMe)
+		if err != nil {
+			return nil, err
+		}
+
+		exist := MembershipRepo.CheckIfIsMember(userId, intGroupId)
+
+		_, err = GroupRepo.IsOwner(intGroupId, userId)
+
+		IsOwner := false
+		if err == nil {
+			IsOwner = true
+		}
+
+		if !exist && !IsOwner {
+			followers = append(followers, &follower)
+		}
+
+	}
+	
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return followers, nil
+}
 
 func (sr *SubscriptionRepository) GetFollowing(userId int) ([]*User, error) {
 	query := ` 
@@ -128,6 +172,48 @@ func (sr *SubscriptionRepository) GetFollowing(userId int) ([]*User, error) {
 			return nil, err
 		}
 		following = append(following, &followee)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return following, nil
+}
+func (sr *SubscriptionRepository) GetFollowingToInvite(userId, intGroupId int) ([]*User, error) {
+	query := ` 
+        SELECT u.user_id, u.email, u.first_name, u.last_name, u.date_of_birth, u.avatar, u.nickname, u.about_me
+        FROM subscriptions s
+        JOIN users u ON s.following_user_id = u.user_id
+        WHERE s.follower_user_id = ?;
+    `
+	rows, err := sr.db.Query(query, userId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var following []*User
+
+	for rows.Next() {
+		var followee User
+		err := rows.Scan(&followee.UserID, &followee.Email, &followee.FirstName, &followee.LastName, &followee.DateOfBirth, &followee.Avatar, &followee.Nickname, &followee.AboutMe)
+		if err != nil {
+			return nil, err
+		}
+
+		exist := MembershipRepo.CheckIfIsMember(userId, intGroupId)
+
+		_, err = GroupRepo.IsOwner(intGroupId, userId)
+
+		IsOwner := false
+		if err == nil {
+			IsOwner = true
+		}
+
+		if !exist && !IsOwner {
+			following = append(following, &followee)
+		}
 	}
 
 	if err := rows.Err(); err != nil {

@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS "users" (
 
 CREATE TABLE IF NOT EXISTS "groups" (
   "group_id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-  "title" text NOT NULL,
+  "title" text NOT NULL UNIQUE,
   "description" text NOT NULL,
   "creator_id" integer NOT NULL,
   FOREIGN KEY (creator_id) REFERENCES "users" (user_id)
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS "posts" (
 );
 CREATE TABLE IF NOT EXISTS "group_posts" (
   "post_id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-  "title" text NOT NULL,
+  "title" text NOT NULL ,
   "content" text NOT NULL,
   "created_at" datetime NOT NULL DEFAULT(CURRENT_TIMESTAMP),
   "author_id" integer NOT NULL,

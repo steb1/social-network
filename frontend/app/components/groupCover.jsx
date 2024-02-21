@@ -20,10 +20,6 @@ export const GroupCover = ( { groupInfo, setTab , tab, isowner }) => {
                 <h3 className="md:text-2xl text-base font-bold text-black dark:text-white"> { groupInfo ? (groupInfo.title) : '' } </h3>
                 <p className=" font-normal text-gray-500 mt-2 flex gap-2 flex-wrap dark:text-white/80">
                     <span className="max-lg:hidden"> Public group </span>
-                    <span className="max-lg:hidden"> • </span>
-                    <span> <b className="font-medium text-black dark:text-white">1.2K</b> likes </span>
-                    <span className="max-lg:hidden"> • </span>
-                    <span> <b className="font-medium text-black dark:text-white">1.4K</b> followers </span>
                 </p>
                 </div>
                 <div>

@@ -657,6 +657,7 @@ export const Modal = ({ setPosts, posts }) => {
                                 rows={6}
                                 placeholder='What do you have in mind?'
                                 defaultValue={""}
+                                
                             />
                         </div>
                         <div className='flex items-center gap-2 text-sm py-2 px-4 font-medium flex-wrap'>
@@ -669,6 +670,7 @@ export const Modal = ({ setPosts, posts }) => {
                                     name='media_post'
                                     type='file'
                                     className='file-input file-input-bordered file-input-xs w-full max-w-xs'
+                                   
                                 />
                             </button>
                             <div className='btn' onClick={() => document.getElementById("my_modal_1").showModal()}>
@@ -742,7 +744,7 @@ export const Modal = ({ setPosts, posts }) => {
                                 id='selectVisibility'
                                 onChange={displayFriend}
                                 name='visibility'
-                                className='select select-bordered select-bordered w-26 max-w-xs'
+                                className='select select-bordered w-26 max-w-xs'
                             >
                                 <option disabled defaultValue='Public'>
                                     Audience
@@ -754,7 +756,7 @@ export const Modal = ({ setPosts, posts }) => {
                             <select
                                 name='followers'
                                 id='friend'
-                                className='select hidden select-bordered select-bordered w-26 max-w-xs'
+                                className='select hidden select-bordered  w-26 max-w-xs'
                                 multiple
                             >
                                 <option disabled defaultValue='option1'>

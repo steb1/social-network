@@ -33,7 +33,6 @@ func HandleGetAllGroups(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	userId, err := strconv.Atoi(session.UserID)
-	fmt.Println(userId)
 	if err != nil {
 		apiError.Error = "Error getting user."
 		WriteJSON(w, http.StatusUnauthorized, apiError)
@@ -202,7 +201,6 @@ type GroupData struct {
 }
 
 func HandleGetGroupDetail(w http.ResponseWriter, r *http.Request) {
-	fmt.Println( " ---- exist")
 	if r.Method == http.MethodOptions {
 		HandleOptions(w, r)
 		return
@@ -277,11 +275,15 @@ func HandleGetGroupDetail(w http.ResponseWriter, r *http.Request) {
 
 		Requests, _ := models.MembershipRepo.GetAllRequestByGroupID(intGroupId)
 
-		Post, err := models.GroupPostRepo.GetAllPostsItems(intGroupId, userId)
+		Post, _ := models.GroupPostRepo.GetAllPostsItems(intGroupId, userId)
 
-		fmt.Println(err, " ------------ err")
 
 		Messages, _ := models.GroupChatRepo.GetMessagesByReceiverID(intGroupId)
+
+		Followers, _ := models.SubscriptionRepo.GetFollowersToInvite(userId, intGroupId)
+		Following, _ := models.SubscriptionRepo.GetFollowingToInvite(userId, intGroupId)
+
+		Followers = append(Followers, Following...)
 
 		response := make(map[string]interface{})
 
@@ -292,6 +294,7 @@ func HandleGetGroupDetail(w http.ResponseWriter, r *http.Request) {
 		response["Post"] = Post
 		response["Messages"] = Messages
 		response["IsOwner"] = IsOwner
+		response["Invites"] = Followers
 
 		lib.WriteJSONResponse(w, response)
 	}
@@ -370,30 +373,19 @@ func HandleCreateGroupPost(w http.ResponseWriter, r *http.Request) {
 	if exist || IsOwner {
 		postID_, err := models.GroupPostRepo.CreatePostInGroup(&post)
 		if err != nil {
-			WriteJSON(w, http.StatusUnauthorized, apiError)
 			return
 		}
 
-		defer photo.Close()
-		if err := os.MkdirAll("imgPost", os.ModePerm); err != nil {
-			fmt.Println("Error creating imgPost directory:", err)
-			return 
+		if hasImage ==  1{
+			defer photo.Close()
+			if err := os.MkdirAll("imgPost", os.ModePerm); err != nil {
+				fmt.Println("Error creating imgPost directory:", err)
+			}
+			fichierSortie, _ := os.Create(fmt.Sprintf("imgPost/%d.jpg", postID_))
+			
+			defer fichierSortie.Close()
+			_, _ = io.Copy(fichierSortie, photo)
 		}
-		fichierSortie, err := os.Create(fmt.Sprintf("imgPost/%d.jpg", postID_))
-		if err != nil {
-			lib.HandleError(err, "Creating post image.")
-		}
-		defer fichierSortie.Close()
-		_, err = io.Copy(fichierSortie, photo)
-		if err != nil {
-			fmt.Println("err", err)
-			return 
-		}
-
-		response := make(map[string]interface{})
-
-		response["ok"] = true
-
-		lib.WriteJSONResponse(w, response)
+		WriteJSON(w, http.StatusOK, "")
 	}
 }
