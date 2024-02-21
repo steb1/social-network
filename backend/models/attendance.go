@@ -50,6 +50,15 @@ func (ar *AttendanceRepository) GetAttendance(attendanceID int) (*Attendance, er
 	}
 	return &attendance, nil
 }
+func (ar *AttendanceRepository) IsRegistered(event_id, user_id int) (*Attendance, error) {
+	query := "SELECT * FROM attendance WHERE event_id = ? AND user_id = ? "
+	var attendance Attendance
+	err := ar.db.QueryRow(query, event_id, user_id).Scan(&attendance.AttendanceID, &attendance.UserID, &attendance.EventID, &attendance.AttendanceOption)
+	if err != nil {
+		return nil, err
+	}
+	return &attendance, nil
+}
 
 // UpdateAttendance updates an existing attendance record in the database
 func (ar *AttendanceRepository) UpdateAttendance(attendance *Attendance) error {
@@ -73,4 +82,20 @@ func (ar *AttendanceRepository) DeleteAttendance(attendanceID int) error {
 		return err
 	}
 	return nil
+}
+
+// GetAttendanceCountByEventID returns the number of attendances for a given event_id
+func (ar *AttendanceRepository) GetAttendanceCountByEventID(eventID int) (int, error) {
+	query := `
+		SELECT COUNT(*) FROM attendance
+		WHERE event_id = ? AND attendance_option = 0
+	`
+
+	var count int
+	err := ar.db.QueryRow(query, eventID).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
 }

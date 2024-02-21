@@ -11,13 +11,6 @@ import (
 	"time"
 )
 
-func HandleOptions(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
-	w.WriteHeader(http.StatusOK)
-}
 func HandleCreateComment(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST")
@@ -32,14 +25,14 @@ func HandleCreateComment(w http.ResponseWriter, r *http.Request) {
 
 	cookie, errC := r.Cookie("social-network")
 	session, errS := models.SessionRepo.GetSession(cookie.Value)
-	if errS != nil || errC != nil {
+	if (errS != nil || errC != nil) {
 		apiError.Error = "Go connect first !"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
 		return
 	}
 
 	comment.Content = strings.TrimSpace(r.FormValue("comment_body"))
-	if comment.Content == "" || len(comment.Content) > 400 {
+	if (comment.Content == "" || len(comment.Content)>400) {
 		apiError.Error = "Comment empty or too long."
 		WriteJSON(w, http.StatusBadRequest, apiError)
 		return
