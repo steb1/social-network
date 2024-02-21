@@ -143,7 +143,8 @@ func (pr *PostRepository) GetAllPostsPublicPrivateAuth(userId int) ([]*Post, err
     posts.title, 
     posts.content, 
     posts.created_at, 
-    posts.visibility, 
+    posts.visibility,
+	posts.author_id, 
     posts.has_image, 
     users.nickname, 
     users.first_name, 
@@ -163,7 +164,8 @@ SELECT
     posts.title, 
     posts.content, 
     posts.created_at, 
-    posts.visibility, 
+    posts.visibility,
+	posts.author_id, 
     posts.has_image, 
     users.nickname, 
     users.first_name,
@@ -185,7 +187,8 @@ SELECT
     posts.title, 
     posts.content, 
     posts.created_at, 
-    posts.visibility, 
+    posts.visibility,
+	posts.author_id, 
     posts.has_image, 
     users.nickname, 
     users.first_name, 
@@ -208,7 +211,8 @@ SELECT
     posts.title, 
     posts.content, 
     posts.created_at, 
-    posts.visibility, 
+    posts.visibility,
+	posts.author_id, 
     posts.has_image, 
     users.nickname, 
     users.first_name, 
@@ -233,13 +237,13 @@ ORDER BY
 	for rows.Next() {
 		var post Post
 		post.User = &User{}
-		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.HasImage, &post.User.Nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email); err != nil {
+		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.AuthorID, &post.HasImage, &post.User.Nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email); err != nil {
 			return nil, err
 		}
 		postIDStr := strconv.Itoa(post.PostID)
 		post.CreatedAt = lib.FormatDateDB(post.CreatedAt)
 		post.Category = PostCategoryRepo.GetPostCategory(post.PostID)
-		post.Likes, err = PostLikeRepo.GetNumberOfLikes(post.PostID)
+		post.Likes, _ = PostLikeRepo.GetNumberOfLikes(post.PostID)
 		comments, err := CommentRepo.GetCommentsByPostID(postIDStr, userId)
 		post.Comments = comments
 		if err != nil {
