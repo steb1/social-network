@@ -1,6 +1,9 @@
 package models
 
-import "database/sql"
+import (
+	"database/sql"
+	"log"
+)
 
 // Message structure represents the "messages" table
 type Message struct {
@@ -29,6 +32,7 @@ func (mr *MessageRepository) CreateMessage(SenderID, ReceiverID int, Content, Se
 	`
 	result, err := mr.db.Exec(query, SenderID, ReceiverID, Content, SentTime)
 	if err != nil {
+		log.Println("🚀 ~ funcCreateMessage ~ err:", err)
 		return err
 	}
 

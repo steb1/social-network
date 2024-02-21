@@ -5,10 +5,9 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
-	"sort"
+	"strconv"
 
 	"server/lib"
 	"server/models"
@@ -46,10 +45,10 @@ type MessagePattern struct {
 }
 
 func SocketHandler(w http.ResponseWriter, r *http.Request) {
-	session, ok := IsAuthenticated(r)
-	fmt.Println("🚀 ~ funcSocketHandler ~ err:", ok)
+	session, ok := IsAuthenticatedGoCheck(r)
 	if !ok {
-		log.Println("no ok")
+		log.Println("No cookie for socket handler")
+		return
 	}
 
 	log.Println("socket request")
@@ -61,11 +60,10 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 1, _ := strconv.Atoi(1)
-	user, _ := models.UserRepo.GetUserByID(1)
+	userId, _ := strconv.Atoi(session.UserID)
+	user, _ := models.UserRepo.GetUserByID(userId)
 
 	var nicknameOrEmail string
-
 	if user.Nickname != "" {
 		nicknameOrEmail = user.Nickname
 	} else {
@@ -78,15 +76,12 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 		IsAlive:  true,
 	}
 
-	existingUser, isin := connections[1]
+	existingUser, isin := connections[userId]
 
 	if isin {
 		existingUser.Conn = conn
-		sendCurrentUsers(existingUser, 1)
 	} else {
-		connections[1] = &userInfo
-		notifyUserJoined()
-		sendCurrentUsers(&userInfo, 1)
+		connections[userId] = &userInfo
 	}
 
 	log.Println(connections, len(connections))
@@ -125,17 +120,19 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 				text, _ := bodyMap["text"].(string)
 				time, _ := bodyMap["time"].(string)
 
-				var messagepattern MessagePattern
-				messagepattern.Sender = sender
-				messagepattern.Receiver = receiver
-				messagepattern.Text = text
-				messagepattern.Time = time
+				messagepattern := MessagePattern{
+					Sender:   sender,
+					Receiver: receiver,
+					Text:     text,
+					Time:     time,
+				}
 
+				log.Println(messagepattern, "message pattern")
 				// TODO: Verifier si le receiver existe dans le BD
 
 				// Validate and save message
 				if !lib.IsBlank(messagepattern.Text) && !lib.IsBlank(messagepattern.Sender) && !lib.IsBlank(messagepattern.Receiver) {
-					models.MessageRepo.CreateMessage(1, models.UserRepo.GetIDFromUsernameOrEmail(messagepattern.Receiver), messagepattern.Text, messagepattern.Time)
+					models.MessageRepo.CreateMessage(userId, models.UserRepo.GetIDFromUsernameOrEmail(messagepattern.Receiver), messagepattern.Text, messagepattern.Time)
 				} else {
 					log.Println("Cannot send empty messages.")
 					// SEND ERROR
@@ -158,10 +155,6 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 					// SEND ERROR
 					log.Println("Error: Unable to send message to user")
 					continue
-				}
-			case "getusersonline":
-				for _, user := range connections {
-					sendCurrentUsers(user, models.UserRepo.GetIDFromUsernameOrEmail(user.Nickname))
 				}
 			case "typeinprogress":
 				// TODO C'ets repetitif les 2 lignes laa
@@ -214,52 +207,6 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 }
 
-func notifyUserJoined() {
-	// for _, user := range connections {
-	// 	sendCurrentUsers(user, models.UserRepo.GetIDFromUsernameOrEmail(user.Nickname))
-	// }
-}
-
-func sendCurrentUsers(tosend *UserInfo, user_id int) {
-	// var users []UserByConnection
-	// usernames, err := controllers.GetUsersByLastTimeYouTalkedTo(user_id)
-	// if err != nil {
-	// 	fmt.Println("Error")
-	// }
-	// /**** ONLINE and OFFLINE ***/
-	// for _, username := range usernames {
-	// 	var user UserByConnection
-	// 	user.Username = username
-	// 	if _, found := connections[models.UserRepo.GetIDFromUsernameOrEmail(username)]; !found {
-	// 		user.Connected = false
-	// 	} else {
-	// 		user.Connected = true
-	// 	}
-	// 	users = append(users, user)
-	// }
-
-	// err = EnvoyerMessage(tosend, "userPartitionConnection", users)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return
-	// }
-}
-
-func notifyUserLeft(ID int) {
-	for _, user := range connections {
-		sendCurrentUsers(user, models.UserRepo.GetIDFromUsernameOrEmail(user.Nickname))
-	}
-}
-
-type ModelsPartitionUsersByConnection struct {
-	Connecteds    []string
-	NonConnecteds []string
-}
-type UserByConnection struct {
-	Username  string
-	Connected bool
-}
-
 func EnvoyerMessage(tosend *UserInfo, Command string, Body interface{}) error {
 	message := WebSocketMessage{
 		Command: Command,
@@ -273,22 +220,4 @@ func EnvoyerMessage(tosend *UserInfo, Command string, Body interface{}) error {
 
 	err = tosend.Conn.WriteMessage(websocket.TextMessage, jsonMessage)
 	return err
-}
-
-func PartitionUsersByConnection(allUsers []string, connections map[int]*UserInfo) ([]string, []string) {
-	nonConnectedUsers := make([]string, 0, len(allUsers))
-	connectedUsers := make([]string, 0, len(allUsers))
-
-	for _, user := range allUsers {
-		if _, found := connections[models.UserRepo.GetIDFromUsernameOrEmail(user)]; !found {
-			nonConnectedUsers = append(nonConnectedUsers, user)
-		} else {
-			connectedUsers = append(connectedUsers, user)
-		}
-	}
-
-	sort.Strings(nonConnectedUsers)
-	sort.Strings(connectedUsers)
-
-	return nonConnectedUsers, connectedUsers
 }

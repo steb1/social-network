@@ -179,7 +179,7 @@ func (ur *UserRepository) GetUserByID(userID int) (*User, error) {
 
 func (ur *UserRepository) GetIDFromUsernameOrEmail(usernameOrEmail string) int {
 	query := `
-	SELECT id_user FROM users WHERE nickname = ? OR email = ?
+	SELECT user_id FROM users WHERE nickname = ? OR email = ?
 `
 	var userId int
 	err := ur.db.QueryRow(query, usernameOrEmail, usernameOrEmail).Scan(&userId)

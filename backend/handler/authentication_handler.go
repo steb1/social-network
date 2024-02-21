@@ -315,3 +315,18 @@ func CheckAutheHandler(w http.ResponseWriter, r *http.Request) {
 
 	WriteJSON(w, http.StatusOK, user)
 }
+
+func IsAuthenticatedGoCheck(r *http.Request) (models.Session, bool) {
+	c, err := r.Cookie("social-network")
+	if err != nil {
+		log.Println(err, "IsAuthenticatedGoCheck")
+	}
+	if err == nil {
+		sessionToken := c.Value
+		userSession, exists := models.SessionRepo.SessionExists(sessionToken)
+		if exists && !lib.IsExpired(userSession.Expiry) {
+			return userSession, true
+		}
+	}
+	return models.Session{}, false
+}
