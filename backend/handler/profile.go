@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"server/models"
 )
@@ -66,7 +67,7 @@ func GetFollowersWees(w http.ResponseWriter, r *http.Request) {
 	}
 
 	UN := user.Nickname
-	if UN == "" {
+	if strings.TrimSpace(UN) == "" {
 		UN = user.Email
 	}
 
