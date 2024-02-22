@@ -113,6 +113,7 @@ CREATE TABLE IF NOT EXISTS "comments" (
   "author_id" integer NOT NULL,
   "post_id" integer NOT NULL,
   "createdAt" datetime NOT NULL DEFAULT(CURRENT_TIMESTAMP),
+  "has_image" integer  NOT NULL,
   FOREIGN KEY (author_id) REFERENCES "users" (user_id),
   FOREIGN KEY (post_id) REFERENCES "posts" (post_id)
 );
@@ -122,6 +123,7 @@ CREATE TABLE IF NOT EXISTS "comments_posts_group" (
   "author_id" integer NOT NULL,
   "post_id" integer NOT NULL,
   "createdAt" datetime NOT NULL DEFAULT(CURRENT_TIMESTAMP),
+  "has_image" integer  NOT NULL,
   FOREIGN KEY (author_id) REFERENCES "users" (user_id),
   FOREIGN KEY (post_id) REFERENCES "group_posts" (post_id)
 );

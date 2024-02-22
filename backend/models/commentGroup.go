@@ -2,7 +2,12 @@ package models
 
 import (
 	"database/sql"
+	"fmt"
+	"io"
 	"log"
+	"mime/multipart"
+	"os"
+	"server/lib"
 )
 
 // Comment structure represents the "comments" table
@@ -12,6 +17,9 @@ type CommentGroup struct {
 	AuthorID  int    `json:"author_id"`
 	PostID    int    `json:"post_id"`
 	CreatedAt string `json:"created_at"`
+	IsLiked   bool   `json:"is_liked"`
+	HasImage  int    `json:"has_image"`
+	User      *User
 }
 
 type CommentGroupRepository struct {
@@ -25,31 +33,52 @@ func NewCommentGroupRepository(db *sql.DB) *CommentGroupRepository {
 }
 
 // CreateCommentGroup creates a new comment group in the database
-func (repo *CommentGroupRepository) CreateCommentGroup(commentGroup CommentGroup) (int, error) {
+func (repo *CommentGroupRepository) CreateCommentGroup(commentGroup CommentGroup, photo multipart.File) error {
+
 	result, err := repo.db.Exec(`
-		INSERT INTO comments_posts_group (content, author_id, post_id, createdAt)
-		VALUES (?, ?, ?, ?)
-	`, commentGroup.Content, commentGroup.AuthorID, commentGroup.PostID, commentGroup.CreatedAt)
+		INSERT INTO comments_posts_group (content, author_id, post_id, createdAt, has_image)
+		VALUES (?, ?, ?, ?, ?)
+	`, commentGroup.Content, commentGroup.AuthorID, commentGroup.PostID, commentGroup.CreatedAt, commentGroup.HasImage)
 
 	if err != nil {
 		log.Println("Error creating comment group:", err)
-		return 0, err
+		return err
 	}
 
-	lastInsertID, err := result.LastInsertId()
+	CommentID, err := result.LastInsertId()
 	if err != nil {
 		log.Println("Error getting last insert ID:", err)
-		return 0, err
+		return err
 	}
 
-	return int(lastInsertID), nil
+	if commentGroup.HasImage == 0 {
+		return nil
+	}
+	defer photo.Close()
+	if err := os.MkdirAll("imgCommentGroup", os.ModePerm); err != nil {
+		fmt.Println("Error creating imgComment directory:", err)
+		return nil
+	}
+	fichierSortie, err := os.Create(fmt.Sprintf("imgCommentGroup/%d.jpg", CommentID))
+	if err != nil {
+		lib.HandleError(err, "Creating comment image.")
+	}
+	defer fichierSortie.Close()
+
+	_, err = io.Copy(fichierSortie, photo)
+	if err != nil {
+		fmt.Println("err", err)
+		return nil
+	}
+
+	return  nil
 }
 
 // GetCommentGroupByID retrieves a comment group from the database by its ID
 func (repo *CommentGroupRepository) GetCommentGroupByID(commentID int) (CommentGroup, error) {
 	var commentGroup CommentGroup
 	err := repo.db.QueryRow(`
-		SELECT comment_id, content, author_id, post_id, created_at
+		SELECT comment_id, content, author_id, post_id, created_at, has_image
 		FROM comments_posts_group
 		WHERE comment_id = ?
 	`, commentID).Scan(
@@ -58,6 +87,7 @@ func (repo *CommentGroupRepository) GetCommentGroupByID(commentID int) (CommentG
 		&commentGroup.AuthorID,
 		&commentGroup.PostID,
 		&commentGroup.CreatedAt,
+		&commentGroup.HasImage,
 	)
 
 	if err != nil {
@@ -72,9 +102,9 @@ func (repo *CommentGroupRepository) GetCommentGroupByID(commentID int) (CommentG
 func (repo *CommentGroupRepository) UpdateCommentGroup(commentGroup CommentGroup) error {
 	_, err := repo.db.Exec(`
 		UPDATE comments_posts_group
-		SET content = ?, author_id = ?, post_id = ?, created_at = ?
+		SET content = ?, author_id = ?, post_id = ?, created_at = ?, has_image
 		WHERE comment_id = ?
-	`, commentGroup.Content, commentGroup.AuthorID, commentGroup.PostID, commentGroup.CreatedAt, commentGroup.CommentID)
+	`, commentGroup.Content, commentGroup.AuthorID, commentGroup.PostID, commentGroup.CreatedAt, commentGroup.CommentID, commentGroup.HasImage)
 
 	if err != nil {
 		log.Println("Error updating comment group:", err)
@@ -102,7 +132,7 @@ func (repo *CommentGroupRepository) DeleteCommentGroup(commentID int) error {
 // GetAllCommentsByPostID retrieves all comments for a given post ID from the database
 func (repo *CommentGroupRepository) GetAllCommentsByPostID(postID int) ([]CommentGroup, error) {
 	rows, err := repo.db.Query(`
-		SELECT comment_id, content, author_id, post_id, createdAt
+		SELECT comment_id, content, author_id, post_id, createdAt, has_image
 		FROM comments_posts_group
 		WHERE post_id = ?
 	`, postID)
@@ -123,6 +153,7 @@ func (repo *CommentGroupRepository) GetAllCommentsByPostID(postID int) ([]Commen
 			&commentGroup.AuthorID,
 			&commentGroup.PostID,
 			&commentGroup.CreatedAt,
+			&commentGroup.HasImage,
 		)
 		if err != nil {
 			log.Println("Error scanning comment row:", err)

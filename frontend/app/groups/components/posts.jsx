@@ -1,12 +1,22 @@
 "use client";
 import config from "@/config";
 import { fetchGroupDetail } from "./groupDetail";
+import { useState } from "react";
+import Link from "next/link";
 
 
 export const PostText = ( { posts,  groupId, setPosts , setGroup, setEvents, setRequests, setMessages, setServerError,  setIsOwner, setMembers } ) => {
+	const [showAllComments, setShowAllComments] = useState({});
 
-	const handleSubmitComment = async (post_id) => {
-		const formId = `create-comment-form-${post_id}`;
+	const toggleCommentsVisibility = (postId) => {
+        setShowAllComments((prevState) => ({
+            ...prevState,
+            [postId]: !prevState[postId],
+        }));
+    };
+
+	const handleSubmitComment = async (PostID) => {
+		const formId = `create-comment-form-${PostID}`;
 		const form = document.getElementById(formId);
 		const commentContent = form.querySelector('textarea[name="comment_body"]').value.trim();
 		if (commentContent === "") {
@@ -18,8 +28,11 @@ export const PostText = ( { posts,  groupId, setPosts , setGroup, setEvents, set
 			return;
 		}
 
-		const formDataJson = new FormData(form);
-		formDataJson.append("post_id", post_id);
+		const commentImg = form.querySelector(`input[name="media_post_c"][id="chooseImageC-${PostID}"]`).files[0];
+
+        const formDataJson = new FormData(form);
+        formDataJson.append("PostID", PostID);
+        formDataJson.append("media_post_c", commentImg);
 
 		const response = await fetch(config.serverApiUrl + "createCommentGroup", {
 			method: "POST",
@@ -31,7 +44,6 @@ export const PostText = ( { posts,  groupId, setPosts , setGroup, setEvents, set
 		if (response.ok) {
 			const contentType = response.headers.get("content-type");
 			if (contentType && contentType.includes("application/json")) {
-			  const data = await response.json();
 			  fetchGroupDetail(setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId, setIsOwner, setMembers)
 			} else {
 			  console.error("Response is not in JSON format");
@@ -194,38 +206,150 @@ export const PostText = ( { posts,  groupId, setPosts , setGroup, setEvents, set
 						</button>
 					</div>
 					{/* comments */}
-					<div className="sm:p-4 p-2.5 border-t border-gray-100 font-normal space-y-3 relative dark:border-slate-700/40">
-						{ post.ListOfComments && post.ListOfComments.length > 0 ? post.ListOfComments.map((comment) => (
-							<div key={comment.comment_id} className="flex items-start gap-3 relative">
-								<a href="timeline.html">
-									<img src="assets/images/avatars/avatar-2.jpg" className="w-6 h-6 mt-1 rounded-full" />
-								</a>
-								<div className="flex-1 relative">
-									<a href="timeline.html" className="text-black font-medium inline-block dark:text-white">
-										{comment.User.first_name} {comment.User.last_name}
-									</a>
-									<p className="mt-0.5 break-all w-4/5">{comment.content}</p>
-									{/* Like Button for Comment */}
-									<div className="flex items-center absolute top-1 right-1 gap-2 text-xs font-semibold">
-										<button type="button" onClick={() => handleCommentLikeClick(comment.commentID)} className={`button-icon ${comment.is_liked ? "bg-red-100 text-red-500" : "bg-gray-200"} dark:bg-slate-700`}>
-											<ion-icon className="text-lg" name="heart" />
-										</button>
-										<span className="ml-1">{comment.like}</span>
-									</div>
-								</div>
-							</div>
-						)) : ""}
-					</div>
+					<div className='sm:p-4 p-2.5 border-t border-gray-100 font-normal space-y-3 relative dark:border-slate-700/40'>
+                        { post.ListOfComment ?  post.ListOfComment.slice(0, showAllComments[post.PostID] ? post.ListOfComment.length : 2).map(
+                            (comment, index) => (
+                                <div key={comment.comment_id} className='flex items-start gap-3 relative'>
+                                    <Link href={`/profile/${comment.author_id}`}>
+                                        <img
+                                            src='assets/images/avatars/avatar-2.jpg'
+                                            className='w-6 h-6 mt-1 rounded-full'
+                                        />
+                                    </Link>
+                                    <div className='flex-1 relative'>
+                                        <Link
+                                            href={`/profile/${comment.author_id}`}
+                                            className='text-black font-medium inline-block dark:text-white'
+                                        >
+                                           Louis
+                                        </Link>
+                                        <p className='mt-0.5 break-all w-4/5'>
+                                            {comment.content}
+                                            {/* comment image */}
+                                            {comment.has_image === 1 ? (
+                                                <div>
+                                                    <div className='relative w-full lg:h-96 h-full sm:px-4'>
+                                                        <img
+                                                            src={`${config.serverApiUrl}/imgCommentGroup?id=${comment.comment_id}`}
+                                                            className='sm:rounded-lg w-full h-full object-cover p-1'
+                                                        />
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                ""
+                                            )}
+                                        </p>
+                                        {/* Like Button for Comment */}
+                                        <div className='flex items-center absolute top-1 right-1 gap-2 text-xs font-semibold'>
+                                            <button
+                                                type='button'
+                                                onClick={() => handleCommentLikeClick(comment.comment_id)}
+                                                className={`button-icon ${comment.is_liked ? "bg-red-100 text-red-500" : "bg-gray-200"} dark:bg-slate-700`}
+                                            >
+                                                <ion-icon className='text-lg' name='heart' />
+                                            </button>
+                                            <span className='ml-1'>12</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        ) : ""}
+                        {/* Show more comments button */}
+                        { post.ListOfComment && post.ListOfComment.length > 2 && (
+                            <button
+                                onClick={() => toggleCommentsVisibility(post.PostID)}
+                                className='flex items-center gap-1'
+                            >
+                                {showAllComments[post.PostID] ? (
+                                    <>
+                                        <span>Show Less</span>
+                                        <svg
+                                            className='h-4 w-4 text-gray-600'
+                                            fill='none'
+                                            viewBox='0 0 24 24'
+                                            stroke='currentColor'
+                                        >
+                                            <path
+                                                strokeLinecap='round'
+                                                strokeLinejoin='round'
+                                                strokeWidth={2}
+                                                d='M5 15l7-7 7 7'
+                                            />
+                                        </svg>
+                                    </>
+                                ) : (
+                                    <>
+                                        <span>Show More</span>
+                                        <svg
+                                            className='h-4 w-4 text-gray-600'
+                                            fill='none'
+                                            viewBox='0 0 24 24'
+                                            stroke='currentColor'
+                                        >
+                                            <path
+                                                strokeLinecap='round'
+                                                strokeLinejoin='round'
+                                                strokeWidth={2}
+                                                d='M19 9l-7 7-7-7'
+                                            />
+                                        </svg>
+                                    </>
+                                )}
+                            </button>
+                        )}
+                    </div>
 					{/* add comment */}
-					<div className="sm:px-4 sm:py-3 p-2.5 border-t border-gray-100 flex items-center gap-1 dark:border-slate-700/40">
-						<img src="../assets/images/avatars/avatar-7.jpg" className="w-6 h-6 rounded-full" />
-						<form onSubmit={() => handleSubmitComment(post.PostID)} id={`create-comment-form-${post.PostID}`} className="flex-1 relative overflow-hidden h-10 create-comment-form">
-							<textarea placeholder="Add Comment...." name="comment_body" rows={1} className="w-full resize-none !bg-transparent px-4 py-2 focus:!border-transparent focus:!ring-transparent" aria-haspopup="true" aria-expanded="false" defaultValue={""} />
-						</form>
-						<button onClick={() => handleSubmitComment(post.PostID)} className="text-sm rounded-full py-1.5 px-3.5 bg-secondery">
-							Send
-						</button>
-					</div>
+					<div className='sm:px-4 sm:py-3 p-2.5 border-t border-gray-100 flex items-center gap-1 dark:border-slate-700/40'>
+                        <img src='assets/images/avatars/avatar-7.jpg' className='w-6 h-6 rounded-full' />
+                        <form
+                            onSubmit={() => handleSubmitComment(post.PostID)}
+                            id={`create-comment-form-${post.PostID}`}
+                            className='flex-1 relative overflow-hidden h-10 create-comment-form'
+                        >
+                            <textarea
+                                placeholder='Add Comment....'
+                                name='comment_body'
+                                rows={1}
+                                className='w-[calc(87.3333%)] resize-none !bg-transparent px-4 py-2 focus:!border-transparent focus:!ring-transparent'
+                                aria-haspopup='true'
+                                aria-expanded='false'
+                                defaultValue={""}
+                            />
+                            <label
+                                for={`chooseImageC-${post.PostID}`}
+                                class='flex items-center w-[calc(9%)] absolute top-1 right-1 gap-2 font-semibold  cursor-pointer hover:bg-opacity-80 p-1 px-1.5 rounded-xl transition-all bg-pink-100/60 hover:bg-red-300 dark:bg-white/10 dark:hover:bg-white/20'
+                            >
+                                <svg
+                                    xmlns='http://www.w3.org/2000/svg'
+                                    class='w-6 h-6 stroke-pink-600 fill-pink-200/70'
+                                    viewBox='0 0 24 24'
+                                    stroke-width='1.5'
+                                    stroke='#2c3e50'
+                                    fill='none'
+                                    stroke-linecap='round'
+                                    stroke-linejoin='round'
+                                >
+                                    <path stroke='none' d='M0 0h24v24H0z' fill='none'></path>
+                                    <path d='M15 8h.01'></path>
+                                    <path d='M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z'></path>
+                                    <path d='M3.5 15.5l4.5 -4.5c.928 -.893 2.072 -.893 3 0l5 5'></path>
+                                    <path d='M14 14l1 -1c.928 -.893 2.072 -.893 3 0l2.5 2.5'></path>
+                                </svg>
+                            </label>
+                            <input
+                                name='media_post_c'
+                                id={`chooseImageC-${post.PostID}`}
+                                type='file'
+                                className='file-input hidden file-input-bordered file-input-xs w-0 bg-transparent'
+                            />
+                        </form>
+                        <button
+                            onClick={() => handleSubmitComment(post.PostID)}
+                            className='text-sm rounded-full py-1.5 px-3.5 bg-secondery'
+                        >
+                            Send
+                        </button>
+                    </div>
 				</div>
 			)) : <Placeholder/> }
 		</>

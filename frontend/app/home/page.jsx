@@ -14,7 +14,7 @@ const HomePage = () => {
                     <AddStory />
                     {/* Posts Section */}
                     <PostText />
-                    <PostPlaceholder />
+                    
                 </div>
                 {/* Fixed Rightbar */}
                 <div className='block h-full mt-20 ml-20 max-sm:hidden max-md:hidden max-lg:hidden '>
