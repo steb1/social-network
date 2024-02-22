@@ -97,3 +97,4 @@ func ImageHandlerComment(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "image/jpeg")
 	w.Write(img)
 }
+

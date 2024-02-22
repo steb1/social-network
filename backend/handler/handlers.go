@@ -49,6 +49,7 @@ var Routes = []Route{
 	{Path: "/api/likePost", Handler: HandleLikePost, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/likePostGroup", Handler: HandleLikePostGroup, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/likeComment", Handler: HandleLikeComment, Methods: []string{"POST", "OPTIONS"}},
+	{Path: "/api/likeCommentGroup", Handler: HandleLikeCommentGroup, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/getFollowers", Handler: HandleGetFollowers, Methods: []string{"GET", "OPTIONS"}},
 	{Path: "/api/checkAuth", Handler: CheckAutheHandler, Methods: []string{"GET", "OPTIONS", "POST"}},
 	{Path: "/api/createPost", Handler: HandleCreatePost, Methods: []string{"POST", "OPTIONS"}},

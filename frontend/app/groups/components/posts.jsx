@@ -85,7 +85,7 @@ export const PostText = ( { posts,  groupId, setPosts , setGroup, setEvents, set
 	};
 
 	const handleCommentLikeClick = async (comment_id) => {
-		const response = await fetch(config.serverApiUrl + "likeComment", {
+		const response = await fetch(config.serverApiUrl + "likeCommentGroup", {
 			method: "POST",
 			credentials: "include",
 			body: JSON.stringify({
@@ -96,7 +96,7 @@ export const PostText = ( { posts,  groupId, setPosts , setGroup, setEvents, set
 			const jsonData = await response.json();
 			if (response.ok) {
 				console.log("like comment sent");
-				setPosts(jsonData.posts);
+				fetchGroupDetail(setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId, setIsOwner, setMembers)
 			} else {
 				console.error("Failed to like comment:", jsonData);
 			}
@@ -212,7 +212,7 @@ export const PostText = ( { posts,  groupId, setPosts , setGroup, setEvents, set
                                 <div key={comment.comment_id} className='flex items-start gap-3 relative'>
                                     <Link href={`/profile/${comment.author_id}`}>
                                         <img
-                                            src='assets/images/avatars/avatar-2.jpg'
+                                            src='../assets/images/avatars/avatar-2.jpg'
                                             className='w-6 h-6 mt-1 rounded-full'
                                         />
                                     </Link>
@@ -221,14 +221,14 @@ export const PostText = ( { posts,  groupId, setPosts , setGroup, setEvents, set
                                             href={`/profile/${comment.author_id}`}
                                             className='text-black font-medium inline-block dark:text-white'
                                         >
-                                           Louis
+                                           { comment.User.nickname.charAt(0).toUpperCase() + comment.User.nickname.slice(1).toLowerCase() }
                                         </Link>
-                                        <p className='mt-0.5 break-all w-4/5'>
-                                            {comment.content}
+                                        <div className='mt-0.5 break-all w-4/5'>
+                                           <p> {comment.content} </p>
                                             {/* comment image */}
                                             {comment.has_image === 1 ? (
-                                                <div>
-                                                    <div className='relative w-full lg:h-96 h-full sm:px-4'>
+                                                <div className="avatar">
+                                                    <div className='relative w-32 rounded '>
                                                         <img
                                                             src={`${config.serverApiUrl}/imgCommentGroup?id=${comment.comment_id}`}
                                                             className='sm:rounded-lg w-full h-full object-cover p-1'
@@ -238,7 +238,7 @@ export const PostText = ( { posts,  groupId, setPosts , setGroup, setEvents, set
                                             ) : (
                                                 ""
                                             )}
-                                        </p>
+                                        </div>
                                         {/* Like Button for Comment */}
                                         <div className='flex items-center absolute top-1 right-1 gap-2 text-xs font-semibold'>
                                             <button
@@ -248,7 +248,7 @@ export const PostText = ( { posts,  groupId, setPosts , setGroup, setEvents, set
                                             >
                                                 <ion-icon className='text-lg' name='heart' />
                                             </button>
-                                            <span className='ml-1'>12</span>
+                                            <span className='ml-1'> {comment.NumberOfLikes} </span>
                                         </div>
                                     </div>
                                 </div>
@@ -300,7 +300,7 @@ export const PostText = ( { posts,  groupId, setPosts , setGroup, setEvents, set
                     </div>
 					{/* add comment */}
 					<div className='sm:px-4 sm:py-3 p-2.5 border-t border-gray-100 flex items-center gap-1 dark:border-slate-700/40'>
-                        <img src='assets/images/avatars/avatar-7.jpg' className='w-6 h-6 rounded-full' />
+                        <img src='../assets/images/avatars/avatar-7.jpg' className='w-6 h-6 rounded-full' />
                         <form
                             onSubmit={() => handleSubmitComment(post.PostID)}
                             id={`create-comment-form-${post.PostID}`}

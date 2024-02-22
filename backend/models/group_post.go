@@ -180,7 +180,7 @@ func (pr *GroupPostRepository) GetAllPostsItems(groupid, userId int) ([]PostItem
 				break
 			}
 		}
-		tabAllComments, _ := CommentGroupRepo.GetAllCommentsByPostID(posts[i].PostID)
+		tabAllComments, _ := CommentGroupRepo.GetAllCommentsByPostID(posts[i].PostID, userId)
 
 		Category := PostCategoryRepo.GetPostCategory(posts[i].PostID)
 		CountLikesForPost, _ := PostGroupLikeRepo.CountLikesByPostID(posts[i].PostID)

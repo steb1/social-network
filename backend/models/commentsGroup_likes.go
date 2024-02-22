@@ -83,11 +83,11 @@ func (repo *CommentGroupLikeRepository) UpdateCommentGroupLike(commentGroupLike 
 }
 
 // DeleteCommentGroupLike deletes a comment group like from the database by its ID
-func (repo *CommentGroupLikeRepository) DeleteCommentGroupLike(likeID int) error {
+func (repo *CommentGroupLikeRepository) DeleteCommentGroupLike(commentID, userID int) error {
 	_, err := repo.db.Exec(`
 		DELETE FROM comments_group_likes
-		WHERE comment_like_id = ?
-	`, likeID)
+		WHERE comment_id = ? AND author_id = ?
+	`, commentID, userID)
 
 	if err != nil {
 		log.Println("Error deleting comment group like:", err)
@@ -112,4 +112,19 @@ func (repo *CommentGroupLikeRepository) CountLikesByCommentID(commentID int) (in
 	}
 
 	return likeCount, nil
+}
+
+func (repo *CommentGroupLikeRepository) IsLiked(commentID, userID int) ( bool) {
+	var commentGroupLike CommentGroupLike
+	err := repo.db.QueryRow(`
+		SELECT comment_like_id, author_id, comment_id, rate
+		FROM comments_group_likes
+		WHERE author_id = ? AND comment_id = ?
+	`, userID, commentID).Scan(
+		&commentGroupLike.CommentLikeID,
+		&commentGroupLike.AuthorID,
+		&commentGroupLike.CommentID,
+		&commentGroupLike.Rate,
+	)
+	return err == nil
 }
