@@ -62,7 +62,7 @@ func (mr *MessageRepository) GetMessage(messageID int) (*Message, error) {
 func (mr *MessageRepository) GetMessagesBetweenUsers(idUser1, idUser2, offset, limit int) ([]*MessageResponse, error) {
 	var messages []*MessageResponse
 
-	rows, err := db.Query(`SELECT content, sent_time, sender.first_name AS sender, receiver.first_name as Receiver
+	rows, err := db.Query(`SELECT content, sent_time, COALESCE(sender.nickname, sender.email) AS sender, COALESCE(receiver.nickname, receiver.email) as receiver
 							FROM messages m
 							JOIN 
 								users sender ON m.sender_id = sender.user_id
