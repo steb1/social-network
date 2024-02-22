@@ -35,7 +35,6 @@ CREATE TABLE IF NOT EXISTS "posts" (
   "content" text NOT NULL,
   "created_at" datetime NOT NULL DEFAULT(CURRENT_TIMESTAMP),
   "author_id" integer NOT NULL,
-  "image_url" text,
   "visibility" text NOT NULL,
   "has_image" INTEGER NOT NULL,
   FOREIGN KEY (author_id) REFERENCES "users" (user_id)

@@ -20,6 +20,7 @@ type CommentGroup struct {
 	IsLiked   bool   `json:"is_liked"`
 	HasImage  int    `json:"has_image"`
 	User      *User
+	NumberOfLikes int
 }
 
 type CommentGroupRepository struct {
@@ -130,7 +131,7 @@ func (repo *CommentGroupRepository) DeleteCommentGroup(commentID int) error {
 }
 
 // GetAllCommentsByPostID retrieves all comments for a given post ID from the database
-func (repo *CommentGroupRepository) GetAllCommentsByPostID(postID int) ([]CommentGroup, error) {
+func (repo *CommentGroupRepository) GetAllCommentsByPostID(postID, userID int) ([]CommentGroup, error) {
 	rows, err := repo.db.Query(`
 		SELECT comment_id, content, author_id, post_id, createdAt, has_image
 		FROM comments_posts_group
@@ -160,6 +161,11 @@ func (repo *CommentGroupRepository) GetAllCommentsByPostID(postID int) ([]Commen
 			return nil, err
 		}
 
+		user, _ := UserRepo.GetUserByID(commentGroup.AuthorID)
+
+		commentGroup.User = user
+		commentGroup.IsLiked = CommentGroupLikeRepo.IsLiked(commentGroup.CommentID, userID)
+		commentGroup.NumberOfLikes, _ = CommentGroupLikeRepo.CountLikesByCommentID(commentGroup.CommentID)
 		comments = append(comments, commentGroup)
 	}
 

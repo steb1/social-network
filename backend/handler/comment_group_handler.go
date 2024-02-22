@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -74,6 +75,70 @@ func HandleCreateCommentGroup(w http.ResponseWriter, r *http.Request) {
 
 		lib.WriteJSONResponse(w, response)
 	}
+
+}
+
+func HandleLikeCommentGroup(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+
+	var apiError ApiError
+	var commentLike models.CommentGroupLike
+
+	cookie, errC := r.Cookie("social-network")
+	session, errS := models.SessionRepo.GetSession(cookie.Value)
+	if errS != nil || errC != nil {
+		apiError.Error = "Go connect first !"
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	}
+	commentLike.AuthorID, errC = strconv.Atoi(session.UserID)
+	if errC != nil {
+		apiError.Error = "Error getting user."
+		WriteJSON(w, http.StatusBadRequest, apiError)
+		return
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&commentLike); err != nil {
+		apiError.Error = "Failed to decode like request body."
+		WriteJSON(w, http.StatusBadRequest, apiError)
+		return
+	}
+	commentLike.Rate = 1
+
+	// Check if the comment is already liked by the user
+	isLiked := models.CommentGroupLikeRepo.IsLiked(commentLike.CommentID, commentLike.AuthorID)
+
+
+	if isLiked {
+		// Comment is already liked, handle unlike logic
+		if err := models.CommentGroupLikeRepo.DeleteCommentGroupLike(commentLike.CommentID, commentLike.AuthorID); err != nil {
+			apiError.Error = "Failed to unlike comment."
+			WriteJSON(w, http.StatusInternalServerError, apiError)
+			return
+		}
+	} else {
+		// Comment is not liked, handle like logic
+		if _,err := models.CommentGroupLikeRepo.CreateCommentGroupLike(commentLike); err != nil {
+			apiError.Error = "Failed to like comment"
+			WriteJSON(w, http.StatusInternalServerError, apiError)
+			return
+		}
+	}
+
+	posts := RetreiveAllPosts(w, r, commentLike.AuthorID, apiError)
+
+	var successResponse struct {
+		Message string         `json:"message"`
+		Posts   []*models.Post `json:"posts"`
+	}
+
+	successResponse.Message = "like or dislike comment saved!"
+	successResponse.Posts = posts
+
+	WriteJSON(w, http.StatusOK, successResponse)
 
 }
 

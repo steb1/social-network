@@ -208,12 +208,12 @@ export const PostText = () => {
                                         >
                                             {comment.User.first_name} {comment.User.last_name}
                                         </Link>
-                                        <p className='mt-0.5 break-all w-4/5'>
-                                            {comment.content}
+                                        <div className='mt-0.5 break-all w-4/5'>
+                                           <p> {comment.content} </p>
                                             {/* comment image */}
                                             {comment.has_image === 1 ? (
-                                                <div>
-                                                    <div className='relative w-full lg:h-96 h-full sm:px-4'>
+                                                <div className="avatar">
+                                                    <div className='relative w-32 rounded '>
                                                         <img
                                                             src={`${config.serverApiUrl}/imgComment?id=${comment.comment_id}`}
                                                             className='sm:rounded-lg w-full h-full object-cover p-1'
@@ -223,7 +223,7 @@ export const PostText = () => {
                                             ) : (
                                                 ""
                                             )}
-                                        </p>
+                                        </div>
                                         {/* Like Button for Comment */}
                                         <div className='flex items-center absolute top-1 right-1 gap-2 text-xs font-semibold'>
                                             <button
