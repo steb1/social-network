@@ -13,7 +13,6 @@ import ReactDOM from "react-dom";
 import EmojiPicker, { EmojiClickData, SkinTones, EmojiStyle } from "emoji-picker-react";
 import TypingIndicator from "../messages/TypingIndicator";
 import SideBarPreviewGroupChat from "../messages/SideBarPreviewGroupChat";
-import MessageList from "../messages/MessageList";
 
 const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Messages }) => {
     const [messageInput, setMessageInput] = useState("");
@@ -21,73 +20,69 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Messages }) =>
     let isRendered = false;
 
     const RenderType = () => {
-        if (!isRendered) {
-            const cms = document.getElementById("cms");
-            cms &&
-                ReactDOM.render(
-                    ReactDOM.createPortal(<TypingIndicator Avatar={Chatter[0].avatar} />, cms),
-                    document.createElement("div")
-                );
-            cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
-            isRendered = true;
-        }
+        // if (!isRendered) {
+        //     const cms = document.getElementById("cms");
+        //     cms &&
+        //         ReactDOM.render(
+        //             ReactDOM.createPortal(<TypingIndicator Avatar={Chatter[0].avatar} />, cms),
+        //             document.createElement("div")
+        //         );
+        //     cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+        //     isRendered = true;
+        // }
     };
 
-    useEffect(
-        () => {
-            socket.onopen = function () {
-                // console.log("Ws Open");
-            };
-            const cms = document.getElementById("cms");
+    useEffect(() => {
+        socket.onopen = function () {
+            // console.log("Ws Open");
+        };
+        //const cms = document.getElementById("cms");
 
-            socket.onmessage = async function (event) {
-                const message = JSON.parse(event.data);
+        socket.onmessage = async function (event) {
+            const message = JSON.parse(event.data);
 
-                switch (message.command) {
-                    case "messageforuser":
-                        if (message.body.sender !== Chatter[0].nickname && message.body.sender !== Chatter[0].email) {
-                            return;
+            switch (message.command) {
+                case "messageforuser":
+                    if (message.body.sender !== Chatter[0].nickname && message.body.sender !== Chatter[0].email) {
+                        return;
+                    }
+
+                    // cms &&
+                    //     ReactDOM.render(
+                    //         ReactDOM.createPortal(
+                    //             <LeftMessage Avatar={Chatter[0].avatar} Content={message.body.text} />,
+                    //             cms
+                    //         ),
+                    //         document.createElement("div")
+                    //     );
+                    // cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+                    break;
+                case "typeinprogress":
+                    if (message.body.sender !== Chatter[0].nickname && message.body.sender !== Chatter[0].email) {
+                        return;
+                    }
+                    RenderType();
+                    break;
+                case "nontypeinprogress":
+                    if (message.body.sender !== Chatter[0].nickname && message.body.sender !== Chatter[0].email) {
+                        return;
+                    }
+
+                    if (isRendered) {
+                        const indicatorElement = document.getElementById("indicator");
+                        if (indicatorElement) {
+                            indicatorElement.remove();
+                            isRendered = false;
                         }
+                    }
 
-                        cms &&
-                            ReactDOM.render(
-                                ReactDOM.createPortal(
-                                    <LeftMessage Avatar={Chatter[0].avatar} Content={message.body.text} />,
-                                    cms
-                                ),
-                                document.createElement("div")
-                            );
-                        cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
-                        break;
-                    case "typeinprogress":
-                        if (message.body.sender !== Chatter[0].nickname && message.body.sender !== Chatter[0].email) {
-                            return;
-                        }
-                        RenderType();
-                        break;
-                    case "nontypeinprogress":
-                        if (message.body.sender !== Chatter[0].nickname && message.body.sender !== Chatter[0].email) {
-                            return;
-                        }
+                    break;
 
-                        if (isRendered) {
-                            const indicatorElement = document.getElementById("indicator");
-                            if (indicatorElement) {
-                                indicatorElement.remove();
-                                isRendered = false;
-                            }
-                        }
-
-                        break;
-
-                    default:
-                }
-
-              
-            
-        },
-        [],
-    )};
+                default:
+                    break;
+            }
+        };
+    }, []);
 
     const handleSendMessageClick = () => {
         handleSendMessage(messageInput, Sender, Chatter, AvatarSender, cmsRef);
@@ -145,41 +140,63 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Messages }) =>
                         ></div>
                     </div>
 
-					<div className="flex-1">
-						{!Chatter || !Chatter.length ? (
-							<>
-								<div className="flex items-center justify-between gap-2 w- px-6 py-3.5 z-10 border-b dark:border-slate-700 uk-animation-slide-top-medium">
-									<div className="flex items-center sm:gap-4 gap-2">
-										<button type="button" className="md:hidden" uk-toggle="target: #side-chat ; cls: max-md:-translate-x-full">
-											<ion-icon name="chevron-back-outline" className="text-2xl -ml-4"></ion-icon>
-										</button>
-									</div>
-								</div>
+                    <div className='flex-1'>
+                        {!Chatter || !Chatter.length ? (
+                            <>
+                                <div className='flex items-center justify-between gap-2 w- px-6 py-3.5 z-10 border-b dark:border-slate-700 uk-animation-slide-top-medium'>
+                                    <div className='flex items-center sm:gap-4 gap-2'>
+                                        <button
+                                            type='button'
+                                            className='md:hidden'
+                                            uk-toggle='target: #side-chat ; cls: max-md:-translate-x-full'
+                                        >
+                                            <ion-icon name='chevron-back-outline' className='text-2xl -ml-4'></ion-icon>
+                                        </button>
+                                    </div>
+                                </div>
 
-								<div className="w-full p-5 py-10 overflow-y-auto md:h-full h-screen">
-									<div className="py-10 text-center text-sm lg:pt-8">
-										<div className="mt-3.5">
-											<div className="inline-block rounded-lg px-4 py-1.5 text-sm font-semibold">
-												<svg xmlns="http://www.w3.org/2000/svg" width="10em" height="10em" viewBox="0 0 24 24">
-													<g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
-														<path d="M8 18.72C6.339 20.134 4.82 21 2 21c1-1 2.27-2.35 2.801-4.447C3.067 15.114 2 13.157 2 11c0-4.418 4.477-8 10-8c5.1 0 9.308 3.054 9.923 7"></path>
-														<path fill="currentColor" d="M16 19.889c-3.314 0-6-1.99-6-4.445C10 12.99 12.686 11 16 11s6 1.99 6 4.444c0 1.199-.64 2.286-1.68 3.085c.317 1.165 1.08 1.915 1.68 2.471c-1.8 0-2.716-.544-3.792-1.422c-.684.2-1.428.31-2.208.31z"></path>
-													</g>
-												</svg>
-												<p>Don't be shy chat someone !</p>
-											</div>
-										</div>
-									</div>
-									<div id="cms" className="text-sm font-medium space-y-6 h-[50vh]"></div>
-								</div>
-							</>
-						) : (
-							<>
-								<div className="flex items-center justify-between gap-2 w- px-6 py-3.5 z-10 border-b dark:border-slate-700 uk-animation-slide-top-medium">
-									<div className="flex items-center sm:gap-4 gap-2">
-										<button type="button" className="md:hidden" uk-toggle="target: #side-chat ; cls: max-md:-translate-x-full">
-											<ion-icon name="chevron-back-outline" className="text-2xl -ml-4"></ion-icon>
-										</button>
+                                <div className='w-full p-5 py-10 overflow-y-auto md:h-full h-screen'>
+                                    <div className='py-10 text-center text-sm lg:pt-8'>
+                                        <div className='mt-3.5'>
+                                            <div className='inline-block rounded-lg px-4 py-1.5 text-sm font-semibold'>
+                                                <svg
+                                                    xmlns='http://www.w3.org/2000/svg'
+                                                    width='10em'
+                                                    height='10em'
+                                                    viewBox='0 0 24 24'
+                                                >
+                                                    <g
+                                                        fill='none'
+                                                        stroke='currentColor'
+                                                        strokeLinecap='round'
+                                                        strokeLinejoin='round'
+                                                        strokeWidth='2'
+                                                    >
+                                                        <path d='M8 18.72C6.339 20.134 4.82 21 2 21c1-1 2.27-2.35 2.801-4.447C3.067 15.114 2 13.157 2 11c0-4.418 4.477-8 10-8c5.1 0 9.308 3.054 9.923 7'></path>
+                                                        <path
+                                                            fill='currentColor'
+                                                            d='M16 19.889c-3.314 0-6-1.99-6-4.445C10 12.99 12.686 11 16 11s6 1.99 6 4.444c0 1.199-.64 2.286-1.68 3.085c.317 1.165 1.08 1.915 1.68 2.471c-1.8 0-2.716-.544-3.792-1.422c-.684.2-1.428.31-2.208.31z'
+                                                        ></path>
+                                                    </g>
+                                                </svg>
+                                                <p>Don't be shy chat someone !</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id='cms' className='text-sm font-medium space-y-6 h-[50vh]'></div>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <div className='flex items-center justify-between gap-2 w- px-6 py-3.5 z-10 border-b dark:border-slate-700 uk-animation-slide-top-medium'>
+                                    <div className='flex items-center sm:gap-4 gap-2'>
+                                        <button
+                                            type='button'
+                                            className='md:hidden'
+                                            uk-toggle='target: #side-chat ; cls: max-md:-translate-x-full'
+                                        >
+                                            <ion-icon name='chevron-back-outline' className='text-2xl -ml-4'></ion-icon>
+                                        </button>
 
                                         <div
                                             className='relative cursor-pointer max-md:hidden'
@@ -248,9 +265,35 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Messages }) =>
                                             </Link>
                                         </div>
                                     </div>
-                                    <MessageList Messages={message} />
+                                    <div id='cms' className='text-sm font-medium space-y-6'>
+                                        {Messages && Messages.length > 0 ? (
+                                            Messages.map((message) => {
+                                                console.log(message);
+                                                <div className='flex gap-2 flex-row-reverse items-end'>
+                                                    <img
+                                                        src='https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg'
+                                                        alt=''
+                                                        className='w-5 h-5 rounded-full shadow'
+                                                    />
+                                                    <div className='px-4 py-2 rounded-[20px] max-w-sm bg-gradient-to-tr from-sky-500 to-blue-500 text-white shadow'>
+                                                        <pre> {message.content} </pre>
+                                                    </div>
+                                                </div>;
+                                            })
+                                        ) : (
+                                            <div className='flex gap-2 flex-row-reverse items-end'>
+                                                <img
+                                                    src='https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg'
+                                                    alt=''
+                                                    className='w-5 h-5 rounded-full shadow'
+                                                />
+                                                <div className='px-4 py-2 rounded-[20px] max-w-sm bg-gradient-to-tr from-sky-500 to-blue-500 text-white shadow'>
+                                                    <pre> No message here. </pre>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
-
                                 <div className='flex items-center md:gap-4 gap-2 md:p-3 p-2 overflow-hidden'>
                                     <div
                                         id='message__wrap'
@@ -364,13 +407,13 @@ const handleSendMessage = async (messageInput, Sender, Chatter, AvatarSender, cm
 
     // TODO: Handle the response from the server before appending the message if the message succesfully sent to the chatter before append
 
-    const cms = document.getElementById("cms");
-    cms &&
-        ReactDOM.render(
-            ReactDOM.createPortal(<RightMessage Avatar={AvatarSender} Content={message.text} />, cms),
-            document.createElement("div")
-        );
-    cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+    // const cms = document.getElementById("cms");
+    // cms &&
+    //     ReactDOM.render(
+    //         ReactDOM.createPortal(<RightMessage Avatar={AvatarSender} Content={message.text} />, cms),
+    //         document.createElement("div")
+    //     );
+    // cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
 };
 
 export async function sendMessage(socket, command, body) {
