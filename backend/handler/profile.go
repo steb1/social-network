@@ -27,20 +27,31 @@ type UserProfileResponse struct {
 	Followings        []*models.User `json:"followings"`
 }
 
+type ChatResponse struct {
+	NicknameRequester string                    `json:"nickname_requester"`
+	Avatar            string                    `json:"avatar"`
+	Followers         []*models.User            `json:"followers"`
+	Followings        []*models.User            `json:"followings"`
+	Messages          []*models.MessageResponse `json:"messages"`
+}
+
 func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 	session, ok := IsAuthenticated(r)
+	var apiError ApiError
 
 	if !ok {
-		var apiError ApiError
 		apiError.Error = "StatusUnauthorized"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
 		return
 	}
 
 	to := r.URL.Query().Get("to")
-	exist, _ := models.UserRepo.UserExists(models.UserRepo.GetIDFromUsernameOrEmail(to))
-	if !exist {
-		WriteJSON(w, http.StatusUnauthorized, nil)
+
+	toUserID := models.UserRepo.GetIDFromUsernameOrEmail(to)
+
+	if toUserID < 1 {
+		apiError.Error = "User not does not exist"
+		WriteJSON(w, http.StatusBadRequest, nil)
 	}
 
 	id, _ := strconv.Atoi(session.UserID)
@@ -76,17 +87,31 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 	if strings.TrimSpace(UN) == "" {
 		UN = user.Email
 	}
+	offset, error := strconv.Atoi(r.URL.Query().Get("offset"))
+	if error != nil {
+		offset = 0
+	}
+	error = nil
 
+	limit := 10
+	messages, err := models.MessageRepo.GetMessagesBetweenUsers(user.UserID, toUserID, offset, limit)
+	if err != nil {
+		log.Println("��� ~ funcHandleGetProfileGetMessagesBetweenUsers ~ err:", err)
+		var apiError ApiError
+		apiError.Error = "Not found messages"
+		WriteJSON(w, http.StatusInternalServerError, apiError)
+		return
+	}
 	// Create a UserProfileResponse without the password field
-	userProfile := UserProfileResponse{
+	chatResponse := ChatResponse{
 		NicknameRequester: UN,
 		Avatar:            user.Avatar,
 		Followers:         followers,
 		Followings:        followings,
-		// TODO: LE MESSAGE ENTRE LES DEUX
+		Messages:          messages,
 	}
 
-	WriteJSON(w, http.StatusOK, userProfile)
+	WriteJSON(w, http.StatusOK, chatResponse)
 }
 
 func HandleGetProfile(w http.ResponseWriter, r *http.Request) {
