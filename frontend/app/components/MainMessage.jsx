@@ -13,8 +13,9 @@ import ReactDOM from "react-dom";
 import EmojiPicker, { EmojiClickData, SkinTones, EmojiStyle } from "emoji-picker-react";
 import TypingIndicator from "../messages/TypingIndicator";
 import SideBarPreviewGroupChat from "../messages/SideBarPreviewGroupChat";
+import MessageList from "../messages/MessageList";
 
-const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender }) => {
+const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Messages }) => {
     const [messageInput, setMessageInput] = useState("");
     const cmsRef = useRef();
     let isRendered = false;
@@ -32,55 +33,61 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender }) => {
         }
     };
 
-    useEffect(() => {
-        socket.onopen = function () {
-            // console.log("Ws Open");
-        };
-
-        socket.onmessage = async function (event) {
-            const message = JSON.parse(event.data);
+    useEffect(
+        () => {
+            socket.onopen = function () {
+                // console.log("Ws Open");
+            };
             const cms = document.getElementById("cms");
-            switch (message.command) {
-                case "messageforuser":
-                    if (message.body.sender !== Chatter[0].nickname && message.body.sender !== Chatter[0].email) {
-                        return;
-                    }
 
-                    cms &&
-                        ReactDOM.render(
-                            ReactDOM.createPortal(
-                                <LeftMessage Avatar={Chatter[0].avatar} Content={message.body.text} />,
-                                cms
-                            ),
-                            document.createElement("div")
-                        );
-                    cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
-                    break;
-                case "typeinprogress":
-                    if (message.body.sender !== Chatter[0].nickname && message.body.sender !== Chatter[0].email) {
-                        return;
-                    }
-                    RenderType();
-                    break;
-                case "nontypeinprogress":
-                    if (message.body.sender !== Chatter[0].nickname && message.body.sender !== Chatter[0].email) {
-                        return;
-                    }
+            socket.onmessage = async function (event) {
+                const message = JSON.parse(event.data);
 
-                    if (isRendered) {
-                        const indicatorElement = document.getElementById("indicator");
-                        if (indicatorElement) {
-                            indicatorElement.remove();
-                            isRendered = false;
+                switch (message.command) {
+                    case "messageforuser":
+                        if (message.body.sender !== Chatter[0].nickname && message.body.sender !== Chatter[0].email) {
+                            return;
                         }
-                    }
 
-                    break;
+                        cms &&
+                            ReactDOM.render(
+                                ReactDOM.createPortal(
+                                    <LeftMessage Avatar={Chatter[0].avatar} Content={message.body.text} />,
+                                    cms
+                                ),
+                                document.createElement("div")
+                            );
+                        cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+                        break;
+                    case "typeinprogress":
+                        if (message.body.sender !== Chatter[0].nickname && message.body.sender !== Chatter[0].email) {
+                            return;
+                        }
+                        RenderType();
+                        break;
+                    case "nontypeinprogress":
+                        if (message.body.sender !== Chatter[0].nickname && message.body.sender !== Chatter[0].email) {
+                            return;
+                        }
 
-                default:
-            }
-        };
-    }, []);
+                        if (isRendered) {
+                            const indicatorElement = document.getElementById("indicator");
+                            if (indicatorElement) {
+                                indicatorElement.remove();
+                                isRendered = false;
+                            }
+                        }
+
+                        break;
+
+                    default:
+                }
+
+              
+            
+        },
+        [],
+    )};
 
     const handleSendMessageClick = () => {
         handleSendMessage(messageInput, Sender, Chatter, AvatarSender, cmsRef);
@@ -222,11 +229,7 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender }) => {
                                             </Link>
                                         </div>
                                     </div>
-
-                                    <div id='cms' ref={cmsRef} className='text-sm font-medium space-y-6'>
-                                        {/* //TODO: RANGE LES Messages */}
-                                        {/* TU range puis tu appeles le component date  */}
-                                    </div>
+                                    <MessageList Messages={message} />
                                 </div>
 
                                 <div className='flex items-center md:gap-4 gap-2 md:p-3 p-2 overflow-hidden'>

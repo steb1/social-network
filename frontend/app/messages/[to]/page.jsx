@@ -11,6 +11,7 @@ const Messages = async ({ params: { to } }) => {
 
     const response = await fetch(`${config.serverApiUrl}messageResponse?to=${to}`, {
         method: "GET",
+        cache: "no-store",
         headers: {
             Authorization: cookieStore.get("social-network").value,
         },
@@ -20,7 +21,7 @@ const Messages = async ({ params: { to } }) => {
         return notFound();
     }
 
-    const { nickname_requester, avatar, followers, followings } = await response.json();
+    const { nickname_requester, avatar, followers, followings, messages } = await response.json();
 
     const AbletoTalk =
         followers && followings
@@ -36,14 +37,21 @@ const Messages = async ({ params: { to } }) => {
               : null;
 
     const Chatter = AbletoTalk && AbletoTalk.filter((user) => user.nickname === to || user.email === to);
-
+    console.log("Chatter", Chatter);
+    console.log("Sender", nickname_requester);
     // TODO: Passe comme props les messages à MainMessage
 
     return (
         <div id='wrapper'>
             <Header />
             <Sidebar />
-            <MainMessage AbletoTalk={AbletoTalk} Chatter={Chatter} Sender={nickname_requester} AvatarSender={avatar} />
+            <MainMessage
+                AbletoTalk={AbletoTalk}
+                Chatter={Chatter}
+                Sender={nickname_requester}
+                AvatarSender={avatar}
+                Messages={messages}
+            />
         </div>
     );
 };
