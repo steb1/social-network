@@ -20,7 +20,7 @@ const Messages = async ({ params: { to } }) => {
 		return notFound();
 	}
 
-	const { nickname_requester, avatar, followers, followings } = await response.json();
+	const { groups, nickname_requester, avatar, followers, followings } = await response.json();
 
 	const AbletoTalk =
 		followers && followings
@@ -37,13 +37,11 @@ const Messages = async ({ params: { to } }) => {
 
 	const Chatter = AbletoTalk && AbletoTalk.filter((user) => user.nickname === to || user.email === to);
 
-	// TODO: Passe comme props les messages à MainMessage
-
 	return (
 		<div id="wrapper">
 			<Header />
 			<Sidebar />
-			<MainMessage AbletoTalk={AbletoTalk} Chatter={Chatter} Sender={nickname_requester} AvatarSender={avatar} />
+			<MainMessage AbletoTalk={AbletoTalk} Chatter={Chatter} Sender={nickname_requester} AvatarSender={avatar} Groups={groups} />
 		</div>
 	);
 };

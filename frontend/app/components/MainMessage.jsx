@@ -14,7 +14,7 @@ import EmojiPicker, { EmojiClickData, SkinTones, EmojiStyle } from "emoji-picker
 import TypingIndicator from "../messages/TypingIndicator";
 import SideBarPreviewGroupChat from "../messages/SideBarPreviewGroupChat";
 
-const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender }) => {
+const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups }) => {
 	const [messageInput, setMessageInput] = useState("");
 	const cmsRef = useRef();
 	let isRendered = false;
@@ -95,8 +95,11 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender }) => {
 							</div>
 
 							<div className="space-y-2 p-2 overflow-y-auto md:h-[calc(100vh-204px)] h-[calc(100vh-130px)]">
-								{AbletoTalk ? AbletoTalk.map((user) => <SideBarPreviewChat key={user.user_id} PrenomNom={`${user.first_name} ${user.last_name}`} avatar={user.avatar} To={user.nickname ? user.nickname : user.email} />) : <p className="text-justify font-bold">No chatter avalaible follows someone or wait someone to follow you</p>}
-								<SideBarPreviewGroupChat />
+								{AbletoTalk && AbletoTalk.map((user) => <SideBarPreviewChat key={user.user_id} PrenomNom={`${user.first_name} ${user.last_name}`} avatar={user.avatar} To={user.nickname ? user.nickname : user.email} />)}
+
+								{Groups && Groups.map((group) => <SideBarPreviewGroupChat key={group.GroupID} ID={group.GroupID} GroupName={group.GroupName} Users={group.Users} />)}
+
+								{!AbletoTalk && !Groups && <p className="text-justify font-bold">No chatter available. Follow someone or wait for someone to follow you.</p>}
 							</div>
 						</div>
 

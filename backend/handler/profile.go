@@ -4,27 +4,27 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"server/models"
 )
 
 type UserProfileResponse struct {
-	IDRequester       string         `json:"id_requester"`
-	NicknameRequester string         `json:"nickname_requester"`
-	UserID            int            `json:"user_id"`
-	FirstName         string         `json:"firstName"`
-	LastName          string         `json:"lastName"`
-	Nickname          string         `json:"nickname"`
-	Email             string         `json:"email"`
-	DateOfBirth       string         `json:"dateOfBirth"`
-	Avatar            string         `json:"avatar"`
-	AboutMe           string         `json:"aboutMe"`
-	AccountType       string         `json:"accountType"`
-	FollowStatus      string         `json:"followStatus"`
-	UserPosts         []*models.Post `json:"userPosts"`
-	Followers         []*models.User `json:"followers"`
-	Followings        []*models.User `json:"followings"`
+	IDRequester       string              `json:"id_requester"`
+	NicknameRequester string              `json:"nickname_requester"`
+	UserID            int                 `json:"user_id"`
+	FirstName         string              `json:"firstName"`
+	LastName          string              `json:"lastName"`
+	Nickname          string              `json:"nickname"`
+	Email             string              `json:"email"`
+	DateOfBirth       string              `json:"dateOfBirth"`
+	Avatar            string              `json:"avatar"`
+	AboutMe           string              `json:"aboutMe"`
+	AccountType       string              `json:"accountType"`
+	FollowStatus      string              `json:"followStatus"`
+	UserPosts         []*models.Post      `json:"userPosts"`
+	Followers         []*models.User      `json:"followers"`
+	Followings        []*models.User      `json:"followings"`
+	Groups            []*models.GroupInfo `json:"groups"`
 }
 
 func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
@@ -38,9 +38,22 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 	}
 
 	to := r.URL.Query().Get("to")
-	exist, _ := models.UserRepo.UserExists(models.UserRepo.GetIDFromUsernameOrEmail(to))
-	if !exist {
-		WriteJSON(w, http.StatusUnauthorized, nil)
+
+	// Check if it's a user
+	userExists, _ := models.UserRepo.UserExists(models.UserRepo.GetIDFromUsernameOrEmail(to))
+
+	// Check if it's a group
+	idGroup, err := strconv.Atoi(to)
+	groupExists := false
+
+	if err == nil {
+		_, groupErr := models.MembershipRepo.GetAllUsersByGroupID(idGroup)
+		groupExists = groupErr == nil
+	}
+
+	// If ni user ni group
+	if !userExists && !groupExists {
+		WriteJSON(w, http.StatusNotFound, nil)
 	}
 
 	id, _ := strconv.Atoi(session.UserID)
@@ -73,8 +86,13 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 	}
 
 	UN := user.Nickname
-	if strings.TrimSpace(UN) == "" {
+	if UN == "" {
 		UN = user.Email
+	}
+
+	Groups, err := models.MembershipRepo.GetAllGroupsForUser(user.UserID)
+	if err != nil {
+		log.Println("🚀 ~ funcGetMessageResponse ~ GetAllGroupsForUser ~ err:", err)
 	}
 
 	// Create a UserProfileResponse without the password field
@@ -83,7 +101,7 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 		Avatar:            user.Avatar,
 		Followers:         followers,
 		Followings:        followings,
-		// TODO: LE MESSAGE ENTRE LES DEUX
+		Groups:            Groups,
 	}
 
 	WriteJSON(w, http.StatusOK, userProfile)

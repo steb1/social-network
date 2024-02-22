@@ -101,6 +101,7 @@ func (cm *MembershipRepository) CheckIfMembershispExist(userId, groupId int) boo
 	}
 	return true
 }
+
 func (cm *MembershipRepository) CheckIfSubscribed(userId, groupId int, option string) bool {
 	query := "SELECT * FROM memberships WHERE group_id = ? AND user_id = ? AND membership_status= ?"
 	var membership Membership
@@ -111,11 +112,12 @@ func (cm *MembershipRepository) CheckIfSubscribed(userId, groupId int, option st
 	}
 	return true
 }
+
 func (cm *MembershipRepository) CheckIfIsMember(userId, groupId int) bool {
 	query := "SELECT * FROM memberships WHERE group_id = ? AND user_id = ? AND membership_status != 'pending'"
 	var membership Membership
 	err := cm.db.QueryRow(query, groupId, userId).Scan(&membership.MembershipID, &membership.UserID, &membership.GroupID, &membership.JoinedAt, &membership.InvitationStatus, &membership.MembershipStatus)
-	
+
 	return err == nil
 }
 
@@ -124,47 +126,13 @@ func (cm *MembershipRepository) CheckGroupIsPublic(userId, groupId int) bool {
 	var membership Membership
 	err := cm.db.QueryRow(query, groupId, userId).Scan(&membership.MembershipID, &membership.UserID, &membership.GroupID, &membership.JoinedAt, &membership.InvitationStatus, &membership.MembershipStatus)
 	if err != nil {
-		
+
 		fmt.Println(err)
 		return false
 	}
 	return true
 }
 
-// GetAllUsersByGroupID retrieves all users for a specific group from the memberships table
-func (cm *MembershipRepository) GetAllUsersByGroupID(groupID int) ([]User, error) {
-	query := `
-		SELECT u.user_id, u.email, u.password, u.first_name, u.last_name, u.date_of_birth, u.avatar, u.nickname, u.about_me
-		FROM users u
-		INNER JOIN memberships m ON u.user_id = m.user_id
-		WHERE m.group_id = ? AND m.membership_status = "accepted" 
-	`
-
-	rows, err := cm.db.Query(query, groupID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var users []User
-	for rows.Next() {
-		var user User
-		err := rows.Scan(
-			&user.UserID, &user.Email, &user.Password, &user.FirstName, &user.LastName,
-			&user.DateOfBirth, &user.Avatar, &user.Nickname, &user.AboutMe,
-		)
-		if err != nil {
-			return nil, err
-		}
-		users = append(users, user)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return users, nil
-}
 func (cm *MembershipRepository) GetAllRequestByGroupID(groupID int) ([]User, error) {
 	query := `
 		SELECT u.user_id, u.email, u.password, u.first_name, u.last_name, u.date_of_birth, u.avatar, u.nickname, u.about_me, u.account_type
@@ -197,4 +165,93 @@ func (cm *MembershipRepository) GetAllRequestByGroupID(groupID int) ([]User, err
 	}
 
 	return users, nil
+}
+
+// Structure pour stocker les informations sur un groupe
+type GroupInfo struct {
+	GroupID          int
+	GroupName        string
+	GroupDescription string
+	Users            []UserInfo
+}
+
+type UserInfo struct {
+	Avatar          string
+	NicknameOrEmail string
+}
+
+func (cm *MembershipRepository) GetAllGroupsForUser(userID int) ([]*GroupInfo, error) {
+	query := `
+		SELECT groups.group_id, groups.title, groups.description
+		FROM memberships
+		INNER JOIN groups ON memberships.group_id = groups.group_id
+		WHERE memberships.user_id = ? AND memberships.membership_status = 'accepted';
+	`
+
+	rows, err := cm.db.Query(query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var groups []*GroupInfo
+	for rows.Next() {
+		var group GroupInfo
+		err := rows.Scan(&group.GroupID, &group.GroupName, &group.GroupDescription)
+		if err != nil {
+			return nil, err
+		}
+
+		users, err := cm.GetAllUsersByGroupID(group.GroupID)
+		if err != nil {
+			return nil, err
+		}
+
+		var userInfos []UserInfo
+		for _, user := range users {
+			nicknameOrEmail := user.Nickname
+			if nicknameOrEmail == "" {
+				nicknameOrEmail = user.Email
+			}
+			userInfos = append(userInfos, UserInfo{
+				Avatar:          user.Avatar,
+				NicknameOrEmail: nicknameOrEmail,
+			})
+		}
+
+		group.Users = userInfos
+		groups = append(groups, &group)
+	}
+
+	return groups, rows.Err()
+}
+
+func (cm *MembershipRepository) GetAllUsersByGroupID(groupID int) ([]User, error) {
+	query := `
+		SELECT u.user_id, u.email, u.password, u.first_name, u.last_name, u.date_of_birth, u.avatar, COALESCE(u.nickname, u.email) as nickname, u.about_me
+		FROM users u
+		INNER JOIN memberships m ON u.user_id = m.user_id
+		WHERE m.group_id = ? AND m.membership_status = "accepted" 
+	`
+
+	rows, err := cm.db.Query(query, groupID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []User
+	for rows.Next() {
+		var user User
+		err := rows.Scan(
+			&user.UserID, &user.Email, &user.Password, &user.FirstName, &user.LastName,
+			&user.DateOfBirth, &user.Avatar, &user.Nickname, &user.AboutMe,
+		)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	return users, rows.Err()
 }

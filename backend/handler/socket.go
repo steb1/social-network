@@ -63,10 +63,8 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 	userId, _ := strconv.Atoi(session.UserID)
 	user, _ := models.UserRepo.GetUserByID(userId)
 
-	var nicknameOrEmail string
-	if user.Nickname != "" {
-		nicknameOrEmail = user.Nickname
-	} else {
+	nicknameOrEmail := user.Nickname
+	if nicknameOrEmail == "" {
 		nicknameOrEmail = user.Email
 	}
 
