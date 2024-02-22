@@ -2,7 +2,10 @@ package handler
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+	"os"
+	"server/lib"
 	"server/models"
 	"strconv"
 	"strings"
@@ -35,15 +38,18 @@ func HandleCreateCommentGroup(w http.ResponseWriter, r *http.Request) {
 		WriteJSON(w, http.StatusBadRequest, apiError)
 		return
 	}
-	postID, err := strconv.Atoi(r.FormValue("post_id"))
+	fmt.Println(r.FormValue("PostID"), "hereeee")
+
+	postID, err := strconv.Atoi(r.FormValue("PostID"))
+
 	if err != nil {
-		fmt.Println("Error: post_id is not a valid number!!!")
+		fmt.Println(err, "erroroororo")
 		apiError.Error = "Error: post_id is not a valid number!!!"
 		WriteJSON(w, http.StatusBadRequest, apiError)
 		return
 	}
 	comment.PostID = postID
-	comment.CreatedAt =  time.Now().String()
+	comment.CreatedAt = time.Now().String()
 	userId, err := strconv.Atoi(session.UserID)
 	if err != nil {
 		apiError.Error = "Error getting user."
@@ -51,11 +57,42 @@ func HandleCreateCommentGroup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	comment.AuthorID = userId
-	_, err = models.CommentGroupRepo.CreateCommentGroup(comment)
+	photo, _, _ := r.FormFile("media_post_c")
+	hasImage := map[bool]int{true: 1, false: 0}[photo != nil]
+	comment.HasImage = hasImage
+
+	err = models.CommentGroupRepo.CreateCommentGroup(comment, photo)
 	if err != nil {
 		fmt.Println(err)
 		apiError.Error = "An error occured while creating comment."
 		WriteJSON(w, http.StatusInternalServerError, apiError)
 		return
+	} else {
+		response := make(map[string]interface{})
+
+		response["ok"] = true
+
+		lib.WriteJSONResponse(w, response)
 	}
+
+}
+
+func ImageHandlerCommentGroup(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodOptions {
+		HandleOptions(w, r)
+		return
+	}
+	if r.Method != "GET" {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+	imageId := r.URL.Query().Get("id")
+	img, err := os.ReadFile("imgCommentGroup/" + imageId + ".jpg")
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.Header().Set("Content-Type", "image/jpeg")
+	w.Write(img)
 }

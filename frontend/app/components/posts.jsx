@@ -121,7 +121,7 @@ export const PostText = () => {
     return (
         <>
             <Modal setPosts={setPosts} posts={posts} />
-            {posts.map((post) => (
+             {posts ? posts.map((post) => (
                 <div
                     key={post.post_id}
                     className='bg-white rounded-xl shadow-sm text-sm font-medium border1 dark:bg-dark2'
@@ -336,7 +336,7 @@ export const PostText = () => {
                         </button>
                     </div>
                 </div>
-            ))}
+            )) : <PostPlaceholder/>}
         </>
     );
 };

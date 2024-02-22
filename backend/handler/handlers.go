@@ -42,6 +42,7 @@ var Routes = []Route{
 	{Path: "/api/logout", Handler: Logout, Methods: []string{"GET"}},
 	{Path: "/api/imgPost", Handler: ImageHandler, Methods: []string{"GET", "OPTIONS"}},
 	{Path: "/api/imgComment", Handler: ImageHandlerComment, Methods: []string{"GET", "OPTIONS"}},
+	{Path: "/api/imgCommentGroup", Handler: ImageHandlerCommentGroup, Methods: []string{"GET", "OPTIONS"}},
 	{Path: "/api/getAllPosts", Handler: HandleGetAllPosts, Methods: []string{"GET", "OPTIONS"}},
 	{Path: "/api/createComment", Handler: HandleCreateComment, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/createCommentGroup", Handler: HandleCreateCommentGroup, Methods: []string{"POST", "OPTIONS"}},
