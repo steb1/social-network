@@ -41,7 +41,7 @@ func GetMessages(w http.ResponseWriter, r *http.Request) {
 		}
 		error = nil
 
-		limit := 10
+		limit := 20
 
 		if error != nil {
 			var apiError ApiError
@@ -51,7 +51,9 @@ func GetMessages(w http.ResponseWriter, r *http.Request) {
 		}
 
 		messages, error := models.MessageRepo.GetMessagesBetweenUsers(sessionUserID, userID, offset, limit)
-		fmt.Println(messages)
+		for date, messages := range messages {
+			fmt.Printf("[%s] => %v\n", date, messages)
+		}
 		if error != nil {
 			var apiError ApiError
 			apiError.Error = error.Error()

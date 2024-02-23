@@ -28,11 +28,11 @@ type UserProfileResponse struct {
 }
 
 type ChatResponse struct {
-	NicknameRequester string                    `json:"nickname_requester"`
-	Avatar            string                    `json:"avatar"`
-	Followers         []*models.User            `json:"followers"`
-	Followings        []*models.User            `json:"followings"`
-	Messages          []*models.MessageResponse `json:"messages"`
+	NicknameRequester string                              `json:"nickname_requester"`
+	Avatar            string                              `json:"avatar"`
+	Followers         []*models.User                      `json:"followers"`
+	Followings        []*models.User                      `json:"followings"`
+	Messages          map[string][]models.MessageResponse `json:"messages"`
 }
 
 func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
