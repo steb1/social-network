@@ -1,14 +1,22 @@
 import React from "react";
 
-const RightMessage = ({ Avatar, Content }) => {
-	return (
-		<div className="flex gap-2 flex-row-reverse items-end">
-			<img src={`http://localhost:8080/img/${Avatar}`} alt="" className="w-5 h-5 rounded-full shadow" />
-			<div className="px-4 py-2 rounded-[20px] max-w-sm bg-gradient-to-tr from-sky-500 to-blue-500 text-white shadow">
-				<pre> {Content} </pre>
-			</div>
-		</div>
-	);
+const RightMessage = ({ Avatar, message }) => {
+    return (
+        <div className='chat chat-end'>
+            <div className='chat-image avatar'>
+                <div className='w-10 rounded-full'>
+                    <img alt='Avatar Img' src={`http://localhost:8080/img/${Avatar}`} />
+                </div>
+            </div>
+            <div className='chat-header'>
+                {message.sender}
+                <time className='text-xs opacity-50'> {message.sent_time}</time>
+            </div>
+            <div className='chat-bubble max-w-sm bg-sky-500/100 from-sky-500 to-blue-500 text-white'>
+                {message.content}
+            </div>
+        </div>
+    );
 };
 
 export default RightMessage;

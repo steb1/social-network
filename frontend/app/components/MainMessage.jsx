@@ -13,7 +13,7 @@ import TypingIndicator from "../messages/TypingIndicator";
 import SideBarPreviewGroupChat from "../messages/SideBarPreviewGroupChat";
 import config from "@/config";
 
-const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, GroupChatter }) => {
+const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messages, GroupChatter }) => {
 	const [messageInput, setMessageInput] = useState("");
 	const cmsRef = useRef();
 	let isRendered = false;
@@ -31,6 +31,7 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, GroupC
 		socket.onopen = function () {
 			// console.log("Ws Open");
 		};
+		const cms = document.getElementById("cms");
 
 		socket.onmessage = async function (event) {
 			const message = JSON.parse(event.data);
@@ -178,8 +179,15 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, GroupC
 									</div>
 
 									<div id="cms" ref={cmsRef} className="text-sm font-medium space-y-6">
-										{/* //TODO: RANGE LES Messages */}
-										{/* TU range puis tu appeles le component date  */}
+										{Messages &&
+											Object.entries(Messages).map(([date, chatMessages]) => (
+												<>
+													<div className="flex justify-center ">
+														<div className="font-medium text-gray-500 text-sm dark:text-white/70">{date}</div>
+													</div>
+													{chatMessages.map((message) => (message.sender == Sender ? <LeftMessage Avatar={AvatarSender} message={message} /> : <RightMessage Avatar={Chatter[0].avatar} message={message} />))}
+												</>
+											))}
 									</div>
 								</div>
 
