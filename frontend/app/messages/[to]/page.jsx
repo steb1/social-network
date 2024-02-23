@@ -39,15 +39,6 @@ const Messages = async ({ params: { to } }) => {
     // console.log("Chatter", Chatter);
     // console.log("Sender", nickname_requester);
 
-    Object.entries(messages).map(([date, chatMessages]) => {
-        console.log(date);
-        {
-            chatMessages.map((message) => {
-                console.log(message.content);
-            });
-        }
-    });
-
     // TODO: Passe comme props les messages à MainMessage
 
     return (
