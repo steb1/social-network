@@ -127,7 +127,7 @@ export const DisplayGroups = () => {
         <div className="flex flex-col mt-10">
           <h1 className="text-black text-xl font-bold">Invited Groups</h1>
           <hr className="mt-3" />
-          <div className="carousel carousel-center w-auto p-4 space-x-4 bg-neutral rounded-box">
+          <div className="carousel carousel-center w-auto p-4 overflow-y-scroll space-x-4 bg-neutral rounded-box">
             {invitedgroups ? (
               invitedgroups.map((group) => (
                 <GroupInvited
