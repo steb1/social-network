@@ -16,6 +16,7 @@ import SideBarPreviewGroupChat from "../messages/SideBarPreviewGroupChat";
 
 const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Messages }) => {
     const [messageInput, setMessageInput] = useState("");
+    const [messages, setMessages] = useState([]);
     const cmsRef = useRef();
     let isRendered = false;
 
@@ -82,7 +83,8 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Messages }) =>
                     break;
             }
         };
-    }, []);
+        setMessages(Messages);
+    }, [Messages]);
 
     const handleSendMessageClick = () => {
         handleSendMessage(messageInput, Sender, Chatter, AvatarSender, cmsRef);
@@ -266,20 +268,26 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Messages }) =>
                                         </div>
                                     </div>
                                     <div id='cms' className='text-sm font-medium space-y-6'>
-                                        {Messages && Messages.length > 0 ? (
-                                            Messages.map((message) => {
-                                                console.log(message);
-                                                <div className='flex gap-2 flex-row-reverse items-end'>
-                                                    <img
-                                                        src='https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg'
-                                                        alt=''
-                                                        className='w-5 h-5 rounded-full shadow'
-                                                    />
-                                                    <div className='px-4 py-2 rounded-[20px] max-w-sm bg-gradient-to-tr from-sky-500 to-blue-500 text-white shadow'>
-                                                        <pre> {message.content} </pre>
-                                                    </div>
-                                                </div>;
-                                            })
+                                        {messages && messages.length > 0 ? (
+                                            Object.entries(messages).map(([date, chatMessages]) => (
+                                                <div key={date}>
+                                                    {chatMessages.map((message) => (
+                                                        <div
+                                                            key={message.sent_time}
+                                                            className='flex gap-2 flex-row-reverse items-end'
+                                                        >
+                                                            <img
+                                                                src='https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg'
+                                                                alt=''
+                                                                className='w-5 h-5 rounded-full shadow'
+                                                            />
+                                                            <div className='px-4 py-2 rounded-[20px] max-w-sm bg-gradient-to-tr from-sky-500 to-blue-500 text-white shadow'>
+                                                                <pre> {message.content} </pre>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ))
                                         ) : (
                                             <div className='flex gap-2 flex-row-reverse items-end'>
                                                 <img
