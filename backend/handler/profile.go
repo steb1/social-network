@@ -31,6 +31,7 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 	session, ok := IsAuthenticated(r)
 
 	if !ok {
+		log.Println("GetMessageResponse !IsAuthenticated")
 		var apiError ApiError
 		apiError.Error = "StatusUnauthorized"
 		WriteJSON(w, http.StatusUnauthorized, apiError)

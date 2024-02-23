@@ -6,15 +6,14 @@ import RightMessage from "../messages/RightMessage";
 import DateMessage from "../messages/DateMessage";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import Animation from "@/app/components/animation.js";
-import authAnimation from "@/public/assets/animations/authAnimation.json";
 import socket from "@/public/js/socket";
 import ReactDOM from "react-dom";
-import EmojiPicker, { EmojiClickData, SkinTones, EmojiStyle } from "emoji-picker-react";
+import EmojiPicker from "emoji-picker-react";
 import TypingIndicator from "../messages/TypingIndicator";
 import SideBarPreviewGroupChat from "../messages/SideBarPreviewGroupChat";
+import config from "@/config";
 
-const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups }) => {
+const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, GroupChatter }) => {
 	const [messageInput, setMessageInput] = useState("");
 	const cmsRef = useRef();
 	let isRendered = false;
@@ -71,7 +70,7 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups }) => {
 	}, []);
 
 	const handleSendMessageClick = () => {
-		handleSendMessage(messageInput, Sender, Chatter, AvatarSender, cmsRef);
+		handleSendMessage(messageInput, Sender, Chatter, AvatarSender, cmsRef, GroupChatter);
 		setMessageInput("");
 	};
 
@@ -79,8 +78,8 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups }) => {
 		setMessageInput((prevMessage) => prevMessage + emojiData.emoji);
 	};
 
-	const debounceNoTyping = debounce(() => nontypeinprogress(Sender, Chatter), 8000);
-	const throttleTyping = throttle(() => typeinprogress(Sender, Chatter), 3000);
+	const debounceNoTyping = debounce(() => nontypeinprogress(Sender, Chatter, GroupChatter), 8000);
+	const throttleTyping = throttle(() => typeinprogress(Sender, Chatter, GroupChatter), 3000);
 
 	return (
 		<main id="site__main" className="2xl:ml-[--w-side]  xl:ml-[--w-side-sm] p-2.5 h-[calc(100vh-var(--m-top))] mt-[--m-top]">
@@ -107,7 +106,7 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups }) => {
 					</div>
 
 					<div className="flex-1">
-						{!Chatter || !Chatter.length ? (
+						{(!Chatter || !Chatter.length) && !Groups ? (
 							<>
 								<div className="flex items-center justify-between gap-2 w- px-6 py-3.5 z-10 border-b dark:border-slate-700 uk-animation-slide-top-medium">
 									<div className="flex items-center sm:gap-4 gap-2">
@@ -143,11 +142,12 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups }) => {
 										</button>
 
 										<div className="relative cursor-pointer max-md:hidden" uk-toggle="target: .rightt ; cls: hidden">
-											<img src={`http://localhost:8080/img/${Chatter[0].avatar}`} alt="" className="w-8 h-8 rounded-full shadow" />
+											<img src={Chatter && Chatter[0] ? `${config.ServerApiImage}${Chatter[0].avatar}` : `${config.ServerApiImage}png-transparent-aquatica-seaworld-orlando-강릉시영상미디어센터-community-group-icon-monochrome-black-noun-project-removebg-preview-removebg-preview.png`} alt="" className="w-8 h-8 rounded-full shadow" />
+
 											<div className="w-2 h-2 bg-teal-500 rounded-full absolute right-0 bottom-0 m-px"></div>
 										</div>
 										<div className="cursor-pointer" uk-toggle="target: .rightt ; cls: hidden">
-											<div className="text-base font-bold">{`${Chatter[0].first_name} ${Chatter[0].last_name}`}</div>
+											<div className="text-base font-bold"> {Chatter && Chatter[0] ? `${Chatter[0].first_name} ${Chatter[0].last_name}` : GroupChatter && GroupChatter[0] && GroupChatter[0].GroupName}</div>
 											<div className="text-xs text-green-500 font-semibold"> Online</div>
 										</div>
 									</div>
@@ -163,15 +163,17 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups }) => {
 
 								<div className="w-full p-5 py-10 overflow-y-auto md:h-[calc(100vh-204px)] h-[calc(100vh-195px)]">
 									<div className="py-10 text-center text-sm lg:pt-8">
-										<img src={`http://localhost:8080/img/${Chatter[0].avatar}`} className="w-24 h-24 rounded-full mx-auto mb-3" alt="" />
+										<img src={Chatter && Chatter[0] ? `${config.ServerApiImage}${Chatter[0].avatar}` : `${config.ServerApiImage}png-transparent-aquatica-seaworld-orlando-강릉시영상미디어센터-community-group-icon-monochrome-black-noun-project-removebg-preview-removebg-preview.png`} className="w-24 h-24 rounded-full mx-auto mb-3" alt="" />
 										<div className="mt-8">
-											<div className="md:text-xl text-base font-medium text-black dark:text-white"> {`${Chatter[0].first_name} ${Chatter[0].last_name}`}</div>
-											<div className="text-gray-500 text-sm   dark:text-white/80"> {Chatter[0].nickname ? "@" + Chatter[0].nickname : Chatter[0].email}</div>
+											<div className="md:text-xl text-base font-medium text-black dark:text-white"> {Chatter && Chatter.length ? `${Chatter[0].first_name} ${Chatter[0].last_name}` : GroupChatter && GroupChatter[0] && GroupChatter[0].GroupName} </div>
+											<div className="text-gray-500 text-sm dark:text-white/80">{Chatter && Chatter[0] ? (Chatter[0].nickname ? "@" + Chatter[0].nickname : Chatter[0].email) : null}</div>
 										</div>
 										<div className="mt-3.5">
-											<Link href={`/profile/${Chatter[0].user_id}`} className="inline-block rounded-lg px-4 py-1.5 text-sm font-semibold bg-secondery">
-												View profile
-											</Link>
+											{Chatter && Chatter[0] && (
+												<Link href={`/profile/${Chatter[0].user_id}`} className="inline-block rounded-lg px-4 py-1.5 text-sm font-semibold bg-secondery">
+													View profile
+												</Link>
+											)}
 										</div>
 									</div>
 
@@ -213,26 +215,48 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups }) => {
 						)}
 					</div>
 
-					{!Chatter || !Chatter.length ? null : (
+					{(!Chatter || !Chatter.length) && !Groups ? null : (
 						<>
-							<div className="rightt w-full h-full absolute top-0 right-0 z-10 hidden transition-transform">
-								<div className="w-[360px] border-l shadow-lg h-screen bg-white absolute right-0 top-0 uk-animation-slide-right-medium delay-200 z-50 dark:bg-dark2 dark:border-slate-700">
+							<div className="rightt w-full h-screen absolute top-0 right-0 z-10 hidden transition-transform bg-scroll overflow-y-auto">
+								<div className="w-[360px] border-l shadow-lg h-screen bg-white absolute right-0 top-0 uk-animation-slide-right-medium delay-200 z-50 dark:bg-dark2 dark:border-slate-700 bg-scroll overflow-y-auto">
 									<div className="w-full h-1.5 bg-gradient-to-r to-purple-500 via-red-500 from-pink-500 -mt-px"></div>
+									{Chatter && Chatter[0] && (
+										<>
+											<div className="py-10 text-center text-sm pt-20">
+												<img src={`${config.ServerApiImage}${Chatter[0].avatar}`} className="w-24 h-24 rounded-full mx-auto mb-3" alt="" />
+												<div className="mt-8">
+													<div className="md:text-xl text-base font-medium text-black dark:text-white"></div>
+													<div className="text-gray-500 text-sm mt-1 dark:text-white/80">{Chatter[0].nickname ? "@" + Chatter[0].nickname : Chatter[0].email}</div>
+												</div>
+												<div className="mt-5">
+													<Link href={`/profile/${Chatter[0].user_id}`} className="inline-block rounded-full px-4 py-1.5 text-sm font-semibold bg-secondery">
+														View profile
+													</Link>
+												</div>
+											</div>
 
-									<div className="py-10 text-center text-sm pt-20">
-										<img src={`http://localhost:8080/img/${Chatter[0].avatar}`} className="w-24 h-24 rounded-full mx-auto mb-3" alt="" />
-										<div className="mt-8">
-											<div className="md:text-xl text-base font-medium text-black dark:text-white"></div>
-											<div className="text-gray-500 text-sm mt-1 dark:text-white/80">{Chatter[0].nickname ? "@" + Chatter[0].nickname : Chatter[0].email}</div>
-										</div>
-										<div className="mt-5">
-											<Link href={`/profile/${Chatter[0].user_id}`} className="inline-block rounded-full px-4 py-1.5 text-sm font-semibold bg-secondery">
-												View profile
-											</Link>
-										</div>
-									</div>
-
-									<hr className="opacity-80 dark:border-slate-700" />
+											<hr className="opacity-80 dark:border-slate-700" />
+										</>
+									)}
+									{GroupChatter &&
+										GroupChatter[0] &&
+										GroupChatter[0].Users.map((user) => (
+											<>
+												<div className="py-10 text-center text-sm pt-20">
+													<img src={`${config.ServerApiImage}${user.Avatar}`} className="w-24 h-24 rounded-full mx-auto mb-3" alt="" />
+													<div className="mt-8">
+														<div className="md:text-xl text-base font-medium text-black dark:text-white"></div>
+														<div className="text-gray-500 text-sm mt-1 dark:text-white/80">{user.NicknameOrEmail}</div>
+													</div>
+													<div className="mt-5">
+														<Link href={`/profile/${user.ID}`} className="inline-block rounded-full px-4 py-1.5 text-sm font-semibold bg-secondery">
+															View profile
+														</Link>
+													</div>
+												</div>
+												<hr className="opacity-80 dark:border-slate-700" />
+											</>
+										))}
 
 									<button type="button" className="absolute top-0 right-0 m-4 p-2 bg-secondery rounded-full" uk-toggle="target: .rightt ; cls: hidden">
 										<ion-icon name="close" className="text-2xl flex"></ion-icon>
@@ -251,7 +275,7 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups }) => {
 
 export default MainMessage;
 
-const handleSendMessage = async (messageInput, Sender, Chatter, AvatarSender, cmsRef) => {
+const handleSendMessage = async (messageInput, Sender, Chatter, AvatarSender, cmsRef, GroupChatter) => {
 	if (messageInput.trim() === "") {
 		alert("No empty message");
 		return;
@@ -259,7 +283,7 @@ const handleSendMessage = async (messageInput, Sender, Chatter, AvatarSender, cm
 
 	const message = {
 		sender: Sender,
-		receiver: Chatter[0].nickname || Chatter[0].email,
+		receiver: (Chatter[0] && Chatter[0].nickname) || (Chatter[0] && Chatter[0].email) || (GroupChatter[0] && String(GroupChatter[0].GroupID)),
 		text: messageInput,
 		time: Date.now(),
 	};
@@ -282,18 +306,19 @@ export async function sendMessage(socket, command, body) {
 	socket.send(JSON.stringify(WebSocketMessage));
 }
 
-const typeinprogress = async (Sender, Chatter) => {
+const typeinprogress = async (Sender, Chatter, GroupChatter) => {
 	const message = {
 		sender: Sender,
-		receiver: Chatter[0].nickname || Chatter[0].email,
+		receiver: (Chatter[0] && Chatter[0].nickname) || (Chatter[0] && Chatter[0].email) || (GroupChatter[0] && String(GroupChatter[0].GroupID)),
 	};
+
 	sendMessage(socket, "typeinprogress", message);
 };
 
-const nontypeinprogress = async (Sender, Chatter) => {
+const nontypeinprogress = async (Sender, Chatter, GroupChatter) => {
 	const message = {
 		sender: Sender,
-		receiver: Chatter[0].nickname || Chatter[0].email,
+		receiver: (Chatter[0] && Chatter[0].nickname) || (Chatter[0] && Chatter[0].email) || (GroupChatter[0] && String(GroupChatter[0].GroupID)),
 	};
 	sendMessage(socket, "nontypeinprogress", message);
 };

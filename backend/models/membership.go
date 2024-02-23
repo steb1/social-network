@@ -176,6 +176,7 @@ type GroupInfo struct {
 }
 
 type UserInfo struct {
+	ID              int
 	Avatar          string
 	NicknameOrEmail string
 }
@@ -214,6 +215,7 @@ func (cm *MembershipRepository) GetAllGroupsForUser(userID int) ([]*GroupInfo, e
 				nicknameOrEmail = user.Email
 			}
 			userInfos = append(userInfos, UserInfo{
+				ID:              user.UserID,
 				Avatar:          user.Avatar,
 				NicknameOrEmail: nicknameOrEmail,
 			})

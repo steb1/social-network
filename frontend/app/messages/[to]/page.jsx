@@ -10,6 +10,7 @@ const Messages = async ({ params: { to } }) => {
 	const cookieStore = cookies();
 
 	const response = await fetch(`${config.serverApiUrl}messageResponse?to=${to}`, {
+		cache: "no-store",
 		method: "GET",
 		headers: {
 			Authorization: cookieStore.get("social-network").value,
@@ -36,12 +37,13 @@ const Messages = async ({ params: { to } }) => {
 				: null;
 
 	const Chatter = AbletoTalk && AbletoTalk.filter((user) => user.nickname === to || user.email === to);
+	const GroupChatter = groups && groups.filter((group) => group.GroupID == to);
 
 	return (
 		<div id="wrapper">
 			<Header />
 			<Sidebar />
-			<MainMessage AbletoTalk={AbletoTalk} Chatter={Chatter} Sender={nickname_requester} AvatarSender={avatar} Groups={groups} />
+			<MainMessage AbletoTalk={AbletoTalk} Chatter={Chatter} Sender={nickname_requester} AvatarSender={avatar} Groups={groups} GroupChatter={GroupChatter} />
 		</div>
 	);
 };
