@@ -12,6 +12,7 @@ type Group struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	CreatorID   int    `json:"creator_id"`
+	User 		*User
 }
 
 type GroupRepository struct {
@@ -52,6 +53,7 @@ func (gr *GroupRepository) GetGroup(groupID int) (*Group, error) {
 	if err != nil {
 		return nil, err
 	}
+	group.User, _ = UserRepo.GetUserByID(group.CreatorID)
 	return &group, nil
 }
 // GetGroup retrieves a group from the database by group_id
