@@ -69,7 +69,6 @@ CREATE TABLE IF NOT EXISTS "post_categories" (
 
 -- Table for 'category'
 
-
 CREATE TABLE IF NOT EXISTS "post_visibilities" (
   "post_visibility_id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
   "post_id" integer NOT NULL,
@@ -198,6 +197,17 @@ CREATE TABLE IF NOT EXISTS "group_chats" (
   "content" text NOT NULL,
   "sent_time" datetime NOT NULL DEFAULT(CURRENT_TIMESTAMP),
   FOREIGN KEY (sender_id) REFERENCES "users" (user_id),
+  FOREIGN KEY (group_id) REFERENCES "groups" (group_id)
+);
+
+CREATE TABLE IF NOT EXISTS "invitations" (
+  "invitation_id" integer PRIMARY KEY AUTOINCREMENT,
+  "sender_id" integer NOT NULL,
+  "receiver_id" integer NOT NULL,
+  "group_id" integer NOT NULL,
+  "sent_time" datetime NOT NULL DEFAULT(CURRENT_TIMESTAMP),
+  FOREIGN KEY (sender_id) REFERENCES "users" (user_id),
+  FOREIGN KEY (receiver_id) REFERENCES "users" (user_id),
   FOREIGN KEY (group_id) REFERENCES "groups" (group_id)
 );
 

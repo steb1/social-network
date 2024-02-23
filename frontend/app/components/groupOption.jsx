@@ -15,39 +15,20 @@ export const GroupOption = ({ group, setGroups, setServerError }) => {
                 <p>{group.description}</p>
                 <div className='card-actions justify-end'>
                     <button
-                        onClick={() => handleGroupRequest(group.group_id, setGroups, setServerError)}
+                        onClick={(e) => handleGroupRequest(e, group.group_id, setGroups, setServerError)}
                         className='btn btn-xs btn-primary '
                     >
-                        Join
+                        Send request
                     </button>
-        <div id={group.group_id} className='card card-compact bg-white-100 shadow-xl carousel-item w-96 h-64'>
-            <figure>
-                <img
-                    src='https://i0.wp.com/www.iedunote.com/img/28051/reference-groups.jpg?fit=1080%2C720&quality=100&ssl=1'
-                    alt='Shoes'
-                />
-            </figure>
-            <div className='card-body'>
-                <h2 className='card-title'>{group.title}</h2>
-                <p>{group.description}</p>
-                <div className='card-actions justify-end'>
-                    <button
-                        onClick={() => handleGroupRequest(group.group_id, setGroups, setServerError)}
-                        className='btn btn-xs btn-primary '
-                    >
-                        Join
-                    </button>
-                </div>
-            </div>
-        </div>
       </div>
     </div>
   </div>
 )};
 
 
-async function handleGroupRequest(groupid, setGroups, setServerError) {
+async function handleGroupRequest(e, groupid, setGroups, setServerError) {
     console.log("clicked");
+   
 
     let token = document.cookie.split("=")[1];
 
@@ -68,9 +49,12 @@ async function handleGroupRequest(groupid, setGroups, setServerError) {
             body: JSON.stringify({ groupid: groupid }),
         });
 
-      if (response.ok) {
-        fetchAllGroups(setGroups, setServerError)
-      }
+        if (response.ok) {
+            e.target.classList.add("btn-disabled")
+            e.target.classList.remove("bg-primary")
+        }
+
+      
     } catch (error) {
         console.error("Error while fetching groups:", error);
       }

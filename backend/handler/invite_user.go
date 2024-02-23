@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func HandleCreateEvent(w http.ResponseWriter, r *http.Request) {
+func HandleInviteUser(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodOptions {
 		HandleOptions(w, r)
@@ -43,72 +43,76 @@ func HandleCreateEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Access the form fields
-	EventTitle := r.FormValue("EventTitle")
-	groupID := r.FormValue("groupId")
-	EventDate := r.FormValue("EventDate")
-	DescriptionEvent := r.FormValue("DescriptionEvent")
-	EventTime := r.FormValue("EventTime")
-
-	intGroupId, err := strconv.Atoi(fmt.Sprintf("%v", groupID))
-	if err != nil {
-		http.Error(w, "Erreur lors de la lecture du corps de la requête", http.StatusBadRequest)
-		return
-	}
-	_, err = models.GroupRepo.GetGroup(intGroupId)
+	groupId := r.FormValue("groupId")
+	invitedId := r.FormValue("invitedId")
+	intGroupId, _ := strconv.Atoi(fmt.Sprintf("%v", groupId))
+	intInvitedId, err := strconv.Atoi(fmt.Sprintf("%v", invitedId))
 
 	if err != nil {
 		http.Error(w, "Erreur group doesn't exist", http.StatusBadRequest)
 		return
 	}
-	fmt.Println("Is hereee")
 
-	existMember := models.MembershipRepo.CheckIfIsMember(userId, intGroupId)
+	hasRequested := models.MembershipRepo.CheckIfSubscribed(intInvitedId, intGroupId, "pending")
+
+	if hasRequested {
+		http.Error(w, "Erreur group doesn't exist", http.StatusBadRequest)
+		return
+	}
+
+	senderIsMember := models.MembershipRepo.CheckIfIsMember(userId, intGroupId)
+
+	receiverIsMember := models.MembershipRepo.CheckIfIsMember(userId, intGroupId)
+	if receiverIsMember {
+		http.Error(w, "Erreur group doesn't exist", http.StatusBadRequest)
+		return
+	}
+
+	fmt.Println("herereee")
+
+	invitationExist := models.InvitationRepo.IsInvited(intInvitedId, intGroupId)
+
+	if invitationExist {
+		http.Error(w, "Erreur group doesn't exist", http.StatusBadRequest)
+		return
+	}
 
 	_, err = models.GroupRepo.IsOwner(intGroupId, userId)
+
 	IsOwner := false
 	if err == nil {
 		IsOwner = true
 	}
 
-	_, err = models.EventRepo.GetEventbyTitle(EventTitle)
 
-	if (existMember || IsOwner) && (err != nil) {
-		var event models.Event
-		dateString := EventDate + " " + EventTime
-		layout := "2006-01-02 15:04"
+	if IsOwner || senderIsMember {
+		var invitation models.Invitation
 
-		// Parse the date string into a time.Time object
-		parsedTime, err := time.Parse(layout, dateString)
-		formattedString := parsedTime.Format(layout)
-		if err != nil {
-			fmt.Println("Error parsing date:", err)
-			return
-		}
-		event.GroupID = intGroupId
-		event.EventDate = formattedString
-		event.Title = EventTitle
-		event.Description = DescriptionEvent
+		invitation.GroupID = intGroupId
+		invitation.ReceiverID = intInvitedId
+		invitation.SenderID = userId
+		invitation.SentTime = time.Now()
 
-		err = models.EventRepo.CreateEvent(&event)
+		err := models.InvitationRepo.CreateInvitation(&invitation)
 
 		if err != nil {
-			WriteJSON(w, http.StatusUnauthorized, apiError)
+			http.Error(w, "Erreur group doesn't exist", http.StatusBadRequest)
 			return
 		}
+
+		Followers, _ := models.SubscriptionRepo.GetFollowersToInvite(userId, intGroupId)
 
 		response := make(map[string]interface{})
 
-		response["ok"] = true
+		response["Followers"] = Followers
 
 		lib.WriteJSONResponse(w, response)
-	}
 
+	}
 
 }
 
-func HandleRegisterEvent(w http.ResponseWriter, r *http.Request) {
-
+func HandleInviteUserResponse (w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodOptions {
 		HandleOptions(w, r)
@@ -142,9 +146,9 @@ func HandleRegisterEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	eventID := r.FormValue("eventId")
+	groupId := r.FormValue("groupId")
 	option := r.FormValue("option")
-	intEventId, err := strconv.Atoi(fmt.Sprintf("%v", eventID))
+	intGroupId, err := strconv.Atoi(fmt.Sprintf("%v", groupId))
 
 
 	if err != nil {
@@ -153,36 +157,46 @@ func HandleRegisterEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 
-	event , err := models.EventRepo.GetEvent(intEventId)
+	group , err := models.GroupRepo.GetGroup(intGroupId)
+
 
 	if err != nil {
 		http.Error(w, "Erreur group doesn't exist", http.StatusBadRequest)
 		return
 	}
 
-	existMember := models.MembershipRepo.CheckIfIsMember(userId, event.GroupID)
 
-	_, err = models.GroupRepo.IsOwner(event.GroupID, userId)
+	hasRequested := models.MembershipRepo.CheckIfSubscribed(userId, intGroupId, "pending")
+
+	if hasRequested {
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	}
+
+	_, err = models.GroupRepo.IsOwner(group.GroupID, userId)
 
 	IsOwner := false
 	if err == nil {
 		IsOwner = true
 	}
-
-	if IsOwner || existMember {
-			if (option == "going" ) {
-				var Attendance models.Attendance
+	if !IsOwner {
+			if (option == "accept" ) {
+				var membership models.Membership
 	
-				Attendance.EventID = intEventId
-				Attendance.UserID = userId
-				Attendance.AttendanceOption = 0
+				membership.GroupID = group.GroupID
+				membership.InvitationStatus = "invite"
+				membership.JoinedAt = time.Now().String()
+				membership.MembershipStatus = "accepted"
+				membership.UserID = userId
 	
-				err = models.AttendanceRepo.CreateAttendance(&Attendance)
+				err = models.MembershipRepo.CreateMembership(&membership)
 	
 				if err != nil {
 					WriteJSON(w, http.StatusUnauthorized, apiError)
 					return
 				}
+
+				_ = models.InvitationRepo.DeleteInvitation(userId, intGroupId)
 	
 				response := make(map[string]interface{})
 	
@@ -190,13 +204,7 @@ func HandleRegisterEvent(w http.ResponseWriter, r *http.Request) {
 	
 				lib.WriteJSONResponse(w, response)
 			} else {
-				var Attendance models.Attendance
-	
-				Attendance.EventID = intEventId
-				Attendance.UserID = userId
-				Attendance.AttendanceOption = 2
-	
-				err = models.AttendanceRepo.CreateAttendance(&Attendance)
+				err = models.InvitationRepo.DeleteInvitation(userId, intGroupId)
 	
 				if err != nil {
 					WriteJSON(w, http.StatusUnauthorized, apiError)
@@ -209,8 +217,5 @@ func HandleRegisterEvent(w http.ResponseWriter, r *http.Request) {
 	
 				lib.WriteJSONResponse(w, response)
 			}
-		
 	}
-
-
 }

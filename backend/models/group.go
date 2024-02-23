@@ -106,8 +106,9 @@ func (gr *GroupRepository) GetAllPublicGroup(userid int) []Group {
 		}
 
 		exist := MembershipRepo.CheckIfMembershispExist(userid, group.GroupID)
+		isInvited := InvitationRepo.IsInvited(userid, group.GroupID)
 
-		if !exist {
+		if !exist && !isInvited {
 			groups = append(groups, group)
 		}
 	}
@@ -183,4 +184,32 @@ func (gr *GroupRepository) CheckGroupExist(name string) bool {
 		return false
 	}
 	return true
+}
+
+func (gr *GroupRepository) GetAllInvitedGroup(userID int) ([]Group, error) {
+	var groups []Group
+
+	// Query to retrieve groups where the user has been invited
+	query := `
+		SELECT g.group_id, g.title, g.description, g.creator_id
+		FROM groups g
+		JOIN invitations i ON g.group_id = i.group_id
+		WHERE i.receiver_id = ?
+	`
+
+	rows, err := gr.db.Query(query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var group Group
+		if err := rows.Scan(&group.GroupID, &group.Title, &group.Description, &group.CreatorID); err != nil {
+			return nil, err
+		}
+		groups = append(groups, group)
+	}
+
+	return groups, nil
 }

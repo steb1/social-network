@@ -32,6 +32,7 @@ var (
 	CommentGroupRepo     *CommentGroupRepository
 	CommentGroupLikeRepo *CommentGroupLikeRepository
 	PostGroupLikeRepo    *PostGroupLikeRepository
+	InvitationRepo 		*InvitationRepository
 )
 
 func init() {
@@ -76,6 +77,7 @@ func init() {
 	CommentGroupRepo = NewCommentGroupRepository(db)
 	CommentGroupLikeRepo = NewCommentGroupLikeRepository(db)
 	PostGroupLikeRepo = NewPostGroupLikeRepository(db)
+	InvitationRepo = NewInvitationRepository(db)
 
 	log.Println("✅ Database init with success")
 }

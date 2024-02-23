@@ -83,6 +83,15 @@ func HandleRequestGroup(w http.ResponseWriter, r *http.Request) {
 
 	hasRequested := models.MembershipRepo.CheckIfSubscribed(intrequesterId, intGroupId, "pending")
 
+	// isInvited := models.InvitationRepo.IsInvited(userId, intGroupId)
+
+	// fmt.Println("isInvited", isInvited)
+
+	// if isInvited {
+	// 	http.Error(w, "Erreur group doesn't exist", http.StatusBadRequest)
+	// 	return
+	// }
+
 	membership, err := models.MembershipRepo.GetMembershipbyGroupAndUserId(intGroupId, intrequesterId)
 
 	if err != nil {

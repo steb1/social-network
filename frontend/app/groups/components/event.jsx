@@ -2,7 +2,7 @@ import config from "@/config";
 import { fetchGroupDetail } from "./groupDetail";
 
 
-export const Event = ( { event, setPosts , setGroup, setEvents, setRequests, setMessages, setServerError, groupId} ) => {
+export const Event = ( { event, setPosts , setGroup, setEvents, setRequests, setMessages, setServerError, groupId, setIsowner, setMembers, setInvites} ) => {
     return (
         <div id={event.event_id} className="card w-96 bg-base-100 shadow-xl">
         <figure className=" "><img src="https://hire4event.com/blogs/wp-content/uploads/2019/05/Event-Management-Proposal-Hire4event.jpg" alt="Shoes" /></figure>
@@ -21,10 +21,10 @@ export const Event = ( { event, setPosts , setGroup, setEvents, setRequests, set
               <div className="w-full justify-center flex flex-col gap-3 flex-center ">
                 <div className="text-center ">Will you participate to this event ?</div>
                 <div className="flex justify-center flex-row gap-2 flex-center content-center" >
-                  <button id={event.event_id} onClick={ (e) => HandleRegisterEvent( e, setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId , "going") } className="btn btn-sm w-36    "> 
+                  <button id={event.event_id} onClick={ (e) => HandleRegisterEvent( e, setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId , "going", setIsowner, setMembers,  setInvites) } className="btn btn-sm w-36    "> 
                     Yes
                   </button> 
-                  <button id={event.event_id} onClick={ (e) => HandleRegisterEvent( e, setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId, "notgoing" ) } className="btn btn-sm w-36"> 
+                  <button id={event.event_id} onClick={ (e) => HandleRegisterEvent( e, setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId, "notgoing", setIsowner, setMembers, setInvites ) } className="btn btn-sm w-36"> 
                     No
                   </button> 
                  </div>
@@ -37,7 +37,7 @@ export const Event = ( { event, setPosts , setGroup, setEvents, setRequests, set
     )
 }
 
-async function HandleRegisterEvent ( e, setPosts, setGroup, setEvents, setRequest, setMessages, setServerError, groupId, option ) {
+async function HandleRegisterEvent ( e, setPosts, setGroup, setEvents, setRequest, setMessages, setServerError, groupId, option, setIsowner, setMembers, setInvites ) {
     let  token = document.cookie.split("=")[1]
     if (!e.target.id || !token) {
         return
@@ -70,7 +70,7 @@ async function HandleRegisterEvent ( e, setPosts, setGroup, setEvents, setReques
           const contentType = response.headers.get("content-type");
           if (contentType && contentType.includes("application/json")) {
             const data = await response.json();
-            fetchGroupDetail(setPosts, setGroup, setEvents, setRequest, setMessages, setServerError, groupId)
+            fetchGroupDetail(setPosts, setGroup, setEvents, setRequest, setMessages, setServerError, groupId, setIsowner, setMembers, setInvites)
           } else {
             console.error("Response is not in JSON format");
           }
