@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"sync"
 
 	"server/lib"
 	"server/models"
@@ -51,7 +52,7 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println("socket request")
+	log.Println("Socket request")
 
 	// Upgrade the HTTP server connection to the WebSocket protocol.
 	conn, err := upgrader.Upgrade(w, r, nil)
@@ -59,6 +60,11 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error upgrading to WebSocket:", err)
 		return
 	}
+
+	// defer func() {
+	// 	log.Println("WebSocket connection closed")
+	// 	conn.Close()
+	// }()
 
 	userId, _ := strconv.Atoi(session.UserID)
 	user, _ := models.UserRepo.GetUserByID(userId)
@@ -84,10 +90,15 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Println(connections, len(connections))
 
+	var wg sync.WaitGroup
+	defer wg.Wait()
+
 	// Handle WebSocket messages in a separate goroutine
+	wg.Add(1)
 	go func() {
 		defer func() {
 			log.Println("Goroutine is closed")
+			wg.Done()
 		}()
 		for {
 			_, p, err := conn.ReadMessage()
@@ -105,61 +116,96 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 
 			switch message.Command {
 			case "messageforuser":
-				log.Println("message recu de js")
+				handleMessageForUser(message, userId)
 
-				bodyMap, ok := message.Body.(map[string]interface{})
-				if !ok {
-					log.Println("Type de corps non pris en charge pour 'messageforuser'")
-					return
-				}
-
-				sender, _ := bodyMap["sender"].(string)
-				receiver, _ := bodyMap["receiver"].(string)
-				text, _ := bodyMap["text"].(string)
-				time, _ := bodyMap["time"].(string)
-
-				messagepattern := MessagePattern{
-					Sender:   sender,
-					Receiver: receiver,
-					Text:     text,
-					Time:     time,
-				}
-
-				log.Println(messagepattern, "message pattern")
-				// TODO: Verifier si le receiver existe dans le BD
-
-				// Validate and save message
-				if !lib.IsBlank(messagepattern.Text) && !lib.IsBlank(messagepattern.Sender) && !lib.IsBlank(messagepattern.Receiver) {
-					models.MessageRepo.CreateMessage(userId, models.UserRepo.GetIDFromUsernameOrEmail(messagepattern.Receiver), messagepattern.Text, messagepattern.Time)
-				} else {
-					log.Println("Cannot send empty messages.")
-					// SEND ERROR
-				}
-
-				// Send the message to the specified user
-				tosend, exists := connections[models.UserRepo.GetIDFromUsernameOrEmail(messagepattern.Receiver)]
-				if !exists {
-					log.Println("No connected user:", messagepattern.Receiver)
-					log.Println("Error: User not connected")
-					continue
-					// SEND ERROR
-				}
-
-				log.Println("Connected user:", messagepattern.Receiver, "message in progress")
-
-				// Use EnvoyerMessage function directly
-				if err := EnvoyerMessage(tosend, "messageforuser", messagepattern); err != nil {
-					log.Println("Error writing message to connection:", err)
-					// SEND ERROR
-					log.Println("Error: Unable to send message to user")
-					continue
-				}
 			case "typeinprogress", "nontypeinprogress":
 				handleInProgressMessage(message.Command, message.Body)
 
 			}
 		}
 	}()
+}
+
+func handleMessageForUser(message WebSocketMessage, userId int) {
+	bodyMap, ok := message.Body.(map[string]interface{})
+	if !ok {
+		log.Println("Type de corps non pris en charge pour 'messageforuser'")
+		return
+	}
+
+	sender, _ := bodyMap["sender"].(string)
+	receiver, _ := bodyMap["receiver"].(string)
+	text, _ := bodyMap["text"].(string)
+	time, _ := bodyMap["time"].(string)
+
+	messagepattern := MessagePattern{
+		Sender:   sender,
+		Receiver: receiver,
+		Text:     text,
+		Time:     time,
+	}
+
+	var (
+		userExists      bool
+		groupExists     bool
+		AllUsersOfGroup []models.User
+	)
+
+	if idGroup, err := strconv.Atoi(messagepattern.Receiver); err == nil {
+		AllUsersOfGroup, err = models.MembershipRepo.GetAllUsersByGroupID(idGroup)
+		groupExists = err == nil
+	}
+
+	if !groupExists {
+		userExists, _ = models.UserRepo.UserExists(models.UserRepo.GetIDFromUsernameOrEmail(messagepattern.Receiver))
+	}
+
+	if groupExists {
+		handleGroupMessage(messagepattern, userId, AllUsersOfGroup)
+	}
+
+	if userExists {
+		handleUserMessage(messagepattern, userId)
+	}
+}
+
+func handleGroupMessage(messagepattern MessagePattern, userId int, AllUsersOfGroup []models.User) {
+	for _, user := range AllUsersOfGroup {
+		if user.UserID != userId {
+			sendMessageToUser(userId, messagepattern, user.UserID)
+		}
+	}
+}
+
+func handleUserMessage(messagepattern MessagePattern, userId int) {
+	sendMessageToUser(userId, messagepattern, models.UserRepo.GetIDFromUsernameOrEmail(messagepattern.Receiver))
+}
+
+func sendMessageToUser(senderID int, messagepattern MessagePattern, receiverID int) {
+	if !lib.IsBlank(messagepattern.Text) && !lib.IsBlank(messagepattern.Sender) && !lib.IsBlank(messagepattern.Receiver) {
+		models.MessageRepo.CreateMessage(senderID, receiverID, messagepattern.Text, messagepattern.Time)
+	} else {
+		log.Println("Cannot send empty messages.")
+		// SEND ERROR
+		return
+	}
+
+	tosend, exists := connections[receiverID]
+	if !exists {
+		log.Println("No connected user:", messagepattern.Receiver)
+		log.Println("Error: User not connected")
+		// SEND ERROR
+		return
+	}
+
+	log.Println("Connected user:", messagepattern.Receiver, "message in progress")
+
+	// Use EnvoyerMessage function directly
+	if err := EnvoyerMessage(tosend, "messageforuser", messagepattern); err != nil {
+		log.Println("Error writing message to connection:", err)
+		// SEND ERROR
+		log.Println("Error: Unable to send message to user")
+	}
 }
 
 func EnvoyerMessage(tosend *UserInfo, Command string, Body interface{}) error {
