@@ -16,28 +16,27 @@ import SideBarPreviewGroupChat from "../messages/SideBarPreviewGroupChat";
 
 const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Messages }) => {
     const [messageInput, setMessageInput] = useState("");
-    const [messages, setMessages] = useState([]);
     const cmsRef = useRef();
     let isRendered = false;
 
     const RenderType = () => {
-        // if (!isRendered) {
-        //     const cms = document.getElementById("cms");
-        //     cms &&
-        //         ReactDOM.render(
-        //             ReactDOM.createPortal(<TypingIndicator Avatar={Chatter[0].avatar} />, cms),
-        //             document.createElement("div")
-        //         );
-        //     cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
-        //     isRendered = true;
-        // }
+        if (!isRendered) {
+            const cms = document.getElementById("cms");
+            cms &&
+                ReactDOM.render(
+                    ReactDOM.createPortal(<TypingIndicator Avatar={Chatter[0].avatar} />, cms),
+                    document.createElement("div")
+                );
+            cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+            isRendered = true;
+        }
     };
 
     useEffect(() => {
         socket.onopen = function () {
             // console.log("Ws Open");
         };
-        //const cms = document.getElementById("cms");
+        const cms = document.getElementById("cms");
 
         socket.onmessage = async function (event) {
             const message = JSON.parse(event.data);
@@ -48,15 +47,15 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Messages }) =>
                         return;
                     }
 
-                    // cms &&
-                    //     ReactDOM.render(
-                    //         ReactDOM.createPortal(
-                    //             <LeftMessage Avatar={Chatter[0].avatar} Content={message.body.text} />,
-                    //             cms
-                    //         ),
-                    //         document.createElement("div")
-                    //     );
-                    // cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+                    cms &&
+                        ReactDOM.render(
+                            ReactDOM.createPortal(
+                                <LeftMessage Avatar={Chatter[0].avatar} Content={message.body.text} />,
+                                cms
+                            ),
+                            document.createElement("div")
+                        );
+                    cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
                     break;
                 case "typeinprogress":
                     if (message.body.sender !== Chatter[0].nickname && message.body.sender !== Chatter[0].email) {
@@ -83,8 +82,7 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Messages }) =>
                     break;
             }
         };
-        setMessages(Messages);
-    }, [Messages]);
+    }, []);
 
     const handleSendMessageClick = () => {
         handleSendMessage(messageInput, Sender, Chatter, AvatarSender, cmsRef);
@@ -267,39 +265,27 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Messages }) =>
                                             </Link>
                                         </div>
                                     </div>
-                                    <div id='cms' className='text-sm font-medium space-y-6'>
-                                        {messages && messages.length > 0 ? (
-                                            Object.entries(messages).map(([date, chatMessages]) => (
-                                                <div key={date}>
-                                                    {chatMessages.map((message) => (
-                                                        <div
-                                                            key={message.sent_time}
-                                                            className='flex gap-2 flex-row-reverse items-end'
-                                                        >
-                                                            <img
-                                                                src='https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg'
-                                                                alt=''
-                                                                className='w-5 h-5 rounded-full shadow'
-                                                            />
-                                                            <div className='px-4 py-2 rounded-[20px] max-w-sm bg-gradient-to-tr from-sky-500 to-blue-500 text-white shadow'>
-                                                                <pre> {message.content} </pre>
-                                                            </div>
+                                    <div id='cms' ref={cmsRef} className='text-sm font-medium space-y-6'>
+                                        {Messages &&
+                                            Object.entries(Messages).map(([date, chatMessages]) => (
+                                                <>
+                                                    <div className='flex justify-center '>
+                                                        <div className='font-medium text-gray-500 text-sm dark:text-white/70'>
+                                                            {date}
                                                         </div>
-                                                    ))}
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <div className='flex gap-2 flex-row-reverse items-end'>
-                                                <img
-                                                    src='https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg'
-                                                    alt=''
-                                                    className='w-5 h-5 rounded-full shadow'
-                                                />
-                                                <div className='px-4 py-2 rounded-[20px] max-w-sm bg-gradient-to-tr from-sky-500 to-blue-500 text-white shadow'>
-                                                    <pre> No message here. </pre>
-                                                </div>
-                                            </div>
-                                        )}
+                                                    </div>
+                                                    {chatMessages.map((message) =>
+                                                        message.sender == Sender ? (
+                                                            <LeftMessage Avatar={AvatarSender} message={message} />
+                                                        ) : (
+                                                            <RightMessage
+                                                                Avatar={Chatter[0].avatar}
+                                                                message={message}
+                                                            />
+                                                        )
+                                                    )}
+                                                </>
+                                            ))}
                                     </div>
                                 </div>
                                 <div className='flex items-center md:gap-4 gap-2 md:p-3 p-2 overflow-hidden'>
@@ -415,13 +401,13 @@ const handleSendMessage = async (messageInput, Sender, Chatter, AvatarSender, cm
 
     // TODO: Handle the response from the server before appending the message if the message succesfully sent to the chatter before append
 
-    // const cms = document.getElementById("cms");
-    // cms &&
-    //     ReactDOM.render(
-    //         ReactDOM.createPortal(<RightMessage Avatar={AvatarSender} Content={message.text} />, cms),
-    //         document.createElement("div")
-    //     );
-    // cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+    const cms = document.getElementById("cms");
+    cms &&
+        ReactDOM.render(
+            ReactDOM.createPortal(<RightMessage Avatar={AvatarSender} Content={message.text} />, cms),
+            document.createElement("div")
+        );
+    cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
 };
 
 export async function sendMessage(socket, command, body) {

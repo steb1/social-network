@@ -14,20 +14,21 @@ func GetMessages(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
-
+	var apiError ApiError
 	if r.Method == http.MethodGet {
-		sessionToken := r.Header.Get("Authorization")
-		userSesion, ok := models.SessionRepo.SessionExists(sessionToken)
-		if !ok {
-			var apiError ApiError
-			apiError.Error = "Unauthorized"
+		cookie, errC := r.Cookie("social-network")
+		session, errS := models.SessionRepo.GetSession(cookie.Value)
+		if errS != nil || errC != nil {
+			apiError.Error = "Go connect first !"
 			WriteJSON(w, http.StatusUnauthorized, apiError)
-			fmt.Println("no exist")
 			return
 		}
-		sessionUserID, _ := strconv.Atoi(userSesion.UserID)
+
+		sessionUserID, _ := strconv.Atoi(session.UserID)
 		username := r.URL.Query().Get("with")
+		fmt.Println(username)
 		userID := models.UserRepo.GetIDFromUsernameOrEmail(username)
+		fmt.Println("User id:", userID)
 		if userID <= 0 {
 			var apiError ApiError
 			apiError.Error = "The user you want to chat with doesn't exist..."
