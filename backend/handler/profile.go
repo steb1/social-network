@@ -43,109 +43,100 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if r.Method == http.MethodGet {
-		session, ok := IsAuthenticated(r)
-		var apiError ApiError
+	session, ok := IsAuthenticated(r)
+	var apiError ApiError
 
-		if !ok {
-			apiError.Error = "StatusUnauthorized"
-			WriteJSON(w, http.StatusUnauthorized, apiError)
-			return
-		}
-
-		to := r.URL.Query().Get("to")
-
-		toUserID := models.UserRepo.GetIDFromUsernameOrEmail(to)
-
-		if toUserID < 1 {
-			apiError.Error = "User not does not exist"
-			WriteJSON(w, http.StatusBadRequest, nil)
-
-		}
-
-		// Check if it's a user
-		userExists, _ := models.UserRepo.UserExists(models.UserRepo.GetIDFromUsernameOrEmail(to))
-
-		// Check if it's a group
-		idGroup, err := strconv.Atoi(to)
-		groupExists := false
-
-		if err == nil {
-			_, groupErr := models.MembershipRepo.GetAllUsersByGroupID(idGroup)
-			groupExists = groupErr == nil
-		}
-
-		// If ni user ni group
-		if !userExists && !groupExists {
-			WriteJSON(w, http.StatusNotFound, nil)
-		}
-
-		id, _ := strconv.Atoi(session.UserID)
-
-		user, err := models.UserRepo.GetUserByID(id)
-		if err != nil {
-			log.Println("🚀 ~ funcHandleGetProfileGetUserByID ~ err:", err)
-			var apiError ApiError
-			apiError.Error = "Not found user"
-			WriteJSON(w, http.StatusNotFound, apiError)
-			return
-		}
-
-		followers, err := models.SubscriptionRepo.GetFollowers(user.UserID)
-		if err != nil {
-			log.Println("🚀 ~ funcHandleGetProfileGetFollowers ~ err:", err)
-			var apiError ApiError
-			apiError.Error = "Not found followers"
-			WriteJSON(w, http.StatusInternalServerError, apiError)
-			return
-		}
-
-		followings, err := models.SubscriptionRepo.GetFollowing(user.UserID)
-		if err != nil {
-			log.Println("🚀 ~ funcHandleGetProfileGetFollowing ~ err:", err)
-			var apiError ApiError
-			apiError.Error = "Not found followings"
-			WriteJSON(w, http.StatusInternalServerError, apiError)
-			return
-		}
-
-		UN := user.Nickname
-		if UN == "" {
-			UN = user.Email
-		}
-		offset, error := strconv.Atoi(r.URL.Query().Get("offset"))
-		if error != nil {
-			offset = 0
-		}
-		error = nil
-
-		Groups, err := models.MembershipRepo.GetAllGroupsForUser(user.UserID)
-		if err != nil {
-			log.Println("🚀 ~ funcGetMessageResponse ~ GetAllGroupsForUser ~ err:", err)
-		}
-		limit := 20
-		messages, err := models.MessageRepo.GetMessagesBetweenUsers(user.UserID, toUserID, offset, limit)
-		if err != nil {
-			log.Println("��� ~ funcHandleGetProfileGetMessagesBetweenUsers ~ err:", err)
-			var apiError ApiError
-			apiError.Error = "Not found messages"
-			WriteJSON(w, http.StatusInternalServerError, apiError)
-			return
-		}
-
-		// Create a UserProfileResponse without the password field
-		chatResponse := ChatResponse{
-			NicknameRequester: UN,
-			Avatar:            user.Avatar,
-			Followers:         followers,
-			Followings:        followings,
-			Groups:            Groups,
-			Messages:          messages,
-		}
-
-		WriteJSON(w, http.StatusOK, chatResponse)
-
+	if !ok {
+		apiError.Error = "StatusUnauthorized"
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
 	}
+
+	to := r.URL.Query().Get("to")
+
+	// Check if it's a user
+	userExists, _ := models.UserRepo.UserExists(models.UserRepo.GetIDFromUsernameOrEmail(to))
+
+	// Check if it's a group
+	idGroup, err := strconv.Atoi(to)
+	groupExists := false
+
+	if err == nil {
+		_, groupErr := models.MembershipRepo.GetAllUsersByGroupID(idGroup)
+		groupExists = groupErr == nil
+	}
+
+	// If ni user ni group
+	if !userExists && !groupExists {
+		WriteJSON(w, http.StatusNotFound, nil)
+	}
+
+	id, _ := strconv.Atoi(session.UserID)
+
+	user, err := models.UserRepo.GetUserByID(id)
+	if err != nil {
+		log.Println("🚀 ~ funcHandleGetProfileGetUserByID ~ err:", err)
+		var apiError ApiError
+		apiError.Error = "Not found user"
+		WriteJSON(w, http.StatusNotFound, apiError)
+		return
+	}
+
+	followers, err := models.SubscriptionRepo.GetFollowers(user.UserID)
+	if err != nil {
+		log.Println("🚀 ~ funcHandleGetProfileGetFollowers ~ err:", err)
+		var apiError ApiError
+		apiError.Error = "Not found followers"
+		WriteJSON(w, http.StatusInternalServerError, apiError)
+		return
+	}
+
+	followings, err := models.SubscriptionRepo.GetFollowing(user.UserID)
+	if err != nil {
+		log.Println("🚀 ~ funcHandleGetProfileGetFollowing ~ err:", err)
+		var apiError ApiError
+		apiError.Error = "Not found followings"
+		WriteJSON(w, http.StatusInternalServerError, apiError)
+		return
+	}
+
+	UN := user.Nickname
+	if UN == "" {
+		UN = user.Email
+	}
+
+	Groups, err := models.MembershipRepo.GetAllGroupsForUser(user.UserID)
+	if err != nil {
+		log.Println("🚀 ~ funcGetMessageResponse ~ GetAllGroupsForUser ~ err:", err)
+	}
+
+	// offset, error := strconv.Atoi(r.URL.Query().Get("offset"))
+	// if error != nil {
+	// 	offset = 0
+	// }
+	// error = nil
+
+	// limit := 20
+	// messages, err := models.MessageRepo.GetMessagesBetweenUsers(user.UserID, toUserID, offset, limit)
+	// if err != nil {
+	// 	log.Println("��� ~ funcHandleGetProfileGetMessagesBetweenUsers ~ err:", err)
+	// 	var apiError ApiError
+	// 	apiError.Error = "Not found messages"
+	// 	WriteJSON(w, http.StatusInternalServerError, apiError)
+	// 	return
+	// }
+
+	// Create a UserProfileResponse without the password field
+	chatResponse := ChatResponse{
+		NicknameRequester: UN,
+		Avatar:            user.Avatar,
+		Followers:         followers,
+		Followings:        followings,
+		Groups:            Groups,
+		// Messages:          messages,
+	}
+
+	WriteJSON(w, http.StatusOK, chatResponse)
 }
 
 func HandleGetProfile(w http.ResponseWriter, r *http.Request) {
