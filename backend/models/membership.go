@@ -169,7 +169,7 @@ func (cm *MembershipRepository) GetAllRequestByGroupID(groupID int) ([]User, err
 
 // Structure pour stocker les informations sur un groupe
 type GroupInfo struct {
-	GroupID          int
+	GroupID          int ``
 	GroupName        string
 	GroupDescription string
 	Users            []UserInfo
