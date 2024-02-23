@@ -53,9 +53,10 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 	}
 
 	to := r.URL.Query().Get("to")
+	toID := models.UserRepo.GetIDFromUsernameOrEmail(to)
 
 	// Check if it's a user
-	userExists, _ := models.UserRepo.UserExists(models.UserRepo.GetIDFromUsernameOrEmail(to))
+	userExists, _ := models.UserRepo.UserExists(toID)
 
 	// Check if it's a group
 	idGroup, err := strconv.Atoi(to)
@@ -110,21 +111,28 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 		log.Println("🚀 ~ funcGetMessageResponse ~ GetAllGroupsForUser ~ err:", err)
 	}
 
-	// offset, error := strconv.Atoi(r.URL.Query().Get("offset"))
-	// if error != nil {
-	// 	offset = 0
-	// }
-	// error = nil
+	messages := map[string][]models.MessageResponse{}
+	if userExists {
+		offset, error := strconv.Atoi(r.URL.Query().Get("offset"))
+		if error != nil {
+			offset = 0
+		}
+		error = nil
 
-	// limit := 20
-	// messages, err := models.MessageRepo.GetMessagesBetweenUsers(user.UserID, toUserID, offset, limit)
-	// if err != nil {
-	// 	log.Println("��� ~ funcHandleGetProfileGetMessagesBetweenUsers ~ err:", err)
-	// 	var apiError ApiError
-	// 	apiError.Error = "Not found messages"
-	// 	WriteJSON(w, http.StatusInternalServerError, apiError)
-	// 	return
-	// }
+		limit := 20
+		messages, _ = models.MessageRepo.GetMessagesBetweenUsers(user.UserID, toID, offset, limit)
+		if err != nil {
+			log.Println("��� ~ funcHandleGetProfileGetMessagesBetweenUsers ~ err:", err)
+			var apiError ApiError
+			apiError.Error = "Not found messages"
+			WriteJSON(w, http.StatusInternalServerError, apiError)
+			return
+		}
+	}
+
+	if groupExists {
+		// TODO: Fecth en fonction de groups
+	}
 
 	// Create a UserProfileResponse without the password field
 	chatResponse := ChatResponse{
@@ -133,7 +141,7 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 		Followers:         followers,
 		Followings:        followings,
 		Groups:            Groups,
-		// Messages:          messages,
+		Messages:          messages,
 	}
 
 	WriteJSON(w, http.StatusOK, chatResponse)

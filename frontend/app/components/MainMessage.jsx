@@ -185,7 +185,7 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
 													<div className="flex justify-center ">
 														<div className="font-medium text-gray-500 text-sm dark:text-white/70">{date}</div>
 													</div>
-													{chatMessages.map((message) => (message.sender == Sender ? <LeftMessage Avatar={AvatarSender} message={message} /> : <RightMessage Avatar={Chatter[0].avatar} message={message} />))}
+													{chatMessages.map((message) => (message.sender == Sender ? <LeftMessage Avatar={AvatarSender} Content={message.content} /> : <RightMessage Avatar={Chatter[0].avatar} Content={message.content} />))}
 												</>
 											))}
 									</div>
