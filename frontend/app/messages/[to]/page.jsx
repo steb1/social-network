@@ -20,7 +20,9 @@ const Messages = async ({ params: { to } }) => {
         return notFound();
     }
 
-    const { nickname_requester, avatar, followers, followings, groups, messages } = await response.json();
+    //const { nickname_requester, avatar, followers, followings, groups, messages } = await response.json();
+    const data = await response.json();
+    console.log(data);
 
     const AbletoTalk =
         followers && followings

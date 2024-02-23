@@ -37,22 +37,32 @@ type ChatResponse struct {
 }
 
 func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
-	session, ok := IsAuthenticated(r)
-	var apiError ApiError
 
-	if !ok {
-		apiError.Error = "StatusUnauthorized"
-		WriteJSON(w, http.StatusUnauthorized, apiError)
+	addCorsHeader(w)
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
 		return
 	}
 
-	to := r.URL.Query().Get("to")
+	if r.Method == http.MethodGet {
+		session, ok := IsAuthenticated(r)
+		var apiError ApiError
 
-	toUserID := models.UserRepo.GetIDFromUsernameOrEmail(to)
+		if !ok {
+			apiError.Error = "StatusUnauthorized"
+			WriteJSON(w, http.StatusUnauthorized, apiError)
+			return
+		}
 
-	if toUserID < 1 {
-		apiError.Error = "User not does not exist"
-		WriteJSON(w, http.StatusBadRequest, nil)
+		to := r.URL.Query().Get("to")
+
+		toUserID := models.UserRepo.GetIDFromUsernameOrEmail(to)
+
+		if toUserID < 1 {
+			apiError.Error = "User not does not exist"
+			WriteJSON(w, http.StatusBadRequest, nil)
+
+		}
 
 		// Check if it's a user
 		userExists, _ := models.UserRepo.UserExists(models.UserRepo.GetIDFromUsernameOrEmail(to))
@@ -135,7 +145,9 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 		}
 
 		WriteJSON(w, http.StatusOK, chatResponse)
+
 	}
+
 }
 
 func HandleGetProfile(w http.ResponseWriter, r *http.Request) {
