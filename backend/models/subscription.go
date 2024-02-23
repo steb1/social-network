@@ -2,7 +2,6 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
 )
 
 const (
@@ -140,14 +139,13 @@ func (sr *SubscriptionRepository) GetFollowersToInvite(userId, intGroupId int) (
 
 		isInvited := InvitationRepo.IsInvited(follower.UserID, intGroupId)
 
-		fmt.Println("exist :", exist, " / IsOwner : ", IsOwner,  " / isSubscribed : ", isSubscribed," / IsInvited : ", isInvited, " / userId : ", userId)
+		//fmt.Println("exist :", exist, " / IsOwner : ", IsOwner,  " / isSubscribed : ", isSubscribed," / IsInvited : ", isInvited, " / userId : ", userId)
 
 		if !exist && !IsOwner && !isInvited && !isSubscribed {
 			followers = append(followers, &follower)
 		}
 
 	}
-	
 
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -211,7 +209,6 @@ func (sr *SubscriptionRepository) GetFollowingToInvite(userId, intGroupId int) (
 		exist := MembershipRepo.CheckIfIsMember(followee.UserID, intGroupId)
 		isSubscribed := MembershipRepo.CheckIfSubscribed(followee.UserID, intGroupId, "pending")
 
-
 		_, err = GroupRepo.IsOwner(intGroupId, followee.UserID)
 
 		IsOwner := false
@@ -220,7 +217,7 @@ func (sr *SubscriptionRepository) GetFollowingToInvite(userId, intGroupId int) (
 		}
 		isInvited := InvitationRepo.IsInvited(followee.UserID, intGroupId)
 
-		if !exist && !IsOwner && !isInvited && !isSubscribed{
+		if !exist && !IsOwner && !isInvited && !isSubscribed {
 			following = append(following, &followee)
 		}
 	}

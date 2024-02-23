@@ -288,7 +288,6 @@ func HandleGetGroupDetail(w http.ResponseWriter, r *http.Request) {
 
 		Post, _ := models.GroupPostRepo.GetAllPostsItems(intGroupId, userId)
 
-
 		Messages, _ := models.GroupChatRepo.GetMessagesByReceiverID(intGroupId)
 
 		Followers, _ := models.SubscriptionRepo.GetFollowersToInvite(userId, intGroupId)
@@ -353,7 +352,7 @@ func HandleCreateGroupPost(w http.ResponseWriter, r *http.Request) {
 	hasImage := map[bool]int{true: 1, false: 0}[photo != nil]
 	post.HasImage = hasImage
 	post.CreatedAt = time.Now()
-	
+
 	if post.Content == "" {
 		return
 	}
@@ -389,13 +388,13 @@ func HandleCreateGroupPost(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if hasImage ==  1{
+		if hasImage == 1 {
 			defer photo.Close()
 			if err := os.MkdirAll("imgPost", os.ModePerm); err != nil {
 				fmt.Println("Error creating imgPost directory:", err)
 			}
 			fichierSortie, _ := os.Create(fmt.Sprintf("imgPost/%d.jpg", postID_))
-			
+
 			defer fichierSortie.Close()
 			_, _ = io.Copy(fichierSortie, photo)
 		}
