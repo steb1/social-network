@@ -41,12 +41,14 @@ func HandleGetAllGroups(w http.ResponseWriter, r *http.Request) {
 	publicGroups := models.GroupRepo.GetAllPublicGroup(userId)
 	ownGroups := models.GroupRepo.GetUserOwnGroups(userId)
 	subcribedGroups := models.GroupRepo.SubcribedGroups(userId)
+	InvitedGroups, _ := models.GroupRepo.GetAllInvitedGroup(userId)
 
 	response := make(map[string]interface{})
 
 	response["publicGroups"] = publicGroups
 	response["ownGroups"] = ownGroups
 	response["subcribedGroups"] = subcribedGroups
+	response["InvitedGroups"] = InvitedGroups
 
 	if ok {
 		lib.WriteJSONResponse(w, response)
@@ -97,6 +99,15 @@ func HandleCreateMembership(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		http.Error(w, "group doesn't exist", 400)
+		return
+	}
+
+	isInvited := models.InvitationRepo.IsInvited(userId, groupid)
+
+	fmt.Println("isInvited", isInvited)
+
+	if isInvited {
+		http.Error(w, "Erreur group doesn't exist", http.StatusBadRequest)
 		return
 	}
 
@@ -281,9 +292,11 @@ func HandleGetGroupDetail(w http.ResponseWriter, r *http.Request) {
 		Messages, _ := models.GroupChatRepo.GetMessagesByReceiverID(intGroupId)
 
 		Followers, _ := models.SubscriptionRepo.GetFollowersToInvite(userId, intGroupId)
-		Following, _ := models.SubscriptionRepo.GetFollowingToInvite(userId, intGroupId)
+		//Following, _ := models.SubscriptionRepo.GetFollowingToInvite(userId, intGroupId)
 
-		Followers = append(Followers, Following...)
+		//fmt.Println("followers : ", Followers , " following : ", Following)
+
+		//Followers = append(Followers, Following...)
 
 		response := make(map[string]interface{})
 

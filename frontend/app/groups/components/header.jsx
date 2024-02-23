@@ -479,7 +479,6 @@ async function handleCreateGroup ()  {
         return
     }
 
-    console.log("clicked");
     let requestData = { name: name.value.trim(), description: description.value.trim() };
 
     let  token = document.cookie.split("=")[1]

@@ -64,6 +64,8 @@ var Routes = []Route{
 	{Path: "/api/createGroupPost", Handler: HandleCreateGroupPost, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/createEvent", Handler: HandleCreateEvent, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/registerEvent", Handler: HandleRegisterEvent, Methods: []string{"POST", "OPTIONS"}},
+	{Path: "/api/inviteUser", Handler: HandleInviteUser, Methods: []string{"POST", "OPTIONS"}},
+	{Path: "/api/handleInvitation", Handler: HandleInviteUserResponse, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/handleRequestGroup", Handler: HandleRequestGroup, Methods: []string{"POST", "OPTIONS"}},
 }
 

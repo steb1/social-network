@@ -19,7 +19,7 @@ export const GroupCover = ( { groupInfo, setTab , tab, isowner }) => {
                 <div className="flex-1"> 
                 <h3 className="md:text-2xl text-base font-bold text-black dark:text-white"> { groupInfo ? (groupInfo.title) : '' } </h3>
                 <p className=" font-normal text-gray-500 mt-2 flex gap-2 flex-wrap dark:text-white/80">
-                    <span className="max-lg:hidden"> Public group </span>
+                    <span className="max-lg:hidden"> { groupInfo ? (groupInfo.description ) : '' } </span>
                 </p>
                 </div>
                 <div>

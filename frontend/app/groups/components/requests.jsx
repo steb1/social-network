@@ -2,7 +2,7 @@ import config from "@/config";
 import { fetchGroupDetail } from "./groupDetail";
 
 
-export const Requests= ( { request, setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId, setIsowner, setMembers }) => {
+export const Requests= ( { request, setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId, setIsowner, setMembers, setInvites }) => {
     return (
         <div className="flex flex-row gap-2">
             <div className="flex flex-row h-16 px-1 bg-white gap-3 w-[30rem] border-2 items-center rounded-2xl ">
@@ -19,7 +19,7 @@ export const Requests= ( { request, setPosts, setGroup, setEvents, setRequests, 
                 </div>
             </div>
             <div className="flex flex-row w-10 h-10 px-1 my-auto gap-3  items-center rounded-full" >
-                <button  onClick={ (e) => handleRequest(e, setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId, "reject", request.user_id, setIsowner, setMembers) } className="hover:bg-slate-100">
+                <button  onClick={ (e) => handleRequest(e, setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId, "reject", request.user_id, setIsowner, setMembers, setInvites) } className="hover:bg-slate-100">
                 <img src="../assets/images/group/delete.png" />
                 </button>
             </div>
@@ -28,11 +28,10 @@ export const Requests= ( { request, setPosts, setGroup, setEvents, setRequests, 
     )
 }
 
-async function handleRequest (e, setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId, option, requesterId, setIsowner, setMembers) {
+async function handleRequest (e, setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId, option, requesterId, setIsowner, setMembers, setInvites) {
     console.log("hereeee");
     let  token = document.cookie.split("=")[1]
     if ( !token) {
-        console.log("fi la");
         return
     }
     
@@ -62,7 +61,7 @@ async function handleRequest (e, setPosts, setGroup, setEvents, setRequests, set
           const contentType = response.headers.get("content-type");
           if (contentType && contentType.includes("application/json")) {
             const data = await response.json();
-            fetchGroupDetail(setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId, setIsowner, setMembers)
+            fetchGroupDetail(setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId, setIsowner, setMembers, setInvites)
           } else {
             console.error("Response is not in JSON format");
           }
