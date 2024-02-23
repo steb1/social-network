@@ -13,7 +13,7 @@ func HandleGetFollowers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	var apiError ApiError
-	cookie, err := r.Cookie("social-network")
+	cookie, _ := r.Cookie("social-network")
 	session, err := models.SessionRepo.GetSession(cookie.Value)
 	if err != nil {
 		apiError.Error = "Go connect first !"
