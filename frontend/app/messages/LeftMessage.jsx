@@ -1,14 +1,20 @@
 import React from "react";
 
-const LeftMessage = ({ Avatar, Content }) => {
-	return (
-		<div className="flex gap-3">
-			<img src={`http://localhost:8080/img/${Avatar}`} alt="" className="w-9 h-9 rounded-full shadow" />
-			<div className="px-4 py-2 rounded-[20px] max-w-sm bg-secondery">
-				<pre> {Content} </pre>
-			</div>
-		</div>
-	);
+const LeftMessage = ({ Avatar, message }) => {
+    return (
+        <div className='chat chat-start'>
+            <div className='chat-image avatar'>
+                <div className='w-10 rounded-full'>
+                    <img alt='Avatar component' src={`http://localhost:8080/img/${Avatar}`} />
+                </div>
+            </div>
+            <div className='chat-header'>
+                {message.sender}
+                <time className='text-xs opacity-50'>{message.sent_time}</time>
+            </div>
+            <div className='chat-bubble max-w-sm bg-secondery text-[#4B5563]'>{message.content}</div>
+        </div>
+    );
 };
 
 export default LeftMessage;

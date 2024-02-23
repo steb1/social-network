@@ -27,17 +27,31 @@ type UserProfileResponse struct {
 	Groups            []*models.GroupInfo `json:"groups"`
 }
 
+type ChatResponse struct {
+	NicknameRequester string                              `json:"nickname_requester"`
+	Avatar            string                              `json:"avatar"`
+	Followers         []*models.User                      `json:"followers"`
+	Followings        []*models.User                      `json:"followings"`
+	Messages          map[string][]models.MessageResponse `json:"messages"`
+}
+
 func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 	session, ok := IsAuthenticated(r)
+	var apiError ApiError
 
 	if !ok {
-		var apiError ApiError
 		apiError.Error = "StatusUnauthorized"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
 		return
 	}
 
 	to := r.URL.Query().Get("to")
+
+	toUserID := models.UserRepo.GetIDFromUsernameOrEmail(to)
+
+	if toUserID < 1 {
+		apiError.Error = "User not does not exist"
+		WriteJSON(w, http.StatusBadRequest, nil)
 
 	// Check if it's a user
 	userExists, _ := models.UserRepo.UserExists(models.UserRepo.GetIDFromUsernameOrEmail(to))
@@ -89,22 +103,43 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 	if UN == "" {
 		UN = user.Email
 	}
+	offset, error := strconv.Atoi(r.URL.Query().Get("offset"))
+	if error != nil {
+		offset = 0
+	}
+	error = nil
 
+<<<<<<< HEAD
 	Groups, err := models.MembershipRepo.GetAllGroupsForUser(user.UserID)
 	if err != nil {
 		log.Println("🚀 ~ funcGetMessageResponse ~ GetAllGroupsForUser ~ err:", err)
 	}
 
+=======
+	limit := 10
+	messages, err := models.MessageRepo.GetMessagesBetweenUsers(user.UserID, toUserID, offset, limit)
+	if err != nil {
+		log.Println("��� ~ funcHandleGetProfileGetMessagesBetweenUsers ~ err:", err)
+		var apiError ApiError
+		apiError.Error = "Not found messages"
+		WriteJSON(w, http.StatusInternalServerError, apiError)
+		return
+	}
+>>>>>>> feature_profile_page
 	// Create a UserProfileResponse without the password field
-	userProfile := UserProfileResponse{
+	chatResponse := ChatResponse{
 		NicknameRequester: UN,
 		Avatar:            user.Avatar,
 		Followers:         followers,
 		Followings:        followings,
+<<<<<<< HEAD
 		Groups:            Groups,
+=======
+		Messages:          messages,
+>>>>>>> feature_profile_page
 	}
 
-	WriteJSON(w, http.StatusOK, userProfile)
+	WriteJSON(w, http.StatusOK, chatResponse)
 }
 
 func HandleGetProfile(w http.ResponseWriter, r *http.Request) {

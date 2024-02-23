@@ -7,43 +7,52 @@ import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
 const Messages = async ({ params: { to } }) => {
-	const cookieStore = cookies();
+    const cookieStore = cookies();
 
-	const response = await fetch(`${config.serverApiUrl}messageResponse?to=${to}`, {
-		method: "GET",
-		headers: {
-			Authorization: cookieStore.get("social-network").value,
-		},
-	});
+    const response = await fetch(`${config.serverApiUrl}messageResponse?to=${to}`, {
+        method: "GET",
+        headers: {
+            Authorization: cookieStore.get("social-network").value,
+        },
+    });
 
-	if (!response.ok) {
-		return notFound();
-	}
+    if (!response.ok) {
+        return notFound();
+    }
 
-	const { groups, nickname_requester, avatar, followers, followings } = await response.json();
+    const { nickname_requester, avatar, followers, followings, groups, messages } = await response.json();
 
-	const AbletoTalk =
-		followers && followings
-			? [...followings, ...followers].reduce((uniqueUsers, user) => {
-					const existingUser = uniqueUsers.find((u) => u.user_id === user.user_id);
-					if (!existingUser) {
-						uniqueUsers.push(user);
-					}
-					return uniqueUsers;
-				}, [])
-			: followers || followings
-				? followers || followings
-				: null;
+    const AbletoTalk =
+        followers && followings
+            ? [...followings, ...followers].reduce((uniqueUsers, user) => {
+                  const existingUser = uniqueUsers.find((u) => u.user_id === user.user_id);
+                  if (!existingUser) {
+                      uniqueUsers.push(user);
+                  }
+                  return uniqueUsers;
+              }, [])
+            : followers || followings
+              ? followers || followings
+              : null;
 
-	const Chatter = AbletoTalk && AbletoTalk.filter((user) => user.nickname === to || user.email === to);
+    const Chatter = AbletoTalk && AbletoTalk.filter((user) => user.nickname === to || user.email === to);
 
-	return (
-		<div id="wrapper">
-			<Header />
-			<Sidebar />
-			<MainMessage AbletoTalk={AbletoTalk} Chatter={Chatter} Sender={nickname_requester} AvatarSender={avatar} Groups={groups} />
-		</div>
-	);
+    // TODO: Passe comme props les messages à MainMessage
+
+    return (
+        <div id='wrapper'>
+            <Header />
+            <Sidebar />
+            <MainMessage
+                AbletoTalk={AbletoTalk}
+                Chatter={Chatter}
+                Sender={nickname_requester}
+                AvatarSender={avatar}
+                Messages={messages}
+                Groups={groups}
+            />
+        </div>
+    );
 };
 
 export default authMiddleware(Messages, `${config.serverApiUrl}checkAuth`);

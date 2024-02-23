@@ -59,10 +59,10 @@ func (mr *MessageRepository) GetMessage(messageID int) (*Message, error) {
 	return &message, nil
 }
 
-func (mr *MessageRepository) GetMessagesBetweenUsers(idUser1, idUser2, offset, limit int) ([]*MessageResponse, error) {
-	var messages []*MessageResponse
+func (mr *MessageRepository) GetMessagesBetweenUsers(idUser1, idUser2, offset, limit int) (map[string][]MessageResponse, error) {
+	result := make(map[string][]MessageResponse)
 
-	rows, err := db.Query(`SELECT content, sent_time, sender.first_name AS sender, receiver.first_name as Receiver
+	rows, err := db.Query(`SELECT  strftime('%Y-%m-%d', sent_time) as date, content, sent_time, COALESCE(sender.nickname, sender.email) AS sender, COALESCE(receiver.nickname, receiver.email) as receiver
 							FROM messages m
 							JOIN 
 								users sender ON m.sender_id = sender.user_id
@@ -73,17 +73,21 @@ func (mr *MessageRepository) GetMessagesBetweenUsers(idUser1, idUser2, offset, l
 							ORDER BY sent_time DESC 
 							LIMIT ?  OFFSET ? `, idUser1, idUser2, idUser2, idUser1, limit, offset)
 	if err != nil {
-		return messages, err
+		return nil, err
 	}
+
 	for rows.Next() {
 		var message MessageResponse
-		err := rows.Scan(&message.Content, &message.SentTime, &message.Sender, &message.Receiver)
+		var date string
+		err := rows.Scan(&date, &message.Content, &message.SentTime, &message.Sender, &message.Receiver)
 		if err != nil {
-			return messages, err
+			return nil, err
 		}
-		messages = append(messages, &message)
+
+		result[date] = append(result[date], message)
+		//messages = append(messages, &message)
 	}
-	return messages, nil
+	return result, nil
 }
 
 // UpdateMessage updates an existing message in the database
