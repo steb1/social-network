@@ -10,7 +10,7 @@ const Messages = async ({ params: { to } }) => {
     const cookieStore = cookies();
 
     const response = await fetch(`${config.serverApiUrl}messageResponse?to=${to}`, {
-        cache: "no-store",
+        cache: "no-cache",
         method: "GET",
         headers: {
             Authorization: cookieStore.get("social-network").value,
@@ -57,3 +57,23 @@ const Messages = async ({ params: { to } }) => {
 };
 
 export default authMiddleware(Messages, `${config.serverApiUrl}checkAuth`);
+
+{
+    Messages &&
+        Object.entries(Messages).map(([date, chatMessages]) => (
+            <>
+                <div className='flex justify-center '>
+                    <div className='font-medium text-gray-500 text-sm dark:text-white/70'>
+                        {formatDateToLocalDate(date)}
+                    </div>
+                </div>
+                {chatMessages.map((message) =>
+                    message.sender == Sender ? (
+                        <LeftMessage Avatar={AvatarSender} Content={message.content} />
+                    ) : (
+                        <RightMessage Avatar={Chatter[0].avatar} Content={message.content} />
+                    )
+                )}
+            </>
+        ));
+}

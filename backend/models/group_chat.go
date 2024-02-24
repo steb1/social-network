@@ -87,7 +87,7 @@ func (repo *GroupChatRepository) GetMessagesOfAGroup(groupChatID, limit, offset 
 	JOIN
     	users u ON gc.sender_id = u.user_id
 	WHERE
-		gc.group_id = 12
+		gc.group_id = ?
 	ORDER BY sent_time DESC 
 	LIMIT ?  OFFSET ?;`, groupChatID, limit, offset)
 	if err != nil {
