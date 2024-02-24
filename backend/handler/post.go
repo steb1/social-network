@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -79,7 +78,6 @@ func HandleCreatePost(w http.ResponseWriter, r *http.Request) {
 	USERRID, _ := strconv.Atoi(session.UserID)
 	user, _ := models.UserRepo.GetUserByID(USERRID)
 	if errors != nil {
-		fmt.Println(errs)
 		apiError.Error = "An error occured."
 		return
 	}
@@ -133,7 +131,6 @@ func HandleGetAllPosts(w http.ResponseWriter, r *http.Request) {
 func RetreiveAllPosts(w http.ResponseWriter, r *http.Request, userId int, apiError ApiError) []*models.Post {
 	posts, err := models.PostRepo.GetAllPostsPublicPrivateAuth(userId)
 	if err != nil {
-		fmt.Println(err)
 		apiError.Error = "Something went wrong while getting all public posts"
 		WriteJSON(w, http.StatusInternalServerError, apiError)
 		return nil

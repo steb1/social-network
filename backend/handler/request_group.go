@@ -96,7 +96,6 @@ func HandleRequestGroup(w http.ResponseWriter, r *http.Request) {
 			err := models.MembershipRepo.DeleteMembership(membership.MembershipID)
 
 			if err != nil {
-				fmt.Println(err)
 				WriteJSON(w, http.StatusUnauthorized, apiError)
 				return
 			}
@@ -108,11 +107,10 @@ func HandleRequestGroup(w http.ResponseWriter, r *http.Request) {
 			MembershipToCreate.MembershipStatus = "accepted"
 			MembershipToCreate.UserID = intrequesterId
 			MembershipToCreate.JoinedAt = time.Now().String()
-			
+
 			err = models.MembershipRepo.CreateMembership(&MembershipToCreate)
 
 			if err != nil {
-				fmt.Println(err)
 				WriteJSON(w, http.StatusUnauthorized, apiError)
 				return
 			}

@@ -124,14 +124,28 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println("��� ~ funcHandleGetProfileGetMessagesBetweenUsers ~ err:", err)
 			var apiError ApiError
-			apiError.Error = "Not found messages"
+			apiError.Error = "Users messages not found."
 			WriteJSON(w, http.StatusInternalServerError, apiError)
 			return
 		}
 	}
 
 	if groupExists {
-		// TODO: Fecth en fonction de groups
+		offset, error := strconv.Atoi(r.URL.Query().Get("offset"))
+		if error != nil {
+			offset = 0
+		}
+		error = nil
+
+		limit := 20
+		messages, err = models.GroupChatRepo.GetMessagesOfAGroup(idGroup, limit, offset)
+		if err != nil {
+			log.Println("��� ~ funcGetMessagesOfAGroup ~ err:", err)
+			var apiError ApiError
+			apiError.Error = "Messages group not found."
+			WriteJSON(w, http.StatusInternalServerError, apiError)
+			return
+		}
 	}
 
 	// Create a UserProfileResponse without the password field

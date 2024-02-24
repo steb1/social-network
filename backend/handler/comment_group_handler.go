@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"server/models"
 	"strconv"
@@ -37,13 +36,12 @@ func HandleCreateCommentGroup(w http.ResponseWriter, r *http.Request) {
 	}
 	postID, err := strconv.Atoi(r.FormValue("post_id"))
 	if err != nil {
-		fmt.Println("Error: post_id is not a valid number!!!")
 		apiError.Error = "Error: post_id is not a valid number!!!"
 		WriteJSON(w, http.StatusBadRequest, apiError)
 		return
 	}
 	comment.PostID = postID
-	comment.CreatedAt =  time.Now().String()
+	comment.CreatedAt = time.Now().String()
 	userId, err := strconv.Atoi(session.UserID)
 	if err != nil {
 		apiError.Error = "Error getting user."
@@ -53,7 +51,6 @@ func HandleCreateCommentGroup(w http.ResponseWriter, r *http.Request) {
 	comment.AuthorID = userId
 	_, err = models.CommentGroupRepo.CreateCommentGroup(comment)
 	if err != nil {
-		fmt.Println(err)
 		apiError.Error = "An error occured while creating comment."
 		WriteJSON(w, http.StatusInternalServerError, apiError)
 		return

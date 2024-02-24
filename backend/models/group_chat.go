@@ -75,6 +75,39 @@ func (gcr *GroupChatRepository) DeleteGroupChat(groupChatID int) error {
 	}
 	return nil
 }
+func (repo *GroupChatRepository) GetMessagesOfAGroup(groupChatID, limit, offset int) (map[string][]MessageResponse, error) {
+	messages := make(map[string][]MessageResponse)
+	rows, err := repo.db.Query(`SELECT
+		strftime('%Y-%m-%d', sent_time) as date,
+		COALESCE(u.nickname, u.email) AS sender,
+		gc.content,
+		gc.sent_time
+	FROM
+    	group_chats gc
+	JOIN
+    	users u ON gc.sender_id = u.user_id
+	WHERE
+		gc.group_id = 12
+	ORDER BY sent_time DESC 
+	LIMIT ?  OFFSET ?;`, groupChatID, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var message MessageResponse
+		var date string
+		err := rows.Scan(&date, &message.Sender, &message.Content, &message.SentTime)
+		if err != nil {
+			return nil, err
+		}
+		messages[date] = append(messages[date], message)
+	}
+
+	return messages, nil
+}
+
 func (repo *GroupChatRepository) GetMessagesByReceiverID(groupChatID int) ([]GroupChat, error) {
 	rows, err := repo.db.Query("SELECT * FROM group_messages WHERE GroupID = ?", groupChatID)
 	if err != nil {
@@ -95,5 +128,3 @@ func (repo *GroupChatRepository) GetMessagesByReceiverID(groupChatID int) ([]Gro
 
 	return messages, nil
 }
-
-

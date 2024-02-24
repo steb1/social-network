@@ -14,6 +14,7 @@ type Message struct {
 	SentTime   string `json:"sent_time"`
 }
 
+// TODO: REMOVE RECEIVER I'M NOT SURE WE'RE USING THIS
 type MessageResponse struct {
 	Sender   string `json:"sender"`
 	Receiver string `json:"receiver"`
@@ -32,12 +33,12 @@ func NewMessageRepository(db *sql.DB) *MessageRepository {
 }
 
 // CreateMessage adds a new message to the database
-func (mr *MessageRepository) CreateMessage(SenderID, ReceiverID int, Content, SentTime string) error {
+func (mr *MessageRepository) CreateMessage(SenderID, ReceiverID int, Content string) error {
 	query := `
 		INSERT INTO messages (sender_id, receiver_id, content, sent_time)
-		VALUES (?, ?, ?, ?)
+		VALUES (?, ?, ?, DEFAULT)
 	`
-	result, err := mr.db.Exec(query, SenderID, ReceiverID, Content, SentTime)
+	result, err := mr.db.Exec(query, SenderID, ReceiverID, Content)
 	if err != nil {
 		log.Println("🚀 ~ funcCreateMessage ~ err:", err)
 		return err
@@ -85,7 +86,6 @@ func (mr *MessageRepository) GetMessagesBetweenUsers(idUser1, idUser2, offset, l
 		}
 
 		result[date] = append(result[date], message)
-		//messages = append(messages, &message)
 	}
 	return result, nil
 }
