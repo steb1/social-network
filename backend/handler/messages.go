@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"server/models"
 	"strconv"
@@ -26,9 +25,7 @@ func GetMessages(w http.ResponseWriter, r *http.Request) {
 
 		sessionUserID, _ := strconv.Atoi(session.UserID)
 		username := r.URL.Query().Get("with")
-		fmt.Println(username)
 		userID := models.UserRepo.GetIDFromUsernameOrEmail(username)
-		fmt.Println("User id:", userID)
 		if userID <= 0 {
 			var apiError ApiError
 			apiError.Error = "The user you want to chat with doesn't exist..."
@@ -52,9 +49,7 @@ func GetMessages(w http.ResponseWriter, r *http.Request) {
 		}
 
 		messages, error := models.MessageRepo.GetMessagesBetweenUsers(sessionUserID, userID, offset, limit)
-		for date, messages := range messages {
-			fmt.Printf("[%s] => %v\n", date, messages)
-		}
+
 		if error != nil {
 			var apiError ApiError
 			apiError.Error = error.Error()

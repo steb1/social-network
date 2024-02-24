@@ -61,7 +61,6 @@ func HandleCreateEvent(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Erreur group doesn't exist", http.StatusBadRequest)
 		return
 	}
-	fmt.Println("Is hereee")
 
 	existMember := models.MembershipRepo.CheckIfIsMember(userId, intGroupId)
 
@@ -82,7 +81,6 @@ func HandleCreateEvent(w http.ResponseWriter, r *http.Request) {
 		parsedTime, err := time.Parse(layout, dateString)
 		formattedString := parsedTime.Format(layout)
 		if err != nil {
-			fmt.Println("Error parsing date:", err)
 			return
 		}
 		event.GroupID = intGroupId
@@ -143,14 +141,12 @@ func HandleRegisterEvent(w http.ResponseWriter, r *http.Request) {
 	option := r.FormValue("option")
 	intEventId, err := strconv.Atoi(fmt.Sprintf("%v", eventID))
 
-
 	if err != nil {
 		http.Error(w, "Erreur group doesn't exist", http.StatusBadRequest)
 		return
 	}
 
-
-	event , err := models.EventRepo.GetEvent(intEventId)
+	event, err := models.EventRepo.GetEvent(intEventId)
 
 	if err != nil {
 		http.Error(w, "Erreur group doesn't exist", http.StatusBadRequest)
@@ -167,47 +163,46 @@ func HandleRegisterEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if IsOwner || existMember {
-			if (option == "going" ) {
-				var Attendance models.Attendance
-	
-				Attendance.EventID = intEventId
-				Attendance.UserID = userId
-				Attendance.AttendanceOption = 0
-	
-				err = models.AttendanceRepo.CreateAttendance(&Attendance)
-	
-				if err != nil {
-					WriteJSON(w, http.StatusUnauthorized, apiError)
-					return
-				}
-	
-				response := make(map[string]interface{})
-	
-				response["ok"] = true 
-	
-				lib.WriteJSONResponse(w, response)
-			} else {
-				var Attendance models.Attendance
-	
-				Attendance.EventID = intEventId
-				Attendance.UserID = userId
-				Attendance.AttendanceOption = 2
-	
-				err = models.AttendanceRepo.CreateAttendance(&Attendance)
-	
-				if err != nil {
-					WriteJSON(w, http.StatusUnauthorized, apiError)
-					return
-				}
-	
-				response := make(map[string]interface{})
-	
-				response["ok"] = true 
-	
-				lib.WriteJSONResponse(w, response)
-			}
-		
-	}
+		if option == "going" {
+			var Attendance models.Attendance
 
+			Attendance.EventID = intEventId
+			Attendance.UserID = userId
+			Attendance.AttendanceOption = 0
+
+			err = models.AttendanceRepo.CreateAttendance(&Attendance)
+
+			if err != nil {
+				WriteJSON(w, http.StatusUnauthorized, apiError)
+				return
+			}
+
+			response := make(map[string]interface{})
+
+			response["ok"] = true
+
+			lib.WriteJSONResponse(w, response)
+		} else {
+			var Attendance models.Attendance
+
+			Attendance.EventID = intEventId
+			Attendance.UserID = userId
+			Attendance.AttendanceOption = 2
+
+			err = models.AttendanceRepo.CreateAttendance(&Attendance)
+
+			if err != nil {
+				WriteJSON(w, http.StatusUnauthorized, apiError)
+				return
+			}
+
+			response := make(map[string]interface{})
+
+			response["ok"] = true
+
+			lib.WriteJSONResponse(w, response)
+		}
+
+	}
 
 }

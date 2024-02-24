@@ -2,7 +2,6 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
 )
 
 const (
@@ -57,12 +56,10 @@ func (sr *FollowRequestRepository) UpdateFollowRequest(followRequest *FollowRequ
 
 func (sr *FollowRequestRepository) DeleteFollowRequest(followerUserId, followingUserId int) error {
 	query := "DELETE FROM follow_requests WHERE follower_user_id = ? AND following_user_id = ? "
-	res, err := sr.db.Exec(query, followerUserId, followingUserId)
+	_, err := sr.db.Exec(query, followerUserId, followingUserId)
 	if err != nil {
 		return err
 	}
-	fmt.Println(followerUserId, followingUserId)
-	fmt.Println(res.RowsAffected())
 	return nil
 }
 

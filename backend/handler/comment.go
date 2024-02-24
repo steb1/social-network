@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"server/models"
 	"strconv"
@@ -37,7 +36,6 @@ func HandleCreateComment(w http.ResponseWriter, r *http.Request) {
 	}
 	postID, err := strconv.Atoi(r.FormValue("post_id"))
 	if err != nil {
-		fmt.Println("Error: post_id is not a valid number!!!")
 		apiError.Error = "Error: post_id is not a valid number!!!"
 		WriteJSON(w, http.StatusBadRequest, apiError)
 		return
@@ -53,7 +51,6 @@ func HandleCreateComment(w http.ResponseWriter, r *http.Request) {
 	comment.AuthorID = userId
 	errors := models.CommentRepo.CreateComment(&comment, createdAt)
 	if errors != nil {
-		fmt.Println(errors)
 		apiError.Error = "An error occured while creating comment."
 		WriteJSON(w, http.StatusInternalServerError, apiError)
 		return

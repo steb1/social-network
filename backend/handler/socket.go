@@ -52,12 +52,9 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println("Socket request")
-
 	// Upgrade the HTTP server connection to the WebSocket protocol.
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Println("Error upgrading to WebSocket:", err)
 		return
 	}
 
@@ -103,14 +100,14 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 		for {
 			_, p, err := conn.ReadMessage()
 			if err != nil {
-				log.Println("Error reading message:", err)
+				// log.Println("Error reading message:", err)
 				return
 			}
 
 			var message WebSocketMessage
 			err = json.Unmarshal(p, &message)
 			if err != nil {
-				log.Println("Error unmarshalling message:", err)
+				// log.Println("Error unmarshalling message:", err)
 				continue
 			}
 
@@ -129,7 +126,7 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 func handleMessageForUser(message WebSocketMessage, userId int) {
 	bodyMap, ok := message.Body.(map[string]interface{})
 	if !ok {
-		log.Println("Type de corps non pris en charge pour 'messageforuser'")
+		// log.Println("Type de corps non pris en charge pour 'messageforuser'")
 		return
 	}
 
@@ -183,28 +180,28 @@ func handleUserMessage(messagepattern MessagePattern, userId int) {
 
 func sendMessageToUser(senderID int, messagepattern MessagePattern, receiverID int) {
 	if !lib.IsBlank(messagepattern.Text) && !lib.IsBlank(messagepattern.Sender) && !lib.IsBlank(messagepattern.Receiver) {
-		models.MessageRepo.CreateMessage(senderID, receiverID, messagepattern.Text, messagepattern.Time)
+		models.MessageRepo.CreateMessage(senderID, receiverID, messagepattern.Text)
 	} else {
-		log.Println("Cannot send empty messages.")
+		// log.Println("Cannot send empty messages.")
 		// SEND ERROR
 		return
 	}
 
 	tosend, exists := connections[receiverID]
 	if !exists {
-		log.Println("No connected user:", messagepattern.Receiver)
-		log.Println("Error: User not connected")
+		// log.Println("No connected user:", messagepattern.Receiver)
+		// log.Println("Error: User not connected")
 		// SEND ERROR
 		return
 	}
 
-	log.Println("Connected user:", messagepattern.Receiver, "message in progress")
+	// log.Println("Connected user:", messagepattern.Receiver, "message in progress")
 
 	// Use EnvoyerMessage function directly
 	if err := EnvoyerMessage(tosend, "messageforuser", messagepattern); err != nil {
 		log.Println("Error writing message to connection:", err)
 		// SEND ERROR
-		log.Println("Error: Unable to send message to user")
+		// log.Println("Error: Unable to send message to user")
 	}
 }
 
@@ -226,7 +223,7 @@ func EnvoyerMessage(tosend *UserInfo, Command string, Body interface{}) error {
 func handleInProgressMessage(messageType string, messageBody interface{}) {
 	bodyMap, ok := messageBody.(map[string]interface{})
 	if !ok {
-		log.Println("Type de corps non pris en charge pour", messageType)
+		// log.Println("Type de corps non pris en charge pour", messageType)
 		return
 	}
 
