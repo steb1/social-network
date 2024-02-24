@@ -309,11 +309,13 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
                                                               <RightMessage
                                                                   Avatar={AvatarSender}
                                                                   Content={message.content}
+                                                                  key={message.sent_time}
                                                               />
                                                           ) : (
                                                               <LeftMessage
                                                                   Avatar={Chatter[0].avatar}
                                                                   Content={message.content}
+                                                                  key={message.sent_time}
                                                               />
                                                           )
                                                       )}
@@ -323,20 +325,25 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
                                               Object.entries(Messages).map(([date, chatMessages]) => (
                                                   <>
                                                       <div className='flex justify-center '>
-                                                          <div className='font-medium text-gray-500 text-sm dark:text-white/70'>
+                                                          <div
+                                                              key={date}
+                                                              className='font-medium text-gray-500 text-sm dark:text-white/70'
+                                                          >
                                                               {formatDateToLocalDate(date)}
                                                           </div>
                                                       </div>
                                                       {chatMessages.map((message) =>
                                                           message.sender == Sender ? (
-                                                              <LeftMessage
-                                                                  Avatar={AvatarSender}
-                                                                  Content={message.content}
-                                                              />
-                                                          ) : (
                                                               <RightMessage
                                                                   Avatar={AvatarSender}
                                                                   Content={message.content}
+                                                                  key={message.sent_time}
+                                                              />
+                                                          ) : (
+                                                              <LeftMessage
+                                                                  Avatar={AvatarSender}
+                                                                  Content={message.content}
+                                                                  key={message.sent_time}
                                                               />
                                                           )
                                                       )}
