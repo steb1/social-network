@@ -90,6 +90,10 @@ func (mr *MessageRepository) GetMessagesBetweenUsers(idUser1, idUser2, offset, l
 
 		result[date] = append(result[date], message)
 	}
+
+	for date, messages := range result {
+		result[date] = reverseMessages(messages)
+	}
 	return result, nil
 }
 
@@ -115,4 +119,12 @@ func (mr *MessageRepository) DeleteMessage(messageID int) error {
 		return err
 	}
 	return nil
+}
+
+func reverseMessages(messages []MessageResponse) []MessageResponse {
+	reversedMessages := make([]MessageResponse, len(messages))
+	for i, j := 0, len(messages)-1; i < len(messages); i, j = i+1, j-1 {
+		reversedMessages[i] = messages[j]
+	}
+	return reversedMessages
 }
