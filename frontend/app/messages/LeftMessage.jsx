@@ -13,9 +13,7 @@ const LeftMessage = ({ Avatar, Content }) => {
                 {/* {message.sender}
                 <time className='text-xs opacity-50'>{message.sent_time}</time> */}
             </div>
-            <div className='chat-bubble max-w-sm bg-secondery text-[#4B5563]'>
-                <pre>{Content}</pre>
-            </div>
+            <div className='chat-bubble max-w-sm bg-secondery text-[#4B5563]'>{Content}</div>
         </div>
     );
 };

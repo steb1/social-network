@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 )
 
@@ -35,8 +36,8 @@ func NewMessageRepository(db *sql.DB) *MessageRepository {
 // CreateMessage adds a new message to the database
 func (mr *MessageRepository) CreateMessage(SenderID, ReceiverID int, Content string) error {
 	query := `
-		INSERT INTO messages (sender_id, receiver_id, content, sent_time)
-		VALUES (?, ?, ?, DEFAULT)
+		INSERT INTO messages (sender_id, receiver_id, content)
+		VALUES (?, ?, ?)
 	`
 	result, err := mr.db.Exec(query, SenderID, ReceiverID, Content)
 	if err != nil {
@@ -81,7 +82,9 @@ func (mr *MessageRepository) GetMessagesBetweenUsers(idUser1, idUser2, offset, l
 		var message MessageResponse
 		var date string
 		err := rows.Scan(&date, &message.Content, &message.SentTime, &message.Sender, &message.Receiver)
+
 		if err != nil {
+			fmt.Println(err.Error())
 			return nil, err
 		}
 
