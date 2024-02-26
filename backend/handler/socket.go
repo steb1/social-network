@@ -172,6 +172,13 @@ func handleMessageForUser(message WebSocketMessage, userId int) {
 
 func handleGroupMessage(messagepattern MessagePattern, userId int, AllUsersOfGroup []models.User, idGroup int) {
 	log.Println(" 🚀 ~ Message ~ GROUP")
+	if !lib.IsBlank(messagepattern.Text) && !lib.IsBlank(messagepattern.Sender) && !lib.IsBlank(messagepattern.Receiver) {
+		models.GroupChatRepo.CreateGroupChat(userId, idGroup, messagepattern.Text)
+	} else {
+		// SEND ERROR
+		log.Println("Groupchat wasnot created")
+		return
+	}
 	for _, user := range AllUsersOfGroup {
 		if user.UserID != userId {
 			sendMessageToUser(userId, messagepattern, user.UserID, "group", idGroup)
@@ -197,12 +204,6 @@ func sendMessageToUser(senderID int, messagepattern MessagePattern, receiverID i
 	}
 
 	if messagetype == "group" {
-		if !lib.IsBlank(messagepattern.Text) && !lib.IsBlank(messagepattern.Sender) && !lib.IsBlank(messagepattern.Receiver) {
-			models.GroupChatRepo.CreateGroupChat(senderID, idGroup, messagepattern.Text)
-		} else {
-			// SEND ERROR
-			return
-		}
 		Command = "messageforgroup"
 	}
 
