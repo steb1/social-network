@@ -23,15 +23,10 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
 			cms && ReactDOM.render(ReactDOM.createPortal(<TypingIndicator Avatar={Chatter[0].avatar} />, cms), document.createElement("div"));
 			cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
 			isRendered = true;
-		} else {
-			//cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
 		}
 	};
 
 	useEffect(() => {
-		socket.onopen = function () {
-			// console.log("Ws Open");
-		};
 		const cms = document.getElementById("cms");
 
 		socket.onmessage = async function (event) {
@@ -42,11 +37,19 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
 						return;
 					}
 
-					cms && ReactDOM.render(ReactDOM.createPortal(<LeftMessage Avatar={Chatter[0].avatar} Content={message.body.text} Time={Date.now()} />, cms), document.createElement("div"));
+					cms && ReactDOM.render(ReactDOM.createPortal(<LeftMessage Avatar={Chatter[0].avatar} Content={message.body.text} Sender={message.body.sender} Time={Date.now()} />, cms), document.createElement("div"));
 					cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
 					break;
 				case "messageforgroup":
-					alert("messge group");
+					const senderInGroup = GroupChatter[0] && GroupChatter[0].Users.find((user) => user.NicknameOrEmail === message.body.sender);
+
+					if (!senderInGroup) {
+						return;
+					}
+
+					cms && ReactDOM.render(ReactDOM.createPortal(<LeftMessage Avatar={senderInGroup.Avatar} Content={message.body.text} Sender={message.body.sender} Time={Date.now()} />, cms), document.createElement("div"));
+					cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+
 					break;
 				case "typeinprogress":
 					if (message.body.sender !== Chatter[0].nickname && message.body.sender !== Chatter[0].email) {
@@ -190,7 +193,7 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
 														<div key={date} className="flex justify-center ">
 															<div className="font-medium text-gray-500 text-sm dark:text-white/70">{formatDateToLocalDate(date)}</div>
 														</div>
-														{chatMessages.map((message) => (message.sender == Sender ? <RightMessage Avatar={AvatarSender} Content={message.content} Time={message.sent_time} key={message.sent_time} /> : <LeftMessage Avatar={Chatter[0].avatar} Content={message.content} Time={message.sent_time} key={message.sent_time} />))}
+														{chatMessages.map((message) => (message.sender == Sender ? <RightMessage Avatar={AvatarSender} Content={message.content} Sender={"(You)"} Time={message.sent_time} key={message.sent_time} /> : <LeftMessage Avatar={Chatter[0].avatar} Content={message.content} Sender={message.sender} Time={message.sent_time} key={message.sent_time} />))}
 													</>
 												))
 											: Messages &&
@@ -201,7 +204,7 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
 																{formatDateToLocalDate(date)}
 															</div>
 														</div>
-														{chatMessages.map((message) => (message.sender == Sender ? <RightMessage Avatar={AvatarSender} Content={message.content} Sender={message.sender} Time={message.sent_time} key={message.sent_time} /> : <LeftMessage Avatar={message.avatar} Content={message.content} Sender={message.sender} Time={message.sent_time} key={message.sent_time} />))}
+														{chatMessages.map((message) => (message.sender == Sender ? <RightMessage Avatar={AvatarSender} Content={message.content} Sender={"(You)"} Time={message.sent_time} key={message.sent_time} /> : <LeftMessage Avatar={message.avatar} Content={message.content} Sender={message.sender} Time={message.sent_time} key={message.sent_time} />))}
 													</>
 												))}
 									</div>
@@ -317,7 +320,7 @@ const handleSendMessage = async (messageInput, Sender, Chatter, AvatarSender, cm
 	// TODO: Handle the response from the server before appending the message if the message succesfully sent to the chatter before append
 
 	const cms = document.getElementById("cms");
-	cms && ReactDOM.render(ReactDOM.createPortal(<RightMessage Avatar={AvatarSender} Content={message.text} Time={Date.now()} />, cms), document.createElement("div"));
+	cms && ReactDOM.render(ReactDOM.createPortal(<RightMessage Avatar={AvatarSender} Content={message.text} Sender={"(You)"} Time={Date.now()} />, cms), document.createElement("div"));
 	cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
 };
 
