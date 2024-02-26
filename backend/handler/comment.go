@@ -1,14 +1,14 @@
 package handler
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
-	"server/models"
 	"strconv"
 	"strings"
 	"time"
+
+	"server/models"
 )
 
 func HandleCreateComment(w http.ResponseWriter, r *http.Request) {
@@ -25,21 +25,20 @@ func HandleCreateComment(w http.ResponseWriter, r *http.Request) {
 
 	cookie, errC := r.Cookie("social-network")
 	session, errS := models.SessionRepo.GetSession(cookie.Value)
-	if (errS != nil || errC != nil) {
+	if errS != nil || errC != nil {
 		apiError.Error = "Go connect first !"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
 		return
 	}
 
 	comment.Content = strings.TrimSpace(r.FormValue("comment_body"))
-	if (comment.Content == "" || len(comment.Content)>400) {
+	if comment.Content == "" || len(comment.Content) > 400 {
 		apiError.Error = "Comment empty or too long."
 		WriteJSON(w, http.StatusBadRequest, apiError)
 		return
 	}
 	postID, err := strconv.Atoi(r.FormValue("post_id"))
 	if err != nil {
-		fmt.Println("Error: post_id is not a valid number!!!")
 		apiError.Error = "Error: post_id is not a valid number!!!"
 		WriteJSON(w, http.StatusBadRequest, apiError)
 		return
@@ -53,13 +52,12 @@ func HandleCreateComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	comment.AuthorID = userId
-	//image
+	// image
 	photo, _, _ := r.FormFile("media_post_c")
 	hasImage := map[bool]int{true: 1, false: 0}[photo != nil]
 	comment.HasImage = hasImage
 	errors := models.CommentRepo.CreateComment(&comment, photo, createdAt)
 	if errors != nil {
-		fmt.Println(errors)
 		apiError.Error = "An error occured while creating comment."
 		WriteJSON(w, http.StatusInternalServerError, apiError)
 		return
@@ -97,4 +95,3 @@ func ImageHandlerComment(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "image/jpeg")
 	w.Write(img)
 }
-

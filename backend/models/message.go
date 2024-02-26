@@ -1,6 +1,10 @@
 package models
 
-import "database/sql"
+import (
+	"database/sql"
+	"fmt"
+	"log"
+)
 
 // Message structure represents the "messages" table
 type Message struct {
@@ -9,6 +13,15 @@ type Message struct {
 	ReceiverID int    `json:"receiver_id"`
 	Content    string `json:"content"`
 	SentTime   string `json:"sent_time"`
+}
+
+// TODO: REMOVE RECEIVER I'M NOT SURE WE'RE USING THIS
+type MessageResponse struct {
+	Sender   string `json:"sender"`
+	Receiver string `json:"receiver"`
+	Content  string `json:"content"`
+	SentTime string `json:"sent_time"`
+	Avatar   string `json:"avatar"`
 }
 
 type MessageRepository struct {
@@ -22,13 +35,14 @@ func NewMessageRepository(db *sql.DB) *MessageRepository {
 }
 
 // CreateMessage adds a new message to the database
-func (mr *MessageRepository) CreateMessage(SenderID, ReceiverID int, Content, SentTime string) error {
+func (mr *MessageRepository) CreateMessage(SenderID, ReceiverID int, Content string) error {
 	query := `
-		INSERT INTO messages (sender_id, receiver_id, content, sent_time)
-		VALUES (?, ?, ?, ?)
+		INSERT INTO messages (sender_id, receiver_id, content)
+		VALUES (?, ?, ?)
 	`
-	result, err := mr.db.Exec(query, SenderID, ReceiverID, Content, SentTime)
+	result, err := mr.db.Exec(query, SenderID, ReceiverID, Content)
 	if err != nil {
+		log.Println("🚀 ~ funcCreateMessage ~ err:", err)
 		return err
 	}
 
@@ -46,6 +60,42 @@ func (mr *MessageRepository) GetMessage(messageID int) (*Message, error) {
 		return nil, err
 	}
 	return &message, nil
+}
+
+func (mr *MessageRepository) GetMessagesBetweenUsers(idUser1, idUser2, offset, limit int) (map[string][]MessageResponse, error) {
+	result := make(map[string][]MessageResponse)
+
+	rows, err := db.Query(`SELECT  strftime('%Y-%m-%d', sent_time) as date, content, sent_time, COALESCE(sender.nickname, sender.email) AS sender, COALESCE(receiver.nickname, receiver.email) as receiver
+							FROM messages m
+							JOIN 
+								users sender ON m.sender_id = sender.user_id
+							JOIN 
+								users receiver ON m.receiver_id = receiver.user_id
+							 WHERE (sender_id = ? AND receiver_id = ?)
+								OR (sender_id = ? AND receiver_id = ?)
+							ORDER BY sent_time DESC 
+							LIMIT ?  OFFSET ? `, idUser1, idUser2, idUser2, idUser1, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var message MessageResponse
+		var date string
+		err := rows.Scan(&date, &message.Content, &message.SentTime, &message.Sender, &message.Receiver)
+
+		if err != nil {
+			fmt.Println(err.Error())
+			return nil, err
+		}
+
+		result[date] = append(result[date], message)
+	}
+
+	for date, messages := range result {
+		result[date] = reverseMessages(messages)
+	}
+	return result, nil
 }
 
 // UpdateMessage updates an existing message in the database
@@ -70,4 +120,12 @@ func (mr *MessageRepository) DeleteMessage(messageID int) error {
 		return err
 	}
 	return nil
+}
+
+func reverseMessages(messages []MessageResponse) []MessageResponse {
+	reversedMessages := make([]MessageResponse, len(messages))
+	for i, j := 0, len(messages)-1; i < len(messages); i, j = i+1, j-1 {
+		reversedMessages[i] = messages[j]
+	}
+	return reversedMessages
 }

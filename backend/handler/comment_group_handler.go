@@ -6,11 +6,12 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"server/lib"
-	"server/models"
 	"strconv"
 	"strings"
 	"time"
+
+	"server/lib"
+	"server/models"
 )
 
 func HandleCreateCommentGroup(w http.ResponseWriter, r *http.Request) {
@@ -42,7 +43,6 @@ func HandleCreateCommentGroup(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(r.FormValue("PostID"), "hereeee")
 
 	postID, err := strconv.Atoi(r.FormValue("PostID"))
-
 	if err != nil {
 		fmt.Println(err, "erroroororo")
 		apiError.Error = "Error: post_id is not a valid number!!!"
@@ -64,7 +64,6 @@ func HandleCreateCommentGroup(w http.ResponseWriter, r *http.Request) {
 
 	err = models.CommentGroupRepo.CreateCommentGroup(comment, photo)
 	if err != nil {
-		fmt.Println(err)
 		apiError.Error = "An error occured while creating comment."
 		WriteJSON(w, http.StatusInternalServerError, apiError)
 		return
@@ -75,7 +74,6 @@ func HandleCreateCommentGroup(w http.ResponseWriter, r *http.Request) {
 
 		lib.WriteJSONResponse(w, response)
 	}
-
 }
 
 func HandleLikeCommentGroup(w http.ResponseWriter, r *http.Request) {
@@ -111,7 +109,6 @@ func HandleLikeCommentGroup(w http.ResponseWriter, r *http.Request) {
 	// Check if the comment is already liked by the user
 	isLiked := models.CommentGroupLikeRepo.IsLiked(commentLike.CommentID, commentLike.AuthorID)
 
-
 	if isLiked {
 		// Comment is already liked, handle unlike logic
 		if err := models.CommentGroupLikeRepo.DeleteCommentGroupLike(commentLike.CommentID, commentLike.AuthorID); err != nil {
@@ -121,7 +118,7 @@ func HandleLikeCommentGroup(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		// Comment is not liked, handle like logic
-		if _,err := models.CommentGroupLikeRepo.CreateCommentGroupLike(commentLike); err != nil {
+		if _, err := models.CommentGroupLikeRepo.CreateCommentGroupLike(commentLike); err != nil {
 			apiError.Error = "Failed to like comment"
 			WriteJSON(w, http.StatusInternalServerError, apiError)
 			return
@@ -139,7 +136,6 @@ func HandleLikeCommentGroup(w http.ResponseWriter, r *http.Request) {
 	successResponse.Posts = posts
 
 	WriteJSON(w, http.StatusOK, successResponse)
-
 }
 
 func ImageHandlerCommentGroup(w http.ResponseWriter, r *http.Request) {

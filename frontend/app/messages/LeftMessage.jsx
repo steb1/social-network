@@ -1,10 +1,20 @@
 import React from "react";
+import config from "@/config";
+import { GetTime } from "./RightMessage";
 
-const LeftMessage = () => {
+const LeftMessage = ({ Avatar, Content, Sender, Time }) => {
 	return (
-		<div className="flex gap-3">
-			<img src="assets/images/avatars/avatar-2.jpg" alt="" className="w-9 h-9 rounded-full shadow" />
-			<div className="px-4 py-2 rounded-[20px] max-w-sm bg-secondery"> Hi, I’m John </div>
+		<div className="chat chat-start">
+			<div className="chat-image avatar">
+				<div className="w-10 rounded-full">
+					<img alt="Avatar component" src={`${config.ServerApiImage}${Avatar}`} />
+				</div>
+			</div>
+			<div className="chat-header">
+				&nbsp;{Sender}
+				&nbsp;<time className="text-xs opacity-50">{GetTime(Time)}</time>
+			</div>
+			<div className="chat-bubble max-w-sm bg-secondery text-[#4B5563]">{Content}</div>
 		</div>
 	);
 };

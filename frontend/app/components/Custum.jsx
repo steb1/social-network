@@ -1,4 +1,4 @@
-export const CustomAlert = ({ message, onClose }) => {
+const CustomAlert = ({ message, onClose }) => {
 	return (
 		<div className="fixed top-4 right-4 z-[300]">
 			<div role="alert" className="alert">

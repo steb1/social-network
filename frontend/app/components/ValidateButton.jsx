@@ -1,7 +1,6 @@
 const ValidateButton = ({ userId, cookie }) => {
     const [followStatus, setFollowStatus] = useState(FollowStatus);
     //const [showAlert, setShowAlert] = useState(false);
-    console.log("Bruuuuh");
     const follow = async () => {
         try {
             const response = await fetch(`${config.serverApiUrl}`, {
@@ -18,7 +17,6 @@ const ValidateButton = ({ userId, cookie }) => {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log(data);
                 if (data.type === "Followed") {
                     setFollowStatus("Unfollow");
                 }

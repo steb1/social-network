@@ -62,7 +62,6 @@ func (pr *PostRepository) CreatePost(post *Post, photo multipart.File, categorie
 	imageUrl := strconv.Itoa(post.HasImage)
 	result, err := pr.db.Exec(query, post.Title, post.Content, createdAt, post.AuthorID, imageUrl, post.Visibility)
 	if err != nil {
-		fmt.Println(err)
 		return err, 0
 	}
 	lastInsertID, err := result.LastInsertId()
@@ -79,7 +78,6 @@ func (pr *PostRepository) CreatePost(post *Post, photo multipart.File, categorie
 	}
 	defer photo.Close()
 	if err := os.MkdirAll("imgPost", os.ModePerm); err != nil {
-		fmt.Println("Error creating imgPost directory:", err)
 		return nil, 0
 	}
 	fichierSortie, err := os.Create(fmt.Sprintf("imgPost/%d.jpg", post.PostID))
@@ -89,7 +87,6 @@ func (pr *PostRepository) CreatePost(post *Post, photo multipart.File, categorie
 	defer fichierSortie.Close()
 	_, err = io.Copy(fichierSortie, photo)
 	if err != nil {
-		fmt.Println("err", err)
 		return nil, 0
 	}
 	return nil, post.PostID
@@ -243,7 +240,7 @@ ORDER BY
 		postIDStr := strconv.Itoa(post.PostID)
 		post.CreatedAt = lib.FormatDateDB(post.CreatedAt)
 		post.Category = PostCategoryRepo.GetPostCategory(post.PostID)
-		post.Likes, err = PostLikeRepo.GetNumberOfLikes(post.PostID)
+		post.Likes, _ = PostLikeRepo.GetNumberOfLikes(post.PostID)
 		comments, err := CommentRepo.GetCommentsByPostID(postIDStr, userId)
 		post.Comments = comments
 		if err != nil {

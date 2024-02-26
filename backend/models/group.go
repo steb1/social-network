@@ -2,7 +2,6 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 )
 
@@ -56,6 +55,7 @@ func (gr *GroupRepository) GetGroup(groupID int) (*Group, error) {
 	group.User, _ = UserRepo.GetUserByID(group.CreatorID)
 	return &group, nil
 }
+
 // GetGroup retrieves a group from the database by group_id
 func (gr *GroupRepository) IsOwner(groupID, user_id int) (*Group, error) {
 	query := "SELECT * FROM groups WHERE group_id = ? AND Creator_id = ?"
@@ -181,11 +181,7 @@ func (gr *GroupRepository) CheckGroupExist(name string) bool {
 	query := "SELECT * FROM groups WHERE title = ?"
 	var group Group
 	err := gr.db.QueryRow(query, name).Scan(&group.GroupID, &group.Title, &group.Description, &group.CreatorID)
-	fmt.Println(err, "----------- sql")
-	if err == nil {
-		return false
-	}
-	return true
+	return err != nil
 }
 
 func (gr *GroupRepository) GetAllInvitedGroup(userID int) ([]Group, error) {
