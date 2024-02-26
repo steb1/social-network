@@ -146,7 +146,8 @@ func (pr *PostRepository) GetAllPostsPublicPrivateAuth(userId int) ([]*Post, err
     users.nickname, 
     users.first_name, 
     users.last_name, 
-    users.email 
+	users.email,
+	users.user_id
 FROM 
     posts
 JOIN 
@@ -167,7 +168,8 @@ SELECT
     users.nickname, 
     users.first_name,
     users.last_name, 
-    users.email 
+	users.email,
+	users.user_id
 FROM 
     posts
 JOIN 
@@ -190,7 +192,8 @@ SELECT
     users.nickname, 
     users.first_name, 
     users.last_name, 
-    users.email 
+	users.email,
+	users.user_id
 FROM 
     posts
 JOIN 
@@ -214,7 +217,8 @@ SELECT
     users.nickname, 
     users.first_name, 
     users.last_name, 
-    users.email 
+    users.email,
+	users.user_id
 FROM 
     posts
 JOIN 
@@ -234,7 +238,7 @@ ORDER BY
 	for rows.Next() {
 		var post Post
 		post.User = &User{}
-		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.AuthorID, &post.HasImage, &post.User.Nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email); err != nil {
+		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.AuthorID, &post.HasImage, &post.User.Nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email,&post.User.UserID); err != nil {
 			return nil, err
 		}
 		postIDStr := strconv.Itoa(post.PostID)
@@ -257,22 +261,53 @@ ORDER BY
 
 // GetUserOwnPosts retrieves posts owned by a specific user from the database
 func (pr *PostRepository) GetUserOwnPosts(userID int) ([]*Post, error) {
-	rows, err := pr.db.Query("SELECT * FROM posts WHERE author_id = ?", userID)
+	query := `SELECT 
+    posts.post_id, 
+    posts.title, 
+    posts.content, 
+    posts.created_at, 
+    posts.visibility, 
+    posts.has_image, 
+    users.nickname, 
+    users.first_name, 
+    users.last_name, 
+    users.email 
+FROM 
+    posts
+JOIN 
+    users ON posts.author_id = users.user_id
+WHERE
+posts.author_id=?
+
+ORDER BY 
+    created_at DESC;`
+	rows, err := pr.db.Query(query, userID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-
 	var posts []*Post
 	for rows.Next() {
 		var post Post
-		err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.AuthorID, &post.Visibility, &post.HasImage)
+		post.User = &User{}
+		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.HasImage, &post.User.Nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email); err != nil {
+			return nil, err
+		}
+		postIDStr := strconv.Itoa(post.PostID)
+		post.CreatedAt = lib.FormatDateDB(post.CreatedAt)
+		post.Category = PostCategoryRepo.GetPostCategory(post.PostID)
+		post.Likes, err = PostLikeRepo.GetNumberOfLikes(post.PostID)
+		comments, err := CommentRepo.GetCommentsByPostID(postIDStr, userID)
+		post.Comments = comments
+		if err != nil {
+			return nil, err
+		}
+		post.IsLiked, err = PostLikeRepo.IsPostLikedByCurrentUser(post.PostID, userID)
 		if err != nil {
 			return nil, err
 		}
 		posts = append(posts, &post)
 	}
-
 	return posts, nil
 }
 

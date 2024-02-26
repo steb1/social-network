@@ -1,6 +1,6 @@
 import React from "react";
 import config from "@/config";
-import MainProfile from "@/app/profile/[id]/components/mainProfile";
+import MainProfile from "../../components/mainProfile";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import Layout from "../../components/Layout";

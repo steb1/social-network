@@ -42,6 +42,7 @@ export const PostText = ( { posts,  groupId, setPosts , setGroup, setEvents, set
 
 		try {
 		if (response.ok) {
+			form.reset();
 			const contentType = response.headers.get("content-type");
 			if (contentType && contentType.includes("application/json")) {
 			  fetchGroupDetail(setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId, setIsOwner, setMembers)
@@ -316,18 +317,18 @@ export const PostText = ( { posts,  groupId, setPosts , setGroup, setEvents, set
                                 defaultValue={""}
                             />
                             <label
-                                for={`chooseImageC-${post.PostID}`}
+                                htmlFor={`chooseImageC-${post.PostID}`}
                                 class='flex items-center w-[calc(9%)] absolute top-1 right-1 gap-2 font-semibold  cursor-pointer hover:bg-opacity-80 p-1 px-1.5 rounded-xl transition-all bg-pink-100/60 hover:bg-red-300 dark:bg-white/10 dark:hover:bg-white/20'
                             >
                                 <svg
                                     xmlns='http://www.w3.org/2000/svg'
                                     class='w-6 h-6 stroke-pink-600 fill-pink-200/70'
                                     viewBox='0 0 24 24'
-                                    stroke-width='1.5'
+                                    strokeWidth='1.5'
                                     stroke='#2c3e50'
                                     fill='none'
-                                    stroke-linecap='round'
-                                    stroke-linejoin='round'
+                                    strokeLinecap='round'
+                                    strokeLinejoin='round'
                                 >
                                     <path stroke='none' d='M0 0h24v24H0z' fill='none'></path>
                                     <path d='M15 8h.01'></path>

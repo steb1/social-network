@@ -5,10 +5,9 @@ import Link from "next/link";
 import ButtonTogglePrivacy from "./buttonTogglePrivacy.jsx";
 import { cookies } from "next/headers";
 import SeeFollowersFollowees from "./SeeFollowersFollowees.jsx";
-import DisplayPostImage from "./DisplayPostImage.jsx";
-import DisplayPostWithoutImage from "./DisplayPostWithoutImage.jsx";
 import NoPostUI from "./NoPostUI.jsx";
 import FollowButton from "./FollowButton.jsx";
+import { PostText } from "./PostText.jsx";
 
 const MainProfile = ({ props, Visibility, FollowStatus }) => {
 	const cookieStore = cookies();
@@ -71,34 +70,7 @@ const MainProfile = ({ props, Visibility, FollowStatus }) => {
 
 				<div className="flex 2xl:gap-12 gap-10 mt-8 max-lg:flex-col" id="js-oversized">
 					<div className="flex-1 xl:space-y-6 space-y-3">
-						{/* TODO EXTERNE COMPONENT */}
-						{props.id_requester == props.user_id ? (
-							<div className="bg-white rounded-xl shadow-sm p-4 space-y-4 text-sm font-medium border1 dark:bg-dark2">
-								<div className="flex items-center gap-3">
-									<div className="flex-1 bg-slate-100 hover:bg-opacity-80 transition-all rounded-lg cursor-pointer dark:bg-dark3" uk-toggle="target: #create-status">
-										<div className="py-2.5 text-center dark:text-white"> What do you have in mind? </div>
-									</div>
-									<div className="cursor-pointer hover:bg-opacity-80 p-1 px-1.5 rounded-lg transition-all bg-pink-100/60 hover:bg-pink-100" uk-toggle="target: #create-status">
-										<svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 stroke-pink-600 fill-pink-200/70" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#2c3e50" fill="none" strokeLinecap="round" strokeLinejoin="round">
-											<path stroke="none" d="M0 0h24v24H0z" fill="none" />
-											<path d="M15 8h.01" />
-											<path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z" />
-											<path d="M3.5 15.5l4.5 -4.5c.928 -.893 2.072 -.893 3 0l5 5" />
-											<path d="M14 14l1 -1c.928 -.893 2.072 -.893 3 0l2.5 2.5" />
-										</svg>
-									</div>
-									<div className="cursor-pointer hover:bg-opacity-80 p-1 px-1.5 rounded-lg transition-all bg-sky-100/60 hover:bg-sky-100" uk-toggle="target: #create-status">
-										<svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 stroke-sky-600 fill-sky-200/70 " viewBox="0 0 24 24" strokeWidth="1.5" stroke="#2c3e50" fill="none" strokeLinecap="round" strokeLinejoin="round">
-											<path stroke="none" d="M0 0h24v24H0z" fill="none" />
-											<path d="M15 10l4.553 -2.276a1 1 0 0 1 1.447 .894v6.764a1 1 0 0 1 -1.447 .894l-4.553 -2.276v-4z" />
-											<path d="M3 6m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z" />
-										</svg>
-									</div>
-								</div>
-							</div>
-						) : null}
-
-						{Visibility === "Private" ? <PrivateAccountUI /> : <>{!props.userPosts ? <NoPostUI /> : props.userPosts.map((post) => (post.hasImage === 1 ? <DisplayPostImage key={post.post_id} post={post} /> : <DisplayPostWithoutImage key={post.post_id} post={post} />))}</>}
+						{Visibility === "Private" ? <PrivateAccountUI /> : <>{!props.userPosts ? <NoPostUI /> : <PostText posts={props.userPosts} />}</>}
 					</div>
 
 					{Visibility !== "Private" ? (
