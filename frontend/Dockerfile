@@ -5,16 +5,11 @@ LABEL description="A social-network with followers,chat,groups, posts and commen
 
 WORKDIR /app
 
-COPY package.json ./
-COPY package-lock.json ./
-
 COPY . .
 
-RUN apt update
-
-RUN apt install -y npm
-
-RUN npm install
+RUN apt update && \
+    apt install -y npm && \
+    npm install
 
 EXPOSE 3000
 

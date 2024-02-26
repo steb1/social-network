@@ -14,6 +14,7 @@ import (
 
 func HandleCreatePost(w http.ResponseWriter, r *http.Request) {
 	origin := r.Header.Get("Origin")
+	fmt.Println("postoingin",origin)
 	w.Header().Set("Access-Control-Allow-Origin", origin)
 	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
@@ -104,9 +105,10 @@ func HandleGetAllPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	origin := r.Header.Get("Origin")
+	fmt.Println("postoingin",origin)
 	w.Header().Set("Access-Control-Allow-Origin", origin)
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	var apiError ApiError

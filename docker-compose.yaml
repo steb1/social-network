@@ -11,7 +11,6 @@ services:
     networks:
       social-network-lala:
         ipv4_address:  172.21.0.5
-
   backend:
     build: ./backend
     ports:
