@@ -25,23 +25,23 @@ func NewGroupRepository(db *sql.DB) *GroupRepository {
 }
 
 // CreateGroup adds a new group to the database
-func (gr *GroupRepository) CreateGroup(group *Group) error {
+func (gr *GroupRepository) CreateGroup(group *Group) (error, int) {
 	query := `
 		INSERT INTO groups (title, description, creator_id)
 		VALUES (?, ?, ?)
 	`
 	result, err := gr.db.Exec(query, group.Title, group.Description, group.CreatorID)
 	if err != nil {
-		return err
+		return err, 0
 	}
 
 	lastInsertID, err := result.LastInsertId()
 	if err != nil {
-		return err
+		return err, 0
 	}
 
 	group.GroupID = int(lastInsertID)
-	return nil
+	return nil, int(lastInsertID)
 }
 
 // GetGroup retrieves a group from the database by group_id

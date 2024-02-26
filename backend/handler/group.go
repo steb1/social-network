@@ -191,11 +191,31 @@ func HandleCreateGroup(w http.ResponseWriter, r *http.Request) {
 		Newgroup.Description = fmt.Sprintf("%v", description)
 		Newgroup.CreatorID = userId
 
-		err := models.GroupRepo.CreateGroup(&Newgroup)
+		err, id := models.GroupRepo.CreateGroup(&Newgroup)
 
 		if err != nil {
 			WriteJSON(w, http.StatusUnauthorized, apiError)
 		}
+
+		var Membership models.Membership
+
+		Membership.GroupID = id
+
+		if err != nil {
+			return
+		}
+
+		Membership.UserID = userId
+		Membership.JoinedAt = time.Now().String()
+		Membership.InvitationStatus = "owner"
+		Membership.MembershipStatus = "accepted"
+
+		err = models.MembershipRepo.CreateMembership(&Membership)
+
+		if err != nil {
+			return
+		}
+
 		w.WriteHeader(http.StatusOK)
 	}
 }
