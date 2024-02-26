@@ -2,7 +2,6 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
 )
 
 const (
@@ -57,16 +56,13 @@ func (sr *FollowRequestRepository) UpdateFollowRequest(followRequest *FollowRequ
 
 func (sr *FollowRequestRepository) DeleteFollowRequest(followerUserId, followingUserId int) error {
 	query := "DELETE FROM follow_requests WHERE follower_user_id = ? AND following_user_id = ? "
-	res, err := sr.db.Exec(query, followerUserId, followingUserId)
+	_, err := sr.db.Exec(query, followerUserId, followingUserId)
 	if err != nil {
 		return err
 	}
-	fmt.Println(followerUserId, followingUserId)
-	fmt.Println(res.RowsAffected())
 	return nil
 }
 
-// TODO: Get pending requests
 func (sr *FollowRequestRepository) HasPendingRequestFromAnUser(requesterUserId, userId int) (bool, error) {
 	query := ` 
 	SELECT COUNT(*)
@@ -87,8 +83,6 @@ func (sr *FollowRequestRepository) HasPendingRequestFromAnUser(requesterUserId, 
 
 	return true, nil
 }
-
-//TODO: Accept following requests
 
 func (sr *FollowRequestRepository) AcceptFollowingRequest(followerUserID, followingUserId int) error {
 	query := ` 

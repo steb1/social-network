@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"log"
+	"strconv"
 
 	"server/lib"
 
@@ -81,7 +82,8 @@ func (ur *UserRepository) UpdateUserProfilePrivacy(userID int, mode string) erro
 	return nil
 }
 
-func (ur *UserRepository) UserExists(userID string) (bool, error) {
+func (ur *UserRepository) UserExists(userid int) (bool, error) {
+	userID := strconv.Itoa(userid)
 	query := "SELECT COUNT(*) as total FROM users WHERE user_id = ?"
 	var total int
 	err := ur.db.QueryRow(query, userID).Scan(&total)
@@ -179,7 +181,7 @@ func (ur *UserRepository) GetUserByID(userID int) (*User, error) {
 
 func (ur *UserRepository) GetIDFromUsernameOrEmail(usernameOrEmail string) int {
 	query := `
-	SELECT id_user FROM users WHERE nickname = ? OR email = ?
+	SELECT user_id FROM users WHERE nickname = ? OR email = ?
 `
 	var userId int
 	err := ur.db.QueryRow(query, usernameOrEmail, usernameOrEmail).Scan(&userId)

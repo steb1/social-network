@@ -130,7 +130,8 @@ func HandleCreateMembership(w http.ResponseWriter, r *http.Request) {
 		err = models.MembershipRepo.CreateMembership(&Membership)
 
 		if err != nil {
-			fmt.Println("Membership non crée !")
+			apiError.Error = "Membership non crée !"
+			WriteJSON(w, http.StatusBadRequest, apiError)
 		}
 	}
 }
@@ -179,7 +180,6 @@ func HandleCreateGroup(w http.ResponseWriter, r *http.Request) {
 	description, ok__ := requestBody["description"]
 
 	if !ok_ || !ok__ {
-		fmt.Println(ok_, "--------", ok__)
 		return
 	}
 
@@ -195,7 +195,6 @@ func HandleCreateGroup(w http.ResponseWriter, r *http.Request) {
 
 		if err != nil {
 			WriteJSON(w, http.StatusUnauthorized, apiError)
-			fmt.Println("Group Not created")
 		}
 		w.WriteHeader(http.StatusOK)
 	}
@@ -391,7 +390,6 @@ func HandleCreateGroupPost(w http.ResponseWriter, r *http.Request) {
 		if hasImage == 1 {
 			defer photo.Close()
 			if err := os.MkdirAll("imgPost", os.ModePerm); err != nil {
-				fmt.Println("Error creating imgPost directory:", err)
 			}
 			fichierSortie, _ := os.Create(fmt.Sprintf("imgPost/%d.jpg", postID_))
 

@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"server/models"
 	"strconv"
+
+	"server/models"
 )
 
 const (
@@ -46,7 +47,6 @@ func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 	sessionToken := r.Header.Get("Authorization")
 	session, err := models.SessionRepo.GetSession(sessionToken)
 	if err != nil {
-		fmt.Println(err.Error())
 		apiError.Error = "Go connect first !"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
 		return
@@ -79,7 +79,7 @@ func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ok, _ = models.UserRepo.UserExists(strconv.Itoa(followingUserId))
+	ok, _ = models.UserRepo.UserExists((followingUserId))
 	if !ok {
 		apiError.Error = "Invalid or missing user id bdd."
 		WriteJSON(w, http.StatusBadRequest, apiError)
@@ -154,6 +154,7 @@ func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = models.FollowRequestRepo.CreateFollowRequest(&followResquest)
 	if err != nil {
+
 		log.Printf("%s", err.Error())
 		apiError.Error = "Error making following request to the user."
 		WriteJSON(w, http.StatusBadRequest, apiError)
@@ -171,7 +172,6 @@ func GetPendingRequests(w http.ResponseWriter, r *http.Request) {
 	sessionToken := r.Header.Get("Authorization")
 	session, err := models.SessionRepo.GetSession(sessionToken)
 	if err != nil {
-		fmt.Println(err.Error())
 		apiError.Error = "Go connect first !"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
 		return
@@ -192,12 +192,12 @@ func GetPendingRequests(w http.ResponseWriter, r *http.Request) {
 	}
 	WriteJSON(w, http.StatusOK, users)
 }
+
 func AcceptOrRejectPendingRequests(w http.ResponseWriter, r *http.Request) {
 	var apiError ApiError
 	sessionToken := r.Header.Get("Authorization")
 	session, err := models.SessionRepo.GetSession(sessionToken)
 	if err != nil {
-		fmt.Println(err.Error())
 		apiError.Error = "Go connect first !"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
 		return
@@ -251,6 +251,7 @@ func AcceptOrRejectPendingRequests(w http.ResponseWriter, r *http.Request) {
 	apiError.Error = "Check your request."
 	WriteJSON(w, http.StatusBadRequest, apiError)
 }
+
 func HandlePendingRequests(w http.ResponseWriter, r *http.Request) {
 	addCorsHeader(w)
 	if r.Method == http.MethodOptions {
@@ -265,5 +266,4 @@ func HandlePendingRequests(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		AcceptOrRejectPendingRequests(w, r)
 	}
-
 }

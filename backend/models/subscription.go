@@ -105,6 +105,7 @@ func (sr *SubscriptionRepository) GetFollowers(userId int) ([]*User, error) {
 
 	return followers, nil
 }
+
 func (sr *SubscriptionRepository) GetFollowersToInvite(userId, intGroupId int) ([]*User, error) {
 	query := ` 
         SELECT u.user_id, u.email, u.first_name, u.last_name, u.date_of_birth, u.avatar, u.nickname, u.about_me
@@ -184,6 +185,7 @@ func (sr *SubscriptionRepository) GetFollowing(userId int) ([]*User, error) {
 
 	return following, nil
 }
+
 func (sr *SubscriptionRepository) GetFollowingToInvite(userId, intGroupId int) ([]*User, error) {
 	query := ` 
         SELECT u.user_id, u.email, u.first_name, u.last_name, u.date_of_birth, u.avatar, u.nickname, u.about_me

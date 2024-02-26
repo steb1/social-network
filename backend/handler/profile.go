@@ -9,20 +9,156 @@ import (
 )
 
 type UserProfileResponse struct {
-	IDRequester  string         `json:"id_requester"`
-	UserID       int            `json:"user_id"`
-	FirstName    string         `json:"firstName"`
-	LastName     string         `json:"lastName"`
-	Nickname     string         `json:"nickname"`
-	Email        string         `json:"email"`
-	DateOfBirth  string         `json:"dateOfBirth"`
-	Avatar       string         `json:"avatar"`
-	AboutMe      string         `json:"aboutMe"`
-	AccountType  string         `json:"accountType"`
-	FollowStatus string         `json:"followStatus"`
-	UserPosts    []*models.Post `json:"userPosts"`
-	Followers    []*models.User `json:"followers"`
-	Followings   []*models.User `json:"followings"`
+	IDRequester       string              `json:"id_requester"`
+	NicknameRequester string              `json:"nickname_requester"`
+	UserID            int                 `json:"user_id"`
+	FirstName         string              `json:"firstName"`
+	LastName          string              `json:"lastName"`
+	Nickname          string              `json:"nickname"`
+	Email             string              `json:"email"`
+	DateOfBirth       string              `json:"dateOfBirth"`
+	Avatar            string              `json:"avatar"`
+	AboutMe           string              `json:"aboutMe"`
+	AccountType       string              `json:"accountType"`
+	FollowStatus      string              `json:"followStatus"`
+	UserPosts         []*models.Post      `json:"userPosts"`
+	Followers         []*models.User      `json:"followers"`
+	Followings        []*models.User      `json:"followings"`
+	Groups            []*models.GroupInfo `json:"groups"`
+}
+
+type ChatResponse struct {
+	NicknameRequester string                              `json:"nickname_requester"`
+	Avatar            string                              `json:"avatar"`
+	Followers         []*models.User                      `json:"followers"`
+	Followings        []*models.User                      `json:"followings"`
+	Messages          map[string][]models.MessageResponse `json:"messages"`
+	Groups            []*models.GroupInfo                 `json:"groups"`
+}
+
+func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
+	addCorsHeader(w)
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	session, ok := IsAuthenticated(r)
+	var apiError ApiError
+
+	if !ok {
+		apiError.Error = "StatusUnauthorized"
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	}
+
+	to := r.URL.Query().Get("to")
+	toID := models.UserRepo.GetIDFromUsernameOrEmail(to)
+
+	// Check if it's a user
+	UserChat, _ := models.UserRepo.UserExists(toID)
+
+	// Check if it's a group
+	idGroup, err := strconv.Atoi(to)
+	GroupChat := false
+
+	if err == nil {
+		_, groupErr := models.MembershipRepo.GetAllUsersByGroupID(idGroup)
+		GroupChat = groupErr == nil
+	}
+
+	// If ni user ni group
+	if !UserChat && !GroupChat {
+		WriteJSON(w, http.StatusNotFound, nil)
+	}
+
+	id, _ := strconv.Atoi(session.UserID)
+
+	user, err := models.UserRepo.GetUserByID(id)
+	if err != nil {
+		log.Println("🚀 ~ funcHandleGetProfileGetUserByID ~ err:", err)
+		var apiError ApiError
+		apiError.Error = "Not found user"
+		WriteJSON(w, http.StatusNotFound, apiError)
+		return
+	}
+
+	followers, err := models.SubscriptionRepo.GetFollowers(user.UserID)
+	if err != nil {
+		log.Println("🚀 ~ funcHandleGetProfileGetFollowers ~ err:", err)
+		var apiError ApiError
+		apiError.Error = "Not found followers"
+		WriteJSON(w, http.StatusInternalServerError, apiError)
+		return
+	}
+
+	followings, err := models.SubscriptionRepo.GetFollowing(user.UserID)
+	if err != nil {
+		log.Println("🚀 ~ funcHandleGetProfileGetFollowing ~ err:", err)
+		var apiError ApiError
+		apiError.Error = "Not found followings"
+		WriteJSON(w, http.StatusInternalServerError, apiError)
+		return
+	}
+
+	UN := user.Nickname
+	if UN == "" {
+		UN = user.Email
+	}
+
+	Groups, err := models.MembershipRepo.GetAllGroupsForUser(user.UserID)
+	if err != nil {
+		log.Println("🚀 ~ funcGetMessageResponse ~ GetAllGroupsForUser ~ err:", err)
+	}
+
+	messages := map[string][]models.MessageResponse{}
+	if UserChat {
+		offset, error := strconv.Atoi(r.URL.Query().Get("offset"))
+		if error != nil {
+			offset = 0
+		}
+		error = nil
+
+		limit := 20
+		messages, _ = models.MessageRepo.GetMessagesBetweenUsers(user.UserID, toID, offset, limit)
+		if err != nil {
+			log.Println("��� ~ funcHandleGetProfileGetMessagesBetweenUsers ~ err:", err)
+			var apiError ApiError
+			apiError.Error = "Users messages not found."
+			WriteJSON(w, http.StatusInternalServerError, apiError)
+			return
+		}
+	}
+
+	if GroupChat {
+		offset, error := strconv.Atoi(r.URL.Query().Get("offset"))
+		if error != nil {
+			offset = 0
+		}
+		error = nil
+
+		limit := 20
+		messages, err = models.GroupChatRepo.GetMessagesOfAGroup(idGroup, limit, offset)
+		if err != nil {
+			log.Println("��� ~ funcGetMessagesOfAGroup ~ err:", err)
+			var apiError ApiError
+			apiError.Error = "Messages group not found."
+			WriteJSON(w, http.StatusInternalServerError, apiError)
+			return
+		}
+	}
+
+	// Create a UserProfileResponse without the password field
+	chatResponse := ChatResponse{
+		NicknameRequester: UN,
+		Avatar:            user.Avatar,
+		Followers:         followers,
+		Followings:        followings,
+		Groups:            Groups,
+		Messages:          messages,
+	}
+
+	WriteJSON(w, http.StatusOK, chatResponse)
 }
 
 func HandleGetProfile(w http.ResponseWriter, r *http.Request) {

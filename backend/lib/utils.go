@@ -116,7 +116,6 @@ func WriteJSONResponse(w http.ResponseWriter, data interface{}) {
 }
 
 func RenderPage(basePath, pagePath string, data any, res http.ResponseWriter) {
-	fmt.Println(basePath)
 
 	files := []string{"newtemplates/" + pagePath + ".html"}
 	tpl, err := template.ParseFiles(files...)
@@ -154,13 +153,11 @@ func UploadImage(req *http.Request) string {
 	}
 	file, err := os.Create(filePath)
 	if err != nil {
-		fmt.Println("❌ Error when creating the file", err)
 		return ""
 	}
 	defer file.Close()
 	_, err = io.Copy(file, image)
 	if err != nil {
-		fmt.Println("❌ Error when copying data", err)
 		return ""
 	}
 

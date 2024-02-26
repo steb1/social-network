@@ -123,6 +123,16 @@ func IsAuthenticated(r *http.Request) (models.Session, bool) {
 	return models.Session{}, false
 }
 
+func IsTokenValid(sessionToken string) (models.Session, bool) {
+	if sessionToken != "" {
+		userSession, exists := models.SessionRepo.SessionExists(sessionToken)
+		if exists && !lib.IsExpired(userSession.Expiry) {
+			return userSession, true
+		}
+	}
+	return models.Session{}, false
+}
+
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST")
@@ -133,7 +143,6 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	var apiError ApiError
 	errs := r.ParseMultipartForm(10 << 20)
 	if errs != nil {
-		fmt.Println("An error occured")
 		return
 	}
 
@@ -218,7 +227,6 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		if !allowed {
-			fmt.Println("Extension not valid :", ext)
 			http.Error(w, "Extension de fichier non valide (JPEG, JPG, GIF, WEBP et PNG uniquement)", http.StatusBadRequest)
 			return
 		}
@@ -288,7 +296,7 @@ func CheckAutheHandler(w http.ResponseWriter, r *http.Request) {
 		var apiError ApiError
 		apiError.Error = "Unauthorized"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
-		fmt.Println("no exist")
+		fmt.Println("No exist Authorization")
 		return
 	}
 	userId, _ := strconv.Atoi(userSesion.UserID)
@@ -304,4 +312,20 @@ func CheckAutheHandler(w http.ResponseWriter, r *http.Request) {
 	user.Password = ""
 
 	WriteJSON(w, http.StatusOK, user)
+}
+
+func IsAuthenticatedGoCheck(r *http.Request) (models.Session, bool) {
+	c, err := r.Cookie("social-network")
+	if err != nil {
+		fmt.Println("No exist Cookie: ", err)
+		log.Println(err, "IsAuthenticatedGoCheck")
+	}
+	if err == nil {
+		sessionToken := c.Value
+		userSession, exists := models.SessionRepo.SessionExists(sessionToken)
+		if exists && !lib.IsExpired(userSession.Expiry) {
+			return userSession, true
+		}
+	}
+	return models.Session{}, false
 }
