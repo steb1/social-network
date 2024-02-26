@@ -317,7 +317,7 @@ func CheckAutheHandler(w http.ResponseWriter, r *http.Request) {
 func IsAuthenticatedGoCheck(r *http.Request) (models.Session, bool) {
 	c, err := r.Cookie("social-network")
 	if err != nil {
-		fmt.Println("No exist Cookie: ", err)
+		// fmt.Println("No exist Cookie: ", err)
 		log.Println(err, "IsAuthenticatedGoCheck")
 	}
 	if err == nil {

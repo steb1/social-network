@@ -41,9 +41,9 @@ const ValidateButton = ({ userId, cookie }) => {
                     fill='#ffffff'
                     fillRule='evenodd'
                     stroke='fffffff'
-                    stroke-linecap='round'
-                    stroke-linejoin='round'
-                    stroke-width='4'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth='4'
                     d='m4 24l5-5l10 10L39 9l5 5l-25 25z'
                     clipRule='evenodd'
                 ></path>

@@ -114,7 +114,7 @@ func (pr *PostRepository) GetUserLikedPosts(userID int) ([]*Post, error) {
 
 // DeletePostLike removes a post like from the database by post_like_id
 func (plr *PostLikeRepository) DeletePostLike(postID, AuthorID int) error {
-	query := "DELETE FROM post_groups_likes WHERE post_id = ? AND author_id= ?"
+	query := "DELETE FROM post_likes WHERE post_id = ? AND author_id= ?"
 	_, err := plr.db.Exec(query, postID, AuthorID)
 	if err != nil {
 		return err

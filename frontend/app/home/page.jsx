@@ -1,5 +1,5 @@
 import AddStory from "../components/addStory";
-import { PostText, PostPlaceholder } from "../components/posts";
+import { PostPlaceholder, AllPostText } from "../components/posts";
 import { Rightbar } from "../components/rightbar";
 import "../../public/js/script.js";
 import "../../public/js/simplebar.js";
@@ -13,8 +13,9 @@ const HomePage = () => {
                     {/* Add Story Section */}
                     <AddStory />
                     {/* Posts Section */}
-                    <PostText />
-                    
+                    <AllPostText />
+                    <PostPlaceholder />
+
                 </div>
                 {/* Fixed Rightbar */}
                 <div className='block h-full mt-20 ml-20 max-sm:hidden max-md:hidden max-lg:hidden '>

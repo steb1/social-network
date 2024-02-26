@@ -55,7 +55,7 @@ func HandleLikePostGroup(w http.ResponseWriter, r *http.Request) {
 
 	if isLiked {
 		// Post is already liked, handle unlike logic
-		if err := models.PostLikeRepo.DeletePostLike(postLike.PostID, postLike.AuthorID); err != nil {
+		if err := models.PostGroupLikeRepo.DeletePostGroupLike(postLike.PostID, postLike.AuthorID); err != nil {
 			apiError.Error = "Failed to unlike post."
 			WriteJSON(w, http.StatusInternalServerError, apiError)
 			return
