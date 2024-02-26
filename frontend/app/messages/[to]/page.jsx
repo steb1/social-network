@@ -2,7 +2,7 @@ import authMiddleware from "@/middleware/authMiddleware";
 import config from "@/config";
 import Header from "@/app/components/header";
 import Sidebar from "@/app/components/sidebar";
-import MainMessage from "@/app/components/mainMessage";
+import MainMessage from "@/app/components/MainMessage";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
@@ -49,15 +49,3 @@ const Messages = async ({ params: { to } }) => {
 };
 
 export default authMiddleware(Messages, `${config.serverApiUrl}checkAuth`);
-
-{
-	Messages &&
-		Object.entries(Messages).map(([date, chatMessages]) => (
-			<>
-				<div className="flex justify-center ">
-					<div className="font-medium text-gray-500 text-sm dark:text-white/70">{formatDateToLocalDate(date)}</div>
-				</div>
-				{chatMessages.map((message) => (message.sender == Sender ? <LeftMessage Avatar={AvatarSender} Content={message.content} /> : <RightMessage Avatar={Chatter[0].avatar} Content={message.content} />))}
-			</>
-		));
-}
