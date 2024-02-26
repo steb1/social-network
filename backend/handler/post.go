@@ -13,7 +13,8 @@ import (
 )
 
 func HandleCreatePost(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	origin := r.Header.Get("Origin")
+	w.Header().Set("Access-Control-Allow-Origin", origin)
 	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -24,8 +25,8 @@ func HandleCreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cookie, err := r.Cookie("social-network")
-	session, err := models.SessionRepo.GetSession(cookie.Value)
+	sessionToken := r.Header.Get("Authorization")
+	session, err := models.SessionRepo.GetSession(sessionToken)
 	if err != nil {
 		apiError.Error = "Go connect first !"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
@@ -102,16 +103,21 @@ func HandleGetAllPosts(w http.ResponseWriter, r *http.Request) {
 		HandleOptions(w, r)
 		return
 	}
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	origin := r.Header.Get("Origin")
+	w.Header().Set("Access-Control-Allow-Origin", origin)
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	var apiError ApiError
-
-	cookie, errC := r.Cookie("social-network")
-	session, errS := models.SessionRepo.GetSession(cookie.Value)
-	if (errS != nil || errC != nil) {
+	// cookie, errC := r.Cookie("social-network")
+	sessionToken := r.Header.Get("Authorization")	
+	// if errC != nil {
+	// 	return
+	// }
+	// fmt.Println("cookie",cookie.Value)
+	session, errS := models.SessionRepo.GetSession(sessionToken)
+	if (errS != nil) {
 		apiError.Error = "Go connect first !"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
 		return
@@ -131,7 +137,7 @@ func HandleGetAllPosts(w http.ResponseWriter, r *http.Request) {
 func RetreiveAllPosts(w http.ResponseWriter, r *http.Request, userId int, apiError ApiError) []*models.Post {
 	posts, err := models.PostRepo.GetAllPostsPublicPrivateAuth(userId)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("ici erreur",err)
 		apiError.Error = "Something went wrong while getting all public posts"
 		WriteJSON(w, http.StatusInternalServerError, apiError)
 		return nil
@@ -143,8 +149,8 @@ func RetreiveAllPosts(w http.ResponseWriter, r *http.Request, userId int, apiErr
 			fmt.Println(err)
 			apiError.Error = "Something went wrong while getting comments inside posts"
 			WriteJSON(w, http.StatusInternalServerError, apiError)
+			return nil
 		}
-
 		posts[i].Comments = comments
 	}
 	return posts

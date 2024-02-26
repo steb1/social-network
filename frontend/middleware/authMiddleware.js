@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 const authMiddleware = (handler, serverUrl) => async (req, res) => {
+	console.log("variable next",serverUrl);
 	const cookieStore = cookies();
 	const token = cookieStore.get("social-network");
 

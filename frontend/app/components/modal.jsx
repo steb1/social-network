@@ -2,10 +2,13 @@ import config from "@/config";
 export const Modal = ({ followers, setPosts, posts }) => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    let  token= document.cookie.split("=")[1]
     const NewformData = new FormData(e.currentTarget);
     const response = await fetch(config.serverApiUrl + "createPost", {
       method: "POST",
-      credentials: "include",
+      headers: {
+        'Authorization': token ,
+    },
       body: NewformData,
     });
     try {

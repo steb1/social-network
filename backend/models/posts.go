@@ -225,6 +225,7 @@ ORDER BY
 
 	`, userId, userId, userId, userId)
 	if err != nil {
+		fmt.Println("errrbd1")
 		return nil, err
 	}
 	defer rows.Close()

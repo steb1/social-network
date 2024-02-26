@@ -10,10 +10,13 @@ import "../../public/assets/js/script.js";
 import "../../public/assets/js/simplebar.js";
 import config from "@/config";
 
+let token = document.cookie.split("=")[1]
 export const fetchFollowers = async (setFollowers) => {
   const response = await fetch(config.serverApiUrl + "getFollowers", {
     method: "GET",
-    credentials: "include",
+    headers: {
+      'Authorization': token,
+    },
   });
   if (response.ok) {
     const followers = await response.json();
@@ -26,7 +29,9 @@ const fetchAllPosts = async (setPosts, setServerError) => {
   try {
     const response = await fetch(config.serverApiUrl + "getAllPosts", {
       method: "GET",
-      credentials: "include",
+      headers: {
+        'Authorization': token,
+      },
     });
     if (response.ok) {
       const data = await response.json();
@@ -50,7 +55,7 @@ const HomePage = () => {
     fetchAllPosts(setPosts, setServerError);
     fetchFollowers(setFollowers);
   }, []); // Empty dependency array ensures this runs only once after the initial render
-  
+
   return (
     <div id="wrapper" className="pt-15 space-x-2">
       {/* Header */}
