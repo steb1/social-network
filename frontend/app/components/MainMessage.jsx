@@ -3,7 +3,6 @@ import React from "react";
 import SideBarPreviewChat from "../messages/SideBarPreviewChat";
 import LeftMessage from "../messages/LeftMessage";
 import RightMessage from "../messages/RightMessage";
-import DateMessage from "../messages/DateMessage";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import socket from "@/public/js/socket";
@@ -24,6 +23,8 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
 			cms && ReactDOM.render(ReactDOM.createPortal(<TypingIndicator Avatar={Chatter[0].avatar} />, cms), document.createElement("div"));
 			cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
 			isRendered = true;
+		} else {
+			//cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
 		}
 	};
 
@@ -43,7 +44,7 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
 						return;
 					}
 
-					cms && ReactDOM.render(ReactDOM.createPortal(<LeftMessage Avatar={Chatter[0].avatar} Content={message.body.text} />, cms), document.createElement("div"));
+					cms && ReactDOM.render(ReactDOM.createPortal(<LeftMessage Avatar={Chatter[0].avatar} Content={message.body.text} Time={Date.now()} />, cms), document.createElement("div"));
 					cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
 					break;
 				case "typeinprogress":
@@ -69,6 +70,7 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
 				default:
 			}
 		};
+		cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
 	}, []);
 
 	const handleSendMessageClick = () => {
@@ -128,7 +130,7 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
 														<path fill="currentColor" d="M16 19.889c-3.314 0-6-1.99-6-4.445C10 12.99 12.686 11 16 11s6 1.99 6 4.444c0 1.199-.64 2.286-1.68 3.085c.317 1.165 1.08 1.915 1.68 2.471c-1.8 0-2.716-.544-3.792-1.422c-.684.2-1.428.31-2.208.31z"></path>
 													</g>
 												</svg>
-												<p>Don't be shy chat someone !</p>
+												<p>Don't be shy chat with someone !</p>
 											</div>
 										</div>
 									</div>
@@ -187,16 +189,18 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
 														<div key={date} className="flex justify-center ">
 															<div className="font-medium text-gray-500 text-sm dark:text-white/70">{formatDateToLocalDate(date)}</div>
 														</div>
-														{chatMessages.map((message) => (message.sender == Sender ? <RightMessage Avatar={AvatarSender} Content={message.content} /> : <LeftMessage Avatar={Chatter[0].avatar} Content={message.content} />))}
+														{chatMessages.map((message) => (message.sender == Sender ? <RightMessage Avatar={AvatarSender} Content={message.content} Time={message.sent_time} key={message.sent_time} /> : <LeftMessage Avatar={Chatter[0].avatar} Content={message.content} Time={message.sent_time} key={message.sent_time} />))}
 													</>
 												))
 											: Messages &&
 												Object.entries(Messages).map(([date, chatMessages]) => (
 													<>
 														<div className="flex justify-center ">
-															<div className="font-medium text-gray-500 text-sm dark:text-white/70">{formatDateToLocalDate(date)}</div>
+															<div key={date} className="font-medium text-gray-500 text-sm dark:text-white/70">
+																{formatDateToLocalDate(date)}
+															</div>
 														</div>
-														{chatMessages.map((message) => (message.sender == Sender ? <LeftMessage Avatar={AvatarSender} Content={message.content} /> : <RightMessage Avatar={AvatarSender} Content={message.content} />))}
+														{chatMessages.map((message) => (message.sender == Sender ? <RightMessage Avatar={AvatarSender} Content={message.content} Sender={message.sender} Time={message.sent_time} key={message.sent_time} /> : <LeftMessage Avatar={message.avatar} Content={message.content} Sender={message.sender} Time={message.sent_time} key={message.sent_time} />))}
 													</>
 												))}
 									</div>
@@ -312,7 +316,7 @@ const handleSendMessage = async (messageInput, Sender, Chatter, AvatarSender, cm
 	// TODO: Handle the response from the server before appending the message if the message succesfully sent to the chatter before append
 
 	const cms = document.getElementById("cms");
-	cms && ReactDOM.render(ReactDOM.createPortal(<RightMessage Avatar={AvatarSender} Content={message.text} />, cms), document.createElement("div"));
+	cms && ReactDOM.render(ReactDOM.createPortal(<RightMessage Avatar={AvatarSender} Content={message.text} Time={Date.now()} />, cms), document.createElement("div"));
 	cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
 };
 
