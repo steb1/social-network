@@ -70,7 +70,6 @@ var Routes = []Route{
 	{Path: "/api/inviteUser", Handler: HandleInviteUser, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/handleInvitation", Handler: HandleInviteUserResponse, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/handleRequestGroup", Handler: HandleRequestGroup, Methods: []string{"POST", "OPTIONS"}},
-	{Path: "/api/createGroup", Handler: HandleCreateGroup, Methods: []string{"POST", "OPTIONS"}},
 }
 
 func MiddlewareIsAuthenticated(handler http.HandlerFunc) http.HandlerFunc {
