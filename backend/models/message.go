@@ -21,6 +21,7 @@ type MessageResponse struct {
 	Receiver string `json:"receiver"`
 	Content  string `json:"content"`
 	SentTime string `json:"sent_time"`
+	Avatar   string `json:"avatar"`
 }
 
 type MessageRepository struct {

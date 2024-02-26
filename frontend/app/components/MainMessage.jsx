@@ -3,7 +3,6 @@ import React from "react";
 import SideBarPreviewChat from "../messages/SideBarPreviewChat";
 import LeftMessage from "../messages/LeftMessage";
 import RightMessage from "../messages/RightMessage";
-import DateMessage from "../messages/DateMessage";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import socket from "@/public/js/socket";
@@ -28,6 +27,8 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
                 );
             cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
             isRendered = true;
+        } else {
+            //cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
         }
     };
 
@@ -49,7 +50,11 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
                     cms &&
                         ReactDOM.render(
                             ReactDOM.createPortal(
-                                <LeftMessage Avatar={Chatter[0].avatar} Content={message.body.text} />,
+                                <LeftMessage
+                                    Avatar={Chatter[0].avatar}
+                                    Content={message.body.text}
+                                    Time={Date.now()}
+                                />,
                                 cms
                             ),
                             document.createElement("div")
@@ -79,6 +84,7 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
                 default:
             }
         };
+        cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
     }, []);
 
     const handleSendMessageClick = () => {
@@ -309,12 +315,14 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
                                                               <RightMessage
                                                                   Avatar={AvatarSender}
                                                                   Content={message.content}
+                                                                  Time={message.sent_time}
                                                                   key={message.sent_time}
                                                               />
                                                           ) : (
                                                               <LeftMessage
                                                                   Avatar={Chatter[0].avatar}
                                                                   Content={message.content}
+                                                                  Time={message.sent_time}
                                                                   key={message.sent_time}
                                                               />
                                                           )
@@ -337,12 +345,16 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
                                                               <RightMessage
                                                                   Avatar={AvatarSender}
                                                                   Content={message.content}
+                                                                  Sender={message.sender}
+                                                                  Time={message.sent_time}
                                                                   key={message.sent_time}
                                                               />
                                                           ) : (
                                                               <LeftMessage
-                                                                  Avatar={AvatarSender}
+                                                                  Avatar={message.avatar}
                                                                   Content={message.content}
+                                                                  Sender={message.sender}
+                                                                  Time={message.sent_time}
                                                                   key={message.sent_time}
                                                               />
                                                           )
@@ -504,7 +516,7 @@ const handleSendMessage = async (messageInput, Sender, Chatter, AvatarSender, cm
     const cms = document.getElementById("cms");
     cms &&
         ReactDOM.render(
-            ReactDOM.createPortal(<RightMessage Avatar={AvatarSender} Content={message.text} />, cms),
+            ReactDOM.createPortal(<RightMessage Avatar={AvatarSender} Content={message.text} Time={Date.now()} />, cms),
             document.createElement("div")
         );
     cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
