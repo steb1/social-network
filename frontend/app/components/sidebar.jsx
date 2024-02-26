@@ -77,7 +77,7 @@ const Sidebar = async () => {
 									<span className="text-base"> Notifications </span>
 								</Link>
 							</li>
-							<li>
+							<li className="ml-0">
 								<Link href="">
 									<CreateGroup />
 								</Link>
@@ -89,7 +89,7 @@ const Sidebar = async () => {
 											<img src={`http://localhost:8080/img/${user.avatar}`} />
 										</div>
 									</div>
-									<span className="text-base"> Profile </span>
+									<span className="text-base"> {user.nickname || user.email} </span>
 								</Link>
 							</li>
 						</ul>

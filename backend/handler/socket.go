@@ -172,6 +172,13 @@ func handleMessageForUser(message WebSocketMessage, userId int) {
 
 func handleGroupMessage(messagepattern MessagePattern, userId int, AllUsersOfGroup []models.User, idGroup int) {
 	log.Println(" 🚀 ~ Message ~ GROUP")
+	if !lib.IsBlank(messagepattern.Text) && !lib.IsBlank(messagepattern.Sender) && !lib.IsBlank(messagepattern.Receiver) {
+		models.GroupChatRepo.CreateGroupChat(userId, idGroup, messagepattern.Text)
+	} else {
+		// SEND ERROR
+		log.Println("Groupchat wasnot created")
+		return
+	}
 	for _, user := range AllUsersOfGroup {
 		if user.UserID != userId {
 			sendMessageToUser(userId, messagepattern, user.UserID, "group", idGroup)
@@ -185,6 +192,7 @@ func handleUserMessage(messagepattern MessagePattern, userId int) {
 }
 
 func sendMessageToUser(senderID int, messagepattern MessagePattern, receiverID int, messagetype string, idGroup int) {
+	Command := ""
 	if messagetype == "chat" {
 		if !lib.IsBlank(messagepattern.Text) && !lib.IsBlank(messagepattern.Sender) && !lib.IsBlank(messagepattern.Receiver) {
 			models.MessageRepo.CreateMessage(senderID, receiverID, messagepattern.Text)
@@ -192,15 +200,11 @@ func sendMessageToUser(senderID int, messagepattern MessagePattern, receiverID i
 			// SEND ERROR
 			return
 		}
+		Command = "messageforuser"
 	}
 
 	if messagetype == "group" {
-		if !lib.IsBlank(messagepattern.Text) && !lib.IsBlank(messagepattern.Sender) && !lib.IsBlank(messagepattern.Receiver) {
-			models.GroupChatRepo.CreateGroupChat(senderID, idGroup, messagepattern.Text)
-		} else {
-			// SEND ERROR
-			return
-		}
+		Command = "messageforgroup"
 	}
 
 	tosend, exists := connections[receiverID]
@@ -211,10 +215,8 @@ func sendMessageToUser(senderID int, messagepattern MessagePattern, receiverID i
 		return
 	}
 
-	log.Println("Connected user:", messagepattern.Receiver, "message in progress")
-
 	// Use EnvoyerMessage function directly
-	if err := EnvoyerMessage(tosend, "messageforuser", messagepattern); err != nil {
+	if err := EnvoyerMessage(tosend, Command, messagepattern); err != nil {
 		log.Println("Error writing message to connection:", err)
 		// SEND ERROR
 		// log.Println("Error: Unable to send message to user")
