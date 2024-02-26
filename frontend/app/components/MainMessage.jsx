@@ -14,7 +14,7 @@ import config from "@/config";
 
 const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messages, GroupChatter }) => {
 	const [messageInput, setMessageInput] = useState("");
-	const cmsRef = useRef();
+	const cmsRef = useRef(null);
 	let isRendered = false;
 
 	const RenderType = () => {
@@ -36,16 +36,17 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
 
 		socket.onmessage = async function (event) {
 			const message = JSON.parse(event.data);
-			const cms = document.getElementById("cms");
 			switch (message.command) {
 				case "messageforuser":
-					alert("message for user");
 					if (message.body.sender !== Chatter[0].nickname && message.body.sender !== Chatter[0].email) {
 						return;
 					}
 
 					cms && ReactDOM.render(ReactDOM.createPortal(<LeftMessage Avatar={Chatter[0].avatar} Content={message.body.text} Time={Date.now()} />, cms), document.createElement("div"));
 					cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+					break;
+				case "messageforgroup":
+					alert("messge group");
 					break;
 				case "typeinprogress":
 					if (message.body.sender !== Chatter[0].nickname && message.body.sender !== Chatter[0].email) {
@@ -134,7 +135,7 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
 											</div>
 										</div>
 									</div>
-									<div id="cms" className="text-sm font-medium space-y-6 h-[50vh]"></div>
+									<div id="cms" ref={cmsRef} className="text-sm font-medium space-y-6 h-[50vh]"></div>
 								</div>
 							</>
 						) : (
