@@ -130,6 +130,8 @@ func handleMessageForUser(message WebSocketMessage, userId int) {
 		return
 	}
 
+	log.Println(" 🚀 ~ Message ~ handleMessageForUser")
+
 	sender, _ := bodyMap["sender"].(string)
 	receiver, _ := bodyMap["receiver"].(string)
 	text, _ := bodyMap["text"].(string)
@@ -146,9 +148,11 @@ func handleMessageForUser(message WebSocketMessage, userId int) {
 		userExists      bool
 		groupExists     bool
 		AllUsersOfGroup []models.User
+		idGroup         int
+		err             error
 	)
 
-	if idGroup, err := strconv.Atoi(messagepattern.Receiver); err == nil {
+	if idGroup, err = strconv.Atoi(messagepattern.Receiver); err == nil {
 		AllUsersOfGroup, err = models.MembershipRepo.GetAllUsersByGroupID(idGroup)
 		groupExists = err == nil
 	}
@@ -158,7 +162,7 @@ func handleMessageForUser(message WebSocketMessage, userId int) {
 	}
 
 	if groupExists {
-		handleGroupMessage(messagepattern, userId, AllUsersOfGroup)
+		handleGroupMessage(messagepattern, userId, AllUsersOfGroup, idGroup)
 	}
 
 	if userExists {
@@ -166,36 +170,48 @@ func handleMessageForUser(message WebSocketMessage, userId int) {
 	}
 }
 
-func handleGroupMessage(messagepattern MessagePattern, userId int, AllUsersOfGroup []models.User) {
+func handleGroupMessage(messagepattern MessagePattern, userId int, AllUsersOfGroup []models.User, idGroup int) {
+	log.Println(" 🚀 ~ Message ~ GROUP")
 	for _, user := range AllUsersOfGroup {
 		if user.UserID != userId {
-			sendMessageToUser(userId, messagepattern, user.UserID)
+			sendMessageToUser(userId, messagepattern, user.UserID, "group", idGroup)
 		}
 	}
 }
 
 func handleUserMessage(messagepattern MessagePattern, userId int) {
-	sendMessageToUser(userId, messagepattern, models.UserRepo.GetIDFromUsernameOrEmail(messagepattern.Receiver))
+	log.Println(" 🚀 ~ Message ~ ONE USER")
+	sendMessageToUser(userId, messagepattern, models.UserRepo.GetIDFromUsernameOrEmail(messagepattern.Receiver), "chat", 0)
 }
 
-func sendMessageToUser(senderID int, messagepattern MessagePattern, receiverID int) {
-	if !lib.IsBlank(messagepattern.Text) && !lib.IsBlank(messagepattern.Sender) && !lib.IsBlank(messagepattern.Receiver) {
-		models.MessageRepo.CreateMessage(senderID, receiverID, messagepattern.Text)
-	} else {
-		// log.Println("Cannot send empty messages.")
-		// SEND ERROR
-		return
+func sendMessageToUser(senderID int, messagepattern MessagePattern, receiverID int, messagetype string, idGroup int) {
+	if messagetype == "chat" {
+		if !lib.IsBlank(messagepattern.Text) && !lib.IsBlank(messagepattern.Sender) && !lib.IsBlank(messagepattern.Receiver) {
+			models.MessageRepo.CreateMessage(senderID, receiverID, messagepattern.Text)
+		} else {
+			// SEND ERROR
+			return
+		}
+	}
+
+	if messagetype == "group" {
+		if !lib.IsBlank(messagepattern.Text) && !lib.IsBlank(messagepattern.Sender) && !lib.IsBlank(messagepattern.Receiver) {
+			models.GroupChatRepo.CreateGroupChat(senderID, idGroup, messagepattern.Text)
+		} else {
+			// SEND ERROR
+			return
+		}
 	}
 
 	tosend, exists := connections[receiverID]
 	if !exists {
-		// log.Println("No connected user:", messagepattern.Receiver)
-		// log.Println("Error: User not connected")
+		log.Println("No connected user:", messagepattern.Receiver)
+		log.Println("Error: User not connected")
 		// SEND ERROR
 		return
 	}
 
-	// log.Println("Connected user:", messagepattern.Receiver, "message in progress")
+	log.Println("Connected user:", messagepattern.Receiver, "message in progress")
 
 	// Use EnvoyerMessage function directly
 	if err := EnvoyerMessage(tosend, "messageforuser", messagepattern); err != nil {

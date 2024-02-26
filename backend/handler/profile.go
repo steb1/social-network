@@ -56,19 +56,19 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 	toID := models.UserRepo.GetIDFromUsernameOrEmail(to)
 
 	// Check if it's a user
-	userExists, _ := models.UserRepo.UserExists(toID)
+	UserChat, _ := models.UserRepo.UserExists(toID)
 
 	// Check if it's a group
 	idGroup, err := strconv.Atoi(to)
-	groupExists := false
+	GroupChat := false
 
 	if err == nil {
 		_, groupErr := models.MembershipRepo.GetAllUsersByGroupID(idGroup)
-		groupExists = groupErr == nil
+		GroupChat = groupErr == nil
 	}
 
 	// If ni user ni group
-	if !userExists && !groupExists {
+	if !UserChat && !GroupChat {
 		WriteJSON(w, http.StatusNotFound, nil)
 	}
 
@@ -112,7 +112,7 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 	}
 
 	messages := map[string][]models.MessageResponse{}
-	if userExists {
+	if UserChat {
 		offset, error := strconv.Atoi(r.URL.Query().Get("offset"))
 		if error != nil {
 			offset = 0
@@ -130,7 +130,7 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if groupExists {
+	if GroupChat {
 		offset, error := strconv.Atoi(r.URL.Query().Get("offset"))
 		if error != nil {
 			offset = 0
