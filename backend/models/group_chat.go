@@ -22,22 +22,22 @@ func NewGroupChatRepository(db *sql.DB) *GroupChatRepository {
 }
 
 // CreateGroupChat adds a new group chat message to the database
-func (gcr *GroupChatRepository) CreateGroupChat(groupChat *GroupChat) error {
+func (gcr *GroupChatRepository) CreateGroupChat(SenderID, GroupID int, Content string) error {
 	query := `
-		INSERT INTO group_chats (sender_id, group_id, content, sent_time)
-		VALUES (?, ?, ?, ?)
+		INSERT INTO group_chats (sender_id, group_id, content)
+		VALUES (?, ?, ?)
 	`
-	result, err := gcr.db.Exec(query, groupChat.SenderID, groupChat.GroupID, groupChat.Content, groupChat.SentTime)
+	result, err := gcr.db.Exec(query, SenderID, GroupID, Content)
 	if err != nil {
 		return err
 	}
 
-	lastInsertID, err := result.LastInsertId()
+	_, err = result.LastInsertId()
 	if err != nil {
 		return err
 	}
 
-	groupChat.GroupChatID = int(lastInsertID)
+	// groupChat.GroupChatID = int(lastInsertID)
 	return nil
 }
 
@@ -75,6 +75,7 @@ func (gcr *GroupChatRepository) DeleteGroupChat(groupChatID int) error {
 	}
 	return nil
 }
+
 func (repo *GroupChatRepository) GetMessagesOfAGroup(groupChatID, limit, offset int) (map[string][]MessageResponse, error) {
 	messages := make(map[string][]MessageResponse)
 	rows, err := repo.db.Query(`SELECT
