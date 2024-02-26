@@ -81,7 +81,8 @@ func (repo *GroupChatRepository) GetMessagesOfAGroup(groupChatID, limit, offset 
 		strftime('%Y-%m-%d', sent_time) as date,
 		COALESCE(u.nickname, u.email) AS sender,
 		gc.content,
-		gc.sent_time
+		gc.sent_time,
+		u.avatar
 	FROM
     	group_chats gc
 	JOIN
@@ -98,13 +99,15 @@ func (repo *GroupChatRepository) GetMessagesOfAGroup(groupChatID, limit, offset 
 	for rows.Next() {
 		var message MessageResponse
 		var date string
-		err := rows.Scan(&date, &message.Sender, &message.Content, &message.SentTime)
+		err := rows.Scan(&date, &message.Sender, &message.Content, &message.SentTime, &message.Avatar)
 		if err != nil {
 			return nil, err
 		}
 		messages[date] = append(messages[date], message)
 	}
-
+	for date, result := range messages {
+		messages[date] = reverseMessages(result)
+	}
 	return messages, nil
 }
 
