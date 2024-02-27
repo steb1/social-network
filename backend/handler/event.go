@@ -102,11 +102,9 @@ func HandleCreateEvent(w http.ResponseWriter, r *http.Request) {
 		lib.WriteJSONResponse(w, response)
 	}
 
-
 }
 
 func HandleRegisterEvent(w http.ResponseWriter, r *http.Request) {
-
 
 	if r.Method == http.MethodOptions {
 		HandleOptions(w, r)

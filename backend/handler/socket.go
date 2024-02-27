@@ -5,6 +5,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -43,6 +44,7 @@ type MessagePattern struct {
 	Receiver string `json:"receiver"`
 	Text     string `json:"text"`
 	Time     string `json:"time"`
+	GroupId  int    `json:"groupId"`
 }
 
 func SocketHandler(w http.ResponseWriter, r *http.Request) {
@@ -117,6 +119,9 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 
 			case "typeinprogress", "nontypeinprogress":
 				handleInProgressMessage(message.Command, message.Body)
+
+			case "inviteUser":
+				handleSendInviteNotif(message.Command, message.Body, user)
 			}
 		}
 	}()
@@ -260,4 +265,42 @@ func handleInProgressMessage(messageType string, messageBody interface{}) {
 	if err := EnvoyerMessage(tosend, messageType, messagepattern); err != nil {
 		log.Println("Error writing message", messageType, "to connection:", err)
 	}
+}
+func handleSendInviteNotif(messageType string, messageBody interface{}, user *models.User) {
+	bodyMap, ok := messageBody.(map[string]interface{})
+	if !ok {
+		// log.Println("Type de corps non pris en charge pour", messageType)
+		return
+	}
+
+	fmt.Println("Olalalalaaa 1")
+
+	intInvitedId, _ := strconv.Atoi(fmt.Sprintf("%v", bodyMap["invitedId"]))
+
+	invitedUser, err := models.UserRepo.GetUserByID(intInvitedId)
+
+	if err != nil {
+		return
+	}
+
+	var messagepattern MessagePattern
+	messagepattern.Sender = user.FirstName + " " + user.LastName
+	messagepattern.Receiver = invitedUser.FirstName + " " + invitedUser.LastName
+	messagepattern.GroupId, _ = strconv.Atoi(fmt.Sprintf("%v", bodyMap["groupId"]))
+
+	tosend, exists := connections[invitedUser.UserID]
+
+	if !exists {
+		return
+	}
+
+	fmt.Println("Olalalalaaa 2")
+	fmt.Println(len(connections), "len connections")
+
+	if err := EnvoyerMessage(tosend, messageType, messagepattern); err != nil {
+		log.Println("Error writing message", messageType, "to connection:", err)
+	}
+
+	fmt.Println("Olalalalaaa 3")
+
 }
