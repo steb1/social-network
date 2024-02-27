@@ -117,7 +117,6 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 
 			case "typeinprogress", "nontypeinprogress":
 				handleInProgressMessage(message.Command, message.Body)
-
 			}
 		}
 	}()
@@ -252,6 +251,7 @@ func handleInProgressMessage(messageType string, messageBody interface{}) {
 	messagepattern.Sender = sender
 	messagepattern.Receiver = receiver
 
+	// TODO CHECK IF THE MESSAGE IS FROM A GROUP OR FROM A SIMPLE DISCUSSION
 	tosend, exists := connections[models.UserRepo.GetIDFromUsernameOrEmail(messagepattern.Receiver)]
 	if !exists {
 		return
