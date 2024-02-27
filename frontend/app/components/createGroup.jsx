@@ -37,16 +37,15 @@ export const CreateGroup = () => {
 				/>
 			</svg>
 			<li onClick={() => document.getElementById("my_modal_3").showModal()} className="" uk-scrollspy-class="uk-animation-fade">
-				<div className="p-0 px-0 rounded-lg cursor-pointer dark:text-white dark:bg-dark4">
-					<div className="mt-0 text-sm cursor-pointer font-medium">
+				<div className="rounded-lg cursor-pointer dark:text-white dark:bg-dark4">
+					<div className=" text-sm cursor-pointer font-medium">
 						Create Group
 						<dialog id="my_modal_3" className="modal">
 							<div className="modal-box overflow-y-visible">
 								<form method="dialog">
 									{/* if there is a button in form, it will close the modal */}
-									<button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+									<button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"></button>
 								</form>
-								<h3 className="font-bold text-lg">Create Group</h3>
 								<div>
 									<label className="form-control w-full max-w-xs">
 										<div className="label">
