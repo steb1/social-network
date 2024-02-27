@@ -20,7 +20,7 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
     const { sendJsonMessage } = useWebSocket(socketUrl, {
         onOpen: () => console.log("opened"),
         onClose: () => console.log("closed"),
-        share: true,
+        share: false,
         //Will attempt to reconnect on all close events, such as server shutting down
         shouldReconnect: (closeEvent) => true,
         onMessage: (event) => {
@@ -187,8 +187,8 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
         setMessageInput((prevMessage) => prevMessage + emojiData.emoji);
     };
 
-    const debounceNoTyping = debounce(() => nontypeinprogress(Sender, Chatter, GroupChatter), 8000);
-    const throttleTyping = throttle(() => typeinprogress(Sender, Chatter, GroupChatter), 3000);
+    //const debounceNoTyping = debounce(() => nontypeinprogress(Sender, Chatter, GroupChatter), 8000);
+    //const throttleTyping = throttle(() => typeinprogress(Sender, Chatter, GroupChatter), 3000);
 
     useEffect(() => {
         cmsRef.current.scrollIntoView({ behavior: "instant", block: "end" });
@@ -484,8 +484,8 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
                                             placeholder='Write your message'
                                             rows='1'
                                             value={messageInput}
-                                            onKeyDown={throttleTyping}
-                                            onKeyUp={debounceNoTyping}
+                                            // onKeyDown={throttleTyping}
+                                            // onKeyUp={debounceNoTyping}
                                             onChange={(e) => setMessageInput(e.target.value)} //  update la valeur du champ de message
                                             className='w-full resize-none bg-secondery rounded-full px-4 p-2'
                                         ></textarea>
@@ -589,47 +589,6 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
 };
 
 export default MainMessage;
-
-const handleSendMessage = async (messageInput, Sender, Chatter, AvatarSender, cmsRef, GroupChatter) => {
-    if (messageInput.trim() === "") {
-        alert("No empty message");
-        return;
-    }
-
-    const message = {
-        sender: Sender,
-        receiver:
-            (Chatter[0] && Chatter[0].nickname) ||
-            (Chatter[0] && Chatter[0].email) ||
-            (GroupChatter[0] && String(GroupChatter[0].GroupID)),
-        text: messageInput,
-        time: Date.now(),
-    };
-
-    await sendMessage("messageforuser", message);
-
-    // TODO: Handle the response from the server before appending the message if the message succesfully sent to the chatter before append
-
-    const cms = document.getElementById("cms");
-    cms &&
-        ReactDOM.render(
-            ReactDOM.createPortal(
-                <RightMessage Avatar={AvatarSender} Content={message.text} Sender={"(You)"} Time={Date.now()} />,
-                cms
-            ),
-            document.createElement("div")
-        );
-    cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
-};
-
-export async function sendMessage(command, body) {
-    const WebSocketMessage = {
-        command: command,
-        body: body,
-    };
-
-    socket.send(JSON.stringify(WebSocketMessage));
-}
 
 function debounce(fn, delay) {
     let timer = null;
