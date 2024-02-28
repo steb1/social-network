@@ -124,6 +124,9 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 
 			case "inviteUser":
 				handleSendInviteNotif(message.Command, message.Body, user)
+
+			case "handleGroupRequest":
+				handleSendGroupOwnerNotif(message.Command, message.Body, user)
 			}
 		}
 	}()
@@ -275,8 +278,6 @@ func handleSendInviteNotif(messageType string, messageBody interface{}, user *mo
 		return
 	}
 
-	fmt.Println("Olalalalaaa 1")
-
 	intInvitedId, _ := strconv.Atoi(fmt.Sprintf("%v", bodyMap["invitedId"]))
 
 	invitedUser, err := models.UserRepo.GetUserByID(intInvitedId)
@@ -296,6 +297,55 @@ func handleSendInviteNotif(messageType string, messageBody interface{}, user *mo
 		return
 	}
 
+	fmt.Println(len(connections), "len connections")
+
+	if err := EnvoyerMessage(tosend, messageType, messagepattern); err != nil {
+		log.Println("Error writing message", messageType, "to connection:", err)
+		return
+	}
+
+	var notification models.Notification
+
+	notification.CreatedAt = time.Now().String()
+	notification.GroupID = sql.NullInt64{Int64: int64(messagepattern.GroupId), Valid: true}
+	notification.IsRead = false
+	notification.SenderID = user.UserID
+	notification.UserID = invitedUser.UserID
+	notification.NotificationType = "inviteUser"
+
+	err = models.NotifRepo.CreateNotification(&notification)
+
+	if err != nil {
+		fmt.Println("Notification not created")
+	}
+
+}
+
+func handleSendGroupOwnerNotif(messageType string, messageBody interface{}, user *models.User) {
+	bodyMap, ok := messageBody.(map[string]interface{})
+	if !ok {
+		// log.Println("Type de corps non pris en charge pour", messageType)
+		return
+	}
+
+	fmt.Println("Olalalalaaa 1")
+
+	var messagepattern MessagePattern
+
+	messagepattern.GroupId, _ = strconv.Atoi(fmt.Sprintf("%v", bodyMap["groupId"]))
+	group, _ := models.GroupRepo.GetGroup(messagepattern.GroupId)
+
+	receiver, _ := models.UserRepo.GetUserByID(group.CreatorID)
+
+	messagepattern.Sender = user.FirstName + " " + user.LastName
+	messagepattern.Receiver = receiver.FirstName + " " + receiver.LastName
+
+	tosend, exists := connections[receiver.UserID]
+
+	if !exists {
+		return
+	}
+
 	fmt.Println("Olalalalaaa 2")
 	fmt.Println(len(connections), "len connections")
 
@@ -307,13 +357,13 @@ func handleSendInviteNotif(messageType string, messageBody interface{}, user *mo
 	var notification models.Notification
 
 	notification.CreatedAt = time.Now().String()
-	notification.GroupID =  sql.NullInt64{Int64: int64(messagepattern.GroupId), Valid: true}
+	notification.GroupID = sql.NullInt64{Int64: int64(messagepattern.GroupId), Valid: true}
 	notification.IsRead = false
 	notification.SenderID = user.UserID
-	notification.UserID = invitedUser.UserID
-	notification.NotificationType = "inviteUser"
+	notification.UserID = receiver.UserID
+	notification.NotificationType = "requestGroup"
 
-	err = models.NotifRepo.CreateNotification(&notification)
+	err := models.NotifRepo.CreateNotification(&notification)
 
 	if err != nil {
 		fmt.Println("Notification not created")
