@@ -149,3 +149,36 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "image/jpeg")
 	w.Write(img)
 }
+
+func HandleGetRightBarCategories(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+
+	var apiError ApiError
+
+	cookie, errC := r.Cookie("social-network")
+	if errC != nil {
+		apiError.Error = "Cookie not found"
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	}
+
+	_, errS := models.SessionRepo.GetSession(cookie.Value)
+	if errS != nil {
+		apiError.Error = "Invalid session"
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	}
+
+	postCategoryCount, err := models.PostCategoryRepo.GetRBPostCategory()
+	if err != nil {
+		apiError.Error = "Error fetching post category counts"
+		WriteJSON(w, http.StatusInternalServerError, apiError)
+		return
+	}
+
+	WriteJSON(w, http.StatusOK, postCategoryCount)
+}
