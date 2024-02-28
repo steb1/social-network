@@ -99,10 +99,6 @@ export const Rightbar = () => {
                 <div className='box p-5 px-6 border1  mt-10 dark:bg-dark2'>
                     <div className='flex justify-between text-black dark:text-white'>
                         <h3 className='font-bold text-base'> Trends for you </h3>
-                        <button type='button'>
-                            {" "}
-                            <ion-icon name='sync-outline' className='text-xl' />{" "}
-                        </button>
                     </div>
                     <div className='space-y-3.5 capitalize text-xs font-normal mt-5 mb-2 text-gray-600 dark:text-white/80'>
                         <>
