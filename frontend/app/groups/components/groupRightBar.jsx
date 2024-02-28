@@ -10,6 +10,14 @@ export const GroupRightBar = ({ groupInfo, groupId, invites, setInvites, members
 
         //Will attempt to reconnect on all close events, such as server shutting down
         shouldReconnect: (closeEvent) => true,
+
+        onMessage: (event) => {
+            const message = JSON.parse(event.data);
+            switch (message.command) {
+                case "inviteUser":
+                    console.log(message, "tttt");
+            }
+        }
     });
 
     const handleInviteUsers = async (e, invitedId) => {
