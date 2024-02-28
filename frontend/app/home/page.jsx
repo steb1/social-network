@@ -9,7 +9,7 @@ const HomePage = () => {
     return (
         <Layout>
             <div className='flex mt-5'>
-                <div className='flex-1 pt-8 px-5 md:max-w-[580px] xl:space-y-6 space-y-3 ml-80 '>
+                <div className='flex-1 pt-8 px-5 md:min-w-[580px] xl:space-y-6 space-y-3 ml-80 '>
                     {/* Add Story Section */}
                     <AddStory />
                     {/* Posts Section */}

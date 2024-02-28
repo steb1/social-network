@@ -50,40 +50,39 @@ export const Element = () => {
 
   const updateNotif = async (id) => {
     let token = document.cookie.split("=")[1];
-      if (!token) {
-        return;
-      }
-  
-      if (token) {
-        // Use the token as needed
-        console.log("Token:", token);
+    if (!token) {
+      return;
+    }
+
+    if (token) {
+      // Use the token as needed
+      console.log("Token:", token);
+    } else {
+      console.log("Token not found in cookies");
+    }
+
+    const formData = new FormData();
+    formData.append("notifId", id);
+
+    try {
+      const response = await fetch(config.serverApiUrl + "updateNotif", {
+        method: "POST",
+        headers: {
+          Authorization: token,
+        },
+        credentials: "include",
+        body: formData,
+      });
+
+      if (response.ok) {
+        fetchNotification();
       } else {
-        console.log("Token not found in cookies");
+        console.log("Notif not updated");
       }
-  
-      const formData = new FormData();
-      formData.append("notifId", id);
-  
-      try {
-        const response = await fetch(config.serverApiUrl + "updateNotif", {
-          method: "POST",
-          headers: {
-            Authorization: token,
-          },
-          credentials: "include",
-          body: formData,
-        });
-  
-        if (response.ok) {
-         fetchNotification()
-        } else {
-          console.log("Notif not updated");
-         
-        }
-      } catch (error) {
-        console.error("Error while fetching groups:", error);
-      }
-  }
+    } catch (error) {
+      console.error("Error while fetching groups:", error);
+    }
+  };
 
   const countElementsWithCondition = (arr, condition) =>
     arr.filter(condition).length;
@@ -217,11 +216,20 @@ export const Element = () => {
               <div class="pl-2 p-1 text-sm font-normal dark:text-white">
                 {notifications
                   ? notifications.map((notification) => (
-                      <Link
-                        key={notification.notification_id}
-                        href= {notification.notification_type == "inviteUser" ? "/groups" : "#"}
+                    <Link
+                      key={notification.notification_id}
+                      href={
+                        notification.notification_type === "inviteUser"
+                          ? "/groups"
+                          : notification.notification_type === "requestGroup"
+                          ? `/groups/${notification.Group.group_id}`
+                          : ""
+                      }
+                  
                         class="relative flex items-center gap-3 p-2 duration-200 rounded-xl pr-10 hover:bg-secondery dark:hover:bg-white/10 bg-teal-500/5 mb-5"
-                        onClick={() => updateNotif(notification.notification_id)}
+                        onClick={() =>
+                          updateNotif(notification.notification_id)
+                        }
                       >
                         <div class="relative w-12 h-12 shrink-0">
                           {" "}
@@ -232,19 +240,33 @@ export const Element = () => {
                           />
                         </div>
                         <div class="flex-1 ">
-                          <p>
+                        <p>
+                          {" "}
+                          <b className="font-bold mr-1">
                             {" "}
-                            <b class="font-bold mr-1">
-                              {" "}
-                              {notification.Sender.first_name}{" "}
-                            </b>{" "}
-                            invited you to join group <b class="font-bold mr-1"> { notification.Group.title } </b>
-                          </p>
+                            {notification.Sender.first_name}{" "}
+                          </b>{" "}
+                          {notification.notification_type === "inviteUser" ? (
+                            `invited you to join group `
+                          ) : notification.notification_type === "requestGroup" ? (
+                            `request to join group `
+                          ) : (
+                            ""
+                          )}
+                         
+                            <b className="font-bold mr-1"> {notification.Group.title} </b>
+                         
+                        </p>
+
                           <div class="text-xs text-gray-500 mt-1.5 dark:text-white/80">
                             {" "}
-                            { notification.created_at }
+                            {notification.created_at}
                           </div>
-                          { !notification.is_read ? (<div class="w-2.5 h-2.5 bg-teal-600 rounded-full absolute right-3 top-5"></div>) : "" }
+                          {!notification.is_read ? (
+                            <div class="w-2.5 h-2.5 bg-teal-600 rounded-full absolute right-3 top-5"></div>
+                          ) : (
+                            ""
+                          )}
                         </div>
                       </Link>
                     ))
@@ -266,5 +288,3 @@ export const Element = () => {
     </div>
   );
 };
-
-
