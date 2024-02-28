@@ -1,33 +1,24 @@
-// middleware/authMiddleware.js
-"use server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-const authMiddleware = (handler, serverUrl) => async (req, res) => {
-	const cookieStore = cookies();
-	const token = cookieStore.get("social-network");
+const AuthMiddleware =
+	(handler, serverUrl, isSignInOrSignUpPage = false) =>
+	async (req, res) => {
+		const cookieStore = cookies();
+		const { value: tokenValue } = cookieStore.get("social-network") || {};
 
-	!token ? redirect("/auth/signin") : null;
-
-	const response = await fetch(serverUrl, {
-		method: "GET",
-		headers: {
-			Authorization: `${token.value}`,
-		},
-	});
-
-	if (response.status === 200) {
-		const isSignInOrSignUpPage = req.url === "/auth/signin" || req.url === "/auth/signup";
-
-		if (isSignInOrSignUpPage) {
-			console.log(req.url);
-			// redirect("/");
+		if (!tokenValue) {
+			return isSignInOrSignUpPage ? handler(req, res) : redirect("/auth/signin");
 		}
 
-		return handler(req, res);
-	} else {
-		redirect("/auth/signin");
-	}
-};
+		const response = await fetch(serverUrl, {
+			method: "GET",
+			headers: {
+				Authorization: tokenValue ? `${tokenValue}` : "",
+			},
+		});
 
-export default authMiddleware;
+		return response.status === 200 ? (isSignInOrSignUpPage ? redirect("/") : handler(req, res)) : isSignInOrSignUpPage ? handler(req, res) : redirect("/auth/signin");
+	};
+
+export default AuthMiddleware;
