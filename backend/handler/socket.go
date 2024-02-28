@@ -4,12 +4,14 @@ package handler
 // TODO JE VAIS CLEAN APRES PARDONEZZZZZZ
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 	"sync"
+	"time"
 
 	"server/lib"
 	"server/models"
@@ -299,6 +301,22 @@ func handleSendInviteNotif(messageType string, messageBody interface{}, user *mo
 
 	if err := EnvoyerMessage(tosend, messageType, messagepattern); err != nil {
 		log.Println("Error writing message", messageType, "to connection:", err)
+		return
+	}
+
+	var notification models.Notification
+
+	notification.CreatedAt = time.Now().String()
+	notification.GroupID =  sql.NullInt64{Int64: int64(messagepattern.GroupId), Valid: true}
+	notification.IsRead = false
+	notification.SenderID = user.UserID
+	notification.UserID = invitedUser.UserID
+	notification.NotificationType = "inviteUser"
+
+	err = models.NotifRepo.CreateNotification(&notification)
+
+	if err != nil {
+		fmt.Println("Notification not created")
 	}
 
 	fmt.Println("Olalalalaaa 3")

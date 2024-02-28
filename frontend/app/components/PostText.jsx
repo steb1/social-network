@@ -2,6 +2,7 @@
 import config from "@/config";
 import Link from "next/link";
 import { useState } from "react";
+import { PostPlaceholder } from "./posts";
 
 export const PostText = ({ posts, setPosts }) => {
     const [showAllComments, setShowAllComments] = useState({});
