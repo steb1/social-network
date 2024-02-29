@@ -46,7 +46,7 @@ export const CreateGroup = () => {
 									{/* if there is a button in form, it will close the modal */}
 									<button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
 								</form>
-								<h3 className="font-bold text-lg">Create Group</h3>
+								<h3 className="font-bold text-base">Create Group</h3>
 								<div>
 									<label className="form-control w-full max-w-xs">
 										<div className="label">
