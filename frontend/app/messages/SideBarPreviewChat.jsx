@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import config from "@/config";
 
 const SideBarPreviewChat = ({ PrenomNom, avatar, To, Time, Message }) => {
     return (

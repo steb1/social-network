@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import config from "@/config";
 
 const SideBarPreviewGroupChat = ({ ID, GroupName, Users, Message, Time }) => {
     const displayedUsers = Users.slice(0, 3);
