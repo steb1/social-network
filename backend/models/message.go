@@ -24,6 +24,17 @@ type MessageResponse struct {
 	Avatar   string `json:"avatar"`
 }
 
+type MessagePreview struct {
+	UserOrGroupID       int    `json:"userOrGroupID"`
+	Name                string `json:"name"`
+	Avatar              string `json:"avatar"`
+	Nickname            string `json:"nickname"`
+	Email               string `json:"email"`
+	LastInteractionTime string `json:"lastInteractionTime"`
+	LastMessage         string `json:"lastMessage"`
+	Genre               string `json:"genre"`
+}
+
 type MessageRepository struct {
 	db *sql.DB
 }
@@ -60,6 +71,99 @@ func (mr *MessageRepository) GetMessage(messageID int) (*Message, error) {
 		return nil, err
 	}
 	return &message, nil
+}
+
+func (mr *MessageRepository) GetMessagePreviewsForAnUser(userID int) ([]*MessagePreview, error) {
+	query := `
+	-- Query for messages between users
+SELECT
+    u.user_id AS group_or_user_id,
+	UPPER(SUBSTR(u.first_name, 1, 1)) || SUBSTR(u.first_name, 2) || ' ' || UPPER(SUBSTR(u.last_name, 1, 1)) || SUBSTR(u.last_name, 2) AS name ,
+	u.avatar,
+	u.nickname,
+	u.email,
+	MAX(COALESCE(sent.sent_time, received.sent_time)) AS last_interaction_time,
+	COALESCE(sent.content, received.content) AS last_message_content,
+	"user"AS genre
+	FROM
+		users u
+	LEFT JOIN (
+		SELECT
+			receiver_id AS user_id,
+			MAX(sent_time) AS sent_time,
+			FIRST_VALUE(content) OVER (PARTITION BY receiver_id ORDER BY sent_time DESC) AS content
+		FROM
+			messages
+		WHERE
+			sender_id = ?
+		GROUP BY
+			receiver_id
+	) sent ON u.user_id = sent.user_id
+	LEFT JOIN (
+		SELECT
+			sender_id AS user_id,
+			MAX(sent_time) AS sent_time,
+			FIRST_VALUE(content) OVER (PARTITION BY sender_id ORDER BY sent_time DESC) AS content
+		FROM
+			messages
+		WHERE
+			receiver_id = ?
+		GROUP BY
+			sender_id
+	) received ON u.user_id = received.user_id
+	JOIN subscriptions s ON (s.follower_user_id = u.user_id AND s.following_user_id = ?) OR (s.following_user_id = u.user_id AND s.follower_user_id = ?)
+	GROUP BY
+		u.user_id,
+		u.first_name,
+		u.last_name
+
+	UNION
+
+	-- Query for messages in groups
+	SELECT
+		groups.group_id,
+		groups.title,
+		"",
+		groups.group_id,
+		"",
+		MAX(group_chats.sent_time) AS last_interaction_time,
+		FIRST_VALUE(group_chats.content) OVER (PARTITION BY groups.group_id ORDER BY MAX(group_chats.sent_time) DESC) AS last_message_content,
+		"group" AS genre
+	FROM
+		memberships
+	INNER JOIN groups ON memberships.group_id = groups.group_id
+	LEFT JOIN group_chats ON groups.group_id = group_chats.group_id
+	WHERE
+		memberships.user_id = ? AND memberships.membership_status = 'accepted'
+	GROUP BY
+		groups.group_id,
+		groups.title,
+		groups.description
+
+	ORDER BY
+		last_interaction_time DESC NULLS LAST;
+
+	`
+	rows, err := db.Query(query, userID, userID, userID, userID, userID)
+	if err != nil {
+		return nil, err
+	}
+	var messages []*MessagePreview
+	for rows.Next() {
+		var message MessagePreview
+		var lastInteraction sql.NullString
+		var lastmessage sql.NullString
+		var nickname sql.NullString
+		if err := rows.Scan(&message.UserOrGroupID, &message.Name, &message.Avatar, &nickname, &message.Email, &lastInteraction, &lastmessage, &message.Genre); err != nil {
+			return nil, err
+		}
+		message.LastInteractionTime = lastInteraction.String
+		message.LastMessage = lastmessage.String
+		message.Nickname = nickname.String
+		messages = append(messages, &message)
+	}
+
+	return messages, nil
 }
 
 func (mr *MessageRepository) GetMessagesBetweenUsers(idUser1, idUser2, offset, limit int) (map[string][]MessageResponse, error) {

@@ -5,6 +5,22 @@ import { useState } from "react";
 
 export const PostText = ({ posts, setPosts }) => {
     const [showAllComments, setShowAllComments] = useState({});
+    const [imageSelected, setImageSelected] = useState(false);
+
+    const handleFileInputChange = (postId) => {
+        const fileInput = document.getElementById(`chooseImageC-${postId}`);
+        if (fileInput.files.length > 0) {
+            setImageSelected((prevSelected) => ({
+                ...prevSelected,
+                [postId]: true,
+            }));
+        } else {
+            setImageSelected((prevSelected) => ({
+                ...prevSelected,
+                [postId]: false,
+            }));
+        }
+    };
 
     const toggleCommentsVisibility = (postId) => {
         setShowAllComments((prevState) => ({
@@ -40,6 +56,10 @@ export const PostText = ({ posts, setPosts }) => {
             if (response.ok) {
                 console.log("comment sent");
                 form.reset();
+                setImageSelected((prevSelected) => ({
+                    ...prevSelected,
+                    [post_id]: false,
+                }));
                 setPosts(jsonData.posts);
             } else {
                 console.error("Failed to submit comment:", jsonData);
@@ -50,7 +70,6 @@ export const PostText = ({ posts, setPosts }) => {
     };
 
     const handleLikeClick = async (post_id) => {
-        console.log('--------', post_id);
         const response = await fetch(config.serverApiUrl + "likePost", {
             method: "POST",
             credentials: "include",
@@ -164,7 +183,7 @@ export const PostText = ({ posts, setPosts }) => {
                         </div>
                     </div>
                     {/* comments */}
-                    <div className='sm:p-4 p-2.5 border-t border-gray-100 font-normal space-y-3 relative dark:border-slate-700/40'>
+                    <div className='sm:p-4 p-2.5 border-t border-gray-100 font-normal space-y-3 relative dark:border-slate-700/40 overflow-hidden' style={{ maxHeight: '300px', overflowY: 'auto' }}>
                         {post.Comments.slice(0, showAllComments[post.post_id] ? post.Comments.length : 2).map(
                             (comment, index) => (
                                 <div key={comment.comment_id} className='flex items-start gap-3 relative'>
@@ -275,7 +294,7 @@ export const PostText = ({ posts, setPosts }) => {
                             />
                             <label
                                 htmlFor={`chooseImageC-${post.post_id}`}
-                                className='flex items-center w-[calc(9%)] absolute top-1 right-1 gap-2 font-semibold  cursor-pointer hover:bg-opacity-80 p-1 px-1.5 rounded-xl transition-all bg-pink-100/60 hover:bg-red-300 dark:bg-white/10 dark:hover:bg-white/20'
+                                className={`flex items-center w-[calc(9%)] absolute top-1 right-1 gap-2 font-semibold  cursor-pointer hover:bg-opacity-80 p-1 px-1.5 rounded-xl transition-all hover:bg-red-300 dark:bg-white/10 dark:hover:bg-white/20 ${imageSelected[post.post_id] ? 'bg-red-600/60' : 'bg-pink-100/60'}`}
                             >
                                 <svg
                                     xmlns='http://www.w3.org/2000/svg'
@@ -299,6 +318,7 @@ export const PostText = ({ posts, setPosts }) => {
                                 id={`chooseImageC-${post.post_id}`}
                                 type='file'
                                 className='file-input hidden file-input-bordered file-input-xs w-0 bg-transparent'
+                                onChange={() => handleFileInputChange(post.post_id)}
                             />
                         </form>
                         <button
