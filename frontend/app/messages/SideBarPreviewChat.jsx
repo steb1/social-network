@@ -1,11 +1,12 @@
 import React from "react";
 import Link from "next/link";
+import config from "@/config";
 
 const SideBarPreviewChat = ({ PrenomNom, avatar, To }) => {
 	return (
 		<Link href={`/messages/${To}`} className="relative flex items-center gap-4 p-2 duration-200 rounded-xl hover:bg-secondery">
 			<div className="relative w-14 h-14 shrink-0">
-				<img src={`http://localhost:8080/img/${avatar}`} alt="" className="object-cover w-full h-full rounded-full" />
+				<img src={`${config.ServerApiImage}${avatar}`} alt="" className="object-cover w-full h-full rounded-full" />
 				<div className="w-4 h-4 absolute bottom-0 right-0  bg-green-500 rounded-full border border-white dark:border-slate-800"></div>
 			</div>
 			<div className="flex-1 min-w-0">

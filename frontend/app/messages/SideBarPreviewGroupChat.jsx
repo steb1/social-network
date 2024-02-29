@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import config from "@/config";
 
 const SideBarPreviewGroupChat = ({ ID, GroupName, Users }) => {
 	const displayedUsers = Users.slice(0, 3);
@@ -11,7 +12,7 @@ const SideBarPreviewGroupChat = ({ ID, GroupName, Users }) => {
 				{displayedUsers.map((user, index) => (
 					<div key={index} className="avatar">
 						<div className="w-12">
-							<img src={`http://localhost:8080/img/${user.Avatar}`} alt={`User ${index + 1}`} />
+							<img src={`${config.ServerApiImage}${user.Avatar}`} alt={`User ${index + 1}`} />
 						</div>
 					</div>
 				))}

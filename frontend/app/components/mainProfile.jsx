@@ -8,6 +8,7 @@ import SeeFollowersFollowees from "./SeeFollowersFollowees.jsx";
 import NoPostUI from "./NoPostUI.jsx";
 import FollowButton from "./FollowButton.jsx";
 import { PostText } from "./PostText.jsx";
+import config from "@/config.js";
 
 const MainProfile = ({ props, Visibility, FollowStatus }) => {
 	const cookieStore = cookies();
@@ -16,7 +17,7 @@ const MainProfile = ({ props, Visibility, FollowStatus }) => {
 			<div className="max-w-[1065px] mx-auto max-lg:-m-2.5">
 				<div className="bg-white shadow lg:rounded-b-2xl lg:-mt-10 dark:bg-dark2">
 					<div className="relative overflow-hidden w-full lg:h-72 h-48">
-						<img src={`http://localhost:8080/img/${props.avatar}`} alt="" className="h-full w-full object-cover inset-0" />
+						<img src={`${config.ServerApiImage}${props.avatar}`} alt="" className="h-full w-full object-cover inset-0" />
 
 						<div className="w-full bottom-0 absolute left-0 bg-gradient-to-t from-black/60 pt-20 z-10"></div>
 					</div>
@@ -25,7 +26,7 @@ const MainProfile = ({ props, Visibility, FollowStatus }) => {
 						<div className="flex flex-col justify-center md:items-center lg:-mt-48 -mt-28">
 							<div className="relative lg:h-48 lg:w-48 w-28 h-28 mb-4 z-10">
 								<div className="relative overflow-hidden rounded-full md:border-[6px] border-gray-100 shrink-0 dark:border-slate-900 shadow">
-									<img src={`http://localhost:8080/img/${props.avatar}`} alt="" className="h-full w-full object-cover inset-0" />
+									<img src={`${config.ServerApiImage}${props.avatar}`} alt="" className="h-full w-full object-cover inset-0" />
 								</div>
 							</div>
 
@@ -91,7 +92,7 @@ const MainProfile = ({ props, Visibility, FollowStatus }) => {
 													<Link href={`/profile/${follower.user_id}`} key={follower.user_id}>
 														<div>
 															<div className="relative w-full aspect-square rounded-lg overflow-hidden">
-																<img src={`http://localhost:8080/img/${follower.avatar}`} alt="" className="object-cover w-full h-full inset-0" />
+																<img src={`${config.ServerApiImage}${follower.avatar}`} alt="" className="object-cover w-full h-full inset-0" />
 															</div>
 															<div className="mt-2 line-clamp-1">{`${follower.first_name} ${follower.last_name}`}</div>
 														</div>

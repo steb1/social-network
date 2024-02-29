@@ -86,7 +86,7 @@ const Sidebar = async () => {
 								<Link href={`/profile/${user.user_id}`}>
 									<div className="avatar">
 										<div className="w-7 rounded-full">
-											<img src={`http://localhost:8080/img/${user.avatar}`} />
+											<img src={`${config.ServerApiImage}${user.avatar}`} />
 										</div>
 									</div>
 									<span className="text-base"> {user.nickname || user.email} </span>
