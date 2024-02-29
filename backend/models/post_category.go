@@ -11,6 +11,11 @@ type PostCategory struct {
 	PostID     string
 }
 
+type PostCategoryCount struct {
+	CategoryName string `json:"categoryName"`
+	PostCount    int    `json:"postCount"`
+}
+
 type PostCategorieRepository struct {
 	db *sql.DB
 }
@@ -50,6 +55,26 @@ func (pc *PostCategorieRepository) GetPostCategory(postId int) []string {
 		categories = append(categories, categorie)
 	}
 	return categories
+}
+
+// GetRBPostCategory retrieves all categories with the number of their posts from the database for the right bar, ordered by the highest number of posts
+func (pc *PostCategorieRepository) GetRBPostCategory() ([]PostCategoryCount, error) {
+	rows, err := db.Query("SELECT c.name, COUNT(p.post_id) as post_count FROM posts p JOIN post_categories pc ON p.post_id = pc.post_id JOIN categories c ON pc.category_id = c.category_id GROUP BY c.name ORDER BY post_count DESC")
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	var categories []PostCategoryCount
+	for rows.Next() {
+		var category PostCategoryCount
+		if err := rows.Scan(&category.CategoryName, &category.PostCount); err != nil {
+			log.Fatal(err)
+		}
+		categories = append(categories, category)
+	}
+	return categories, nil
 }
 
 // UpdatePostCategory updates an existing post category in the database
