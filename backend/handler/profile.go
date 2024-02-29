@@ -30,10 +30,15 @@ type UserProfileResponse struct {
 type ChatResponse struct {
 	NicknameRequester string                              `json:"nickname_requester"`
 	Avatar            string                              `json:"avatar"`
-	Followers         []*models.User                      `json:"followers"`
-	Followings        []*models.User                      `json:"followings"`
+	AbleToTalk        []*models.User                      `json:"ableToTalk"`
+	MessagesPreview   []*models.MessagePreview            `json:"messagesPreview"`
 	Messages          map[string][]models.MessageResponse `json:"messages"`
 	Groups            []*models.GroupInfo                 `json:"groups"`
+}
+
+type Test struct {
+	User    *models.User `json:"user"`
+	Message string       `json:"message"`
 }
 
 func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
@@ -56,19 +61,19 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 	toID := models.UserRepo.GetIDFromUsernameOrEmail(to)
 
 	// Check if it's a user
-	UserChat, _ := models.UserRepo.UserExists(toID)
+	userExists, _ := models.UserRepo.UserExists(toID)
 
 	// Check if it's a group
 	idGroup, err := strconv.Atoi(to)
-	GroupChat := false
+	groupExists := false
 
 	if err == nil {
 		_, groupErr := models.MembershipRepo.GetAllUsersByGroupID(idGroup)
-		GroupChat = groupErr == nil
+		groupExists = groupErr == nil
 	}
 
 	// If ni user ni group
-	if !UserChat && !GroupChat {
+	if !userExists && !groupExists {
 		WriteJSON(w, http.StatusNotFound, nil)
 	}
 
@@ -83,16 +88,15 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	followers, err := models.SubscriptionRepo.GetFollowers(user.UserID)
+	ableToTalk, err := models.SubscriptionRepo.GetAbleToTalk(user.UserID)
 	if err != nil {
-		log.Println("🚀 ~ funcHandleGetProfileGetFollowers ~ err:", err)
+		log.Println("🚀 ~ funcHandleGetProfileGetFollowing ~ err:", err)
 		var apiError ApiError
-		apiError.Error = "Not found followers"
+		apiError.Error = "Not found followings"
 		WriteJSON(w, http.StatusInternalServerError, apiError)
 		return
 	}
-
-	followings, err := models.SubscriptionRepo.GetFollowing(user.UserID)
+	messagesPreview, err := models.MessageRepo.GetMessagePreviewsForAnUser(user.UserID)
 	if err != nil {
 		log.Println("🚀 ~ funcHandleGetProfileGetFollowing ~ err:", err)
 		var apiError ApiError
@@ -112,7 +116,7 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 	}
 
 	messages := map[string][]models.MessageResponse{}
-	if UserChat {
+	if userExists {
 		offset, error := strconv.Atoi(r.URL.Query().Get("offset"))
 		if error != nil {
 			offset = 0
@@ -124,36 +128,22 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println("��� ~ funcHandleGetProfileGetMessagesBetweenUsers ~ err:", err)
 			var apiError ApiError
-			apiError.Error = "Users messages not found."
+			apiError.Error = "Not found messages"
 			WriteJSON(w, http.StatusInternalServerError, apiError)
 			return
 		}
 	}
 
-	if GroupChat {
-		offset, error := strconv.Atoi(r.URL.Query().Get("offset"))
-		if error != nil {
-			offset = 0
-		}
-		error = nil
-
-		limit := 20
-		messages, err = models.GroupChatRepo.GetMessagesOfAGroup(idGroup, limit, offset)
-		if err != nil {
-			log.Println("��� ~ funcGetMessagesOfAGroup ~ err:", err)
-			var apiError ApiError
-			apiError.Error = "Messages group not found."
-			WriteJSON(w, http.StatusInternalServerError, apiError)
-			return
-		}
+	if groupExists {
+		// TODO: Fecth en fonction de groups
 	}
 
 	// Create a UserProfileResponse without the password field
 	chatResponse := ChatResponse{
 		NicknameRequester: UN,
 		Avatar:            user.Avatar,
-		Followers:         followers,
-		Followings:        followings,
+		AbleToTalk:        ableToTalk,
+		MessagesPreview:   messagesPreview,
 		Groups:            Groups,
 		Messages:          messages,
 	}
