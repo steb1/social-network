@@ -25,14 +25,14 @@ type MessageResponse struct {
 }
 
 type MessagePreview struct {
-	UserID              int    `json:"user_id"`
-	FirstName           string `json:"firstname"`
-	LastName            string `json:"lastname"`
+	UserOrGroupID       int    `json:"userOrGroupID"`
+	Name                string `json:"name"`
 	Avatar              string `json:"avatar"`
 	Nickname            string `json:"nickname"`
 	Email               string `json:"email"`
 	LastInteractionTime string `json:"lastInteractionTime"`
 	LastMessage         string `json:"lastMessage"`
+	Genre               string `json:"genre"`
 }
 
 type MessageRepository struct {
@@ -75,15 +75,16 @@ func (mr *MessageRepository) GetMessage(messageID int) (*Message, error) {
 
 func (mr *MessageRepository) GetMessagePreviewsForAnUser(userID int) ([]*MessagePreview, error) {
 	query := `
-	SELECT
-    u.user_id,
-    u.first_name,
-    u.last_name,
+	-- Query for messages between users
+SELECT
+    u.user_id AS group_or_user_id,
+	UPPER(SUBSTR(u.first_name, 1, 1)) || SUBSTR(u.first_name, 2) || ' ' || UPPER(SUBSTR(u.last_name, 1, 1)) || SUBSTR(u.last_name, 2) AS name ,
 	u.avatar,
 	u.nickname,
 	u.email,
-    MAX(COALESCE(sent.sent_time, received.sent_time)) AS last_interaction_time,
-    COALESCE(sent.content, received.content) AS last_message_content
+	MAX(COALESCE(sent.sent_time, received.sent_time)) AS last_interaction_time,
+	COALESCE(sent.content, received.content) AS last_message_content,
+	"user"AS genre
 	FROM
 		users u
 	LEFT JOIN (
@@ -115,13 +116,35 @@ func (mr *MessageRepository) GetMessagePreviewsForAnUser(userID int) ([]*Message
 		u.user_id,
 		u.first_name,
 		u.last_name
+
+	UNION
+
+	-- Query for messages in groups
+	SELECT
+		groups.group_id,
+		groups.title,
+		"",
+		groups.group_id,
+		"",
+		MAX(group_chats.sent_time) AS last_interaction_time,
+		FIRST_VALUE(group_chats.content) OVER (PARTITION BY groups.group_id ORDER BY MAX(group_chats.sent_time) DESC) AS last_message_content,
+		"group" AS genre
+	FROM
+		memberships
+	INNER JOIN groups ON memberships.group_id = groups.group_id
+	LEFT JOIN group_chats ON groups.group_id = group_chats.group_id
+	WHERE
+		memberships.user_id = ? AND memberships.membership_status = 'accepted'
+	GROUP BY
+		groups.group_id,
+		groups.title,
+		groups.description
+
 	ORDER BY
-		last_interaction_time DESC NULLS LAST,
-		LOWER(u.first_name),
-		LOWER(u.last_name);
+		last_interaction_time DESC NULLS LAST;
 
 	`
-	rows, err := db.Query(query, userID, userID, userID, userID)
+	rows, err := db.Query(query, userID, userID, userID, userID, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +154,7 @@ func (mr *MessageRepository) GetMessagePreviewsForAnUser(userID int) ([]*Message
 		var lastInteraction sql.NullString
 		var lastmessage sql.NullString
 		var nickname sql.NullString
-		if err := rows.Scan(&message.UserID, &message.FirstName, &message.LastName, &message.Avatar, &nickname, &message.Email, &lastInteraction, &lastmessage); err != nil {
+		if err := rows.Scan(&message.UserOrGroupID, &message.Name, &message.Avatar, &nickname, &message.Email, &lastInteraction, &lastmessage, &message.Genre); err != nil {
 			return nil, err
 		}
 		message.LastInteractionTime = lastInteraction.String
