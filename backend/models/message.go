@@ -78,73 +78,81 @@ func (mr *MessageRepository) GetMessagePreviewsForAnUser(userID int) ([]*Message
 	-- Query for messages between users
 SELECT
     u.user_id AS group_or_user_id,
-	UPPER(SUBSTR(u.first_name, 1, 1)) || SUBSTR(u.first_name, 2) || ' ' || UPPER(SUBSTR(u.last_name, 1, 1)) || SUBSTR(u.last_name, 2) AS name ,
-	u.avatar,
-	u.nickname,
-	u.email,
-	MAX(COALESCE(sent.sent_time, received.sent_time)) AS last_interaction_time,
-	COALESCE(sent.content, received.content) AS last_message_content,
-	"user"AS genre
-	FROM
-		users u
-	LEFT JOIN (
-		SELECT
-			receiver_id AS user_id,
-			MAX(sent_time) AS sent_time,
-			FIRST_VALUE(content) OVER (PARTITION BY receiver_id ORDER BY sent_time DESC) AS content
-		FROM
-			messages
-		WHERE
-			sender_id = ?
-		GROUP BY
-			receiver_id
-	) sent ON u.user_id = sent.user_id
-	LEFT JOIN (
-		SELECT
-			sender_id AS user_id,
-			MAX(sent_time) AS sent_time,
-			FIRST_VALUE(content) OVER (PARTITION BY sender_id ORDER BY sent_time DESC) AS content
-		FROM
-			messages
-		WHERE
-			receiver_id = ?
-		GROUP BY
-			sender_id
-	) received ON u.user_id = received.user_id
-	JOIN subscriptions s ON (s.follower_user_id = u.user_id AND s.following_user_id = ?) OR (s.following_user_id = u.user_id AND s.follower_user_id = ?)
-	GROUP BY
-		u.user_id,
-		u.first_name,
-		u.last_name
+    UPPER(SUBSTR(u.first_name, 1, 1)) || SUBSTR(u.first_name, 2) || ' ' || UPPER(SUBSTR(u.last_name, 1, 1)) || SUBSTR(u.last_name, 2) AS name,
+    u.avatar,
+    u.nickname,
+    u.email,
+    MAX(COALESCE(sent.sent_time, received.sent_time)) AS last_interaction_time,
+    COALESCE(sent.content, received.content) AS last_message_content,
+    "user" AS genre
+FROM
+    users u
+LEFT JOIN (
+    SELECT
+        CASE
+            WHEN sender_id = ? THEN receiver_id
+            WHEN receiver_id = ? THEN sender_id
+        END AS user_id,
+        MAX(sent_time) AS sent_time,
+        FIRST_VALUE(content) OVER (PARTITION BY CASE WHEN sender_id = ? THEN receiver_id WHEN receiver_id = ? THEN sender_id END ORDER BY sent_time DESC) AS content
+    FROM
+        messages
+    WHERE
+        (sender_id = ? OR receiver_id = ?)
+    GROUP BY
+        sender_id,
+        receiver_id
+) sent ON u.user_id = sent.user_id
+LEFT JOIN (
+    SELECT
+        CASE
+            WHEN sender_id = ? THEN receiver_id
+            WHEN receiver_id = ? THEN sender_id
+        END AS user_id,
+        MAX(sent_time) AS sent_time,
+        FIRST_VALUE(content) OVER (PARTITION BY CASE WHEN sender_id = ? THEN receiver_id WHEN receiver_id = ? THEN sender_id END ORDER BY sent_time DESC) AS content
+    FROM
+        messages
+    WHERE
+        (sender_id = ? OR receiver_id = ?)
+    GROUP BY
+        sender_id,
+        receiver_id
+) received ON u.user_id = received.user_id
+JOIN subscriptions s ON (s.follower_user_id = u.user_id AND s.following_user_id = ?) OR (s.following_user_id = u.user_id AND s.follower_user_id = ?)
+GROUP BY
+    u.user_id,
+    u.first_name,
+    u.last_name
 
-	UNION
+UNION
 
-	-- Query for messages in groups
-	SELECT
-		groups.group_id,
-		groups.title,
-		"",
-		groups.group_id,
-		"",
-		MAX(group_chats.sent_time) AS last_interaction_time,
-		FIRST_VALUE(group_chats.content) OVER (PARTITION BY groups.group_id ORDER BY MAX(group_chats.sent_time) DESC) AS last_message_content,
-		"group" AS genre
-	FROM
-		memberships
-	INNER JOIN groups ON memberships.group_id = groups.group_id
-	LEFT JOIN group_chats ON groups.group_id = group_chats.group_id
-	WHERE
-		memberships.user_id = ? AND memberships.membership_status = 'accepted'
-	GROUP BY
-		groups.group_id,
-		groups.title,
-		groups.description
+-- Query for messages in groups
+SELECT
+    groups.group_id,
+    groups.title,
+    "",
+    groups.group_id,
+    "",
+    MAX(group_chats.sent_time) AS last_interaction_time,
+    FIRST_VALUE(group_chats.content) OVER (PARTITION BY groups.group_id ORDER BY MAX(group_chats.sent_time) DESC) AS last_message_content,
+    "group" AS genre
+FROM
+    memberships
+INNER JOIN groups ON memberships.group_id = groups.group_id
+LEFT JOIN group_chats ON groups.group_id = group_chats.group_id
+WHERE
+    memberships.user_id = ? AND memberships.membership_status = 'accepted'
+GROUP BY
+    groups.group_id,
+    groups.title,
+    groups.description
 
-	ORDER BY
-		last_interaction_time DESC NULLS LAST;
+ORDER BY
+    last_interaction_time DESC NULLS LAST;
 
 	`
-	rows, err := db.Query(query, userID, userID, userID, userID, userID)
+	rows, err := db.Query(query, userID, userID, userID, userID, userID, userID, userID, userID, userID, userID, userID, userID, userID, userID, userID)
 	if err != nil {
 		return nil, err
 	}
