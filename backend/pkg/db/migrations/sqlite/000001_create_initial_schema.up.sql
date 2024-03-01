@@ -5,11 +5,13 @@ CREATE TABLE IF NOT EXISTS "users" (
   "first_name" text NOT NULL,
   "last_name" text NOT NULL,
   "date_of_birth" date NOT NULL,
-  "avatar" text,
-  "nickname" text,
-  "about_me" text
+  "avatar" text NOT NULL DEFAULT('blankProfile.png'),
+  "nickname" text UNIQUE,
+  "about_me" text,
+  "account_type" text NOT NULL DEFAULT('Public')
 );
-CREATE UNIQUE INDEX IF NOT EXISTS "idx_unique_nickname" ON "users" ("nickname") WHERE "nickname" != '';
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_nickname ON "users" ("nickname");
 
 CREATE TABLE IF NOT EXISTS "groups" (
   "group_id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
