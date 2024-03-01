@@ -78,9 +78,7 @@ const Sidebar = async () => {
 								</Link>
 							</li>
 							<li className="ml-0">
-								<Link href="">
-									<CreateGroup />
-								</Link>
+								<CreateGroup />
 							</li>
 							<li>
 								<Link href={`/profile/${user.user_id}`}>
