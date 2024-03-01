@@ -86,7 +86,7 @@ const MainMessage = ({ AbletoTalk, MessagesPreview, Chatter, Sender, AvatarSende
 		setMessageInput((prevMessage) => prevMessage + emojiData.emoji);
 	};
 
-	const debounceNoTyping = debounce(() => nontypeinprogress(Sender, Chatter, GroupChatter), 2500);
+	const debounceNoTyping = debounce(() => nontypeinprogress(Sender, Chatter, GroupChatter), 2000);
 	const throttleTyping = throttle(() => typeinprogress(Sender, Chatter, GroupChatter), 3000);
 
 	return (
