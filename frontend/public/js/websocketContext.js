@@ -1,17 +1,23 @@
-// websocketContext.js
-"use client";
-import { createContext, useContext } from "react";
+"use client"
 
+// WebSocketContext.js
+import React, { createContext, useContext } from 'react';
+import useWebSocket  from 'react-use-websocket';
+import { socketUrl } from './socket';
 const WebSocketContext = createContext();
 
-export const WebSocketProvider = ({ children, url }) => {
-    return <WebSocketContext.Provider value={{ url }}>{children}</WebSocketContext.Provider>;
+export const useWebSocketContext = () => useContext(WebSocketContext);
+
+export const WebSocketProvider = ({ children }) => {
+  const options = {
+    // Additional options can be specified here
 };
 
-export const useWebSocketConfig = () => {
-    const context = useContext(WebSocketContext);
-    if (!context) {
-        throw new Error("useWebSocketConfig must be used within a WebSocketProvider");
-    }
-    return context;
+  const webSocket = useWebSocket(socketUrl, options);
+
+  return (
+    <WebSocketContext.Provider value={webSocket}>
+        {children}
+    </WebSocketContext.Provider>
+  );
 };

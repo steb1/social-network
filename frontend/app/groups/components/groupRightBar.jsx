@@ -10,12 +10,11 @@ export const GroupRightBar = ({ groupInfo, groupId, invites, setInvites, members
 
         //Will attempt to reconnect on all close events, such as server shutting down
         shouldReconnect: (closeEvent) => true,
-
         onMessage: (event) => {
             const message = JSON.parse(event.data);
             switch (message.command) {
                 case "inviteUser":
-                    console.log(message, "tttt");
+                    console.log("------------invite----------", message);
             }
         }
     });
@@ -175,7 +174,6 @@ export const GroupRightBar = ({ groupInfo, groupId, invites, setInvites, members
                         </a>
                     </div>
                     <div className='side-list mb-10'>
-                        {console.log(invites, "--------- Invited")}
                         {invites
                             ? invites.map((invites, i) => (
                                   <div key={invites.user_id} className='side-list-item'>
