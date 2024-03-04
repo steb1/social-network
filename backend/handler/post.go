@@ -13,10 +13,8 @@ import (
 )
 
 func HandleCreatePost(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	lib.AddCorsPost(w,r)
+
 	var post models.Post
 	var apiError ApiError
 	errs := r.ParseMultipartForm(10 << 20)
@@ -98,11 +96,8 @@ func HandleCreatePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleGetAllPosts(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	lib.AddCorsGet(w,r)
+
 	var apiError ApiError
 
 	cookie, errC := r.Cookie("social-network")
@@ -151,11 +146,7 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleGetRightBarCategories(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	lib.AddCorsGet(w,r)
 
 	var apiError ApiError
 
