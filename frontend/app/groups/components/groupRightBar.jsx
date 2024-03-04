@@ -1,24 +1,26 @@
 import config from "@/config";
-import { socketUrl } from "@/public/js/socket";
-import useWebSocket from "react-use-websocket";
+import  {useWebSocketContext}  from "@/public/js/websocketContext";
+import { useEffect } from "react";
 
 export const GroupRightBar = ({ groupInfo, groupId, invites, setInvites, members }) => {
-    const { sendJsonMessage } = useWebSocket(socketUrl, {
-        onOpen: () => console.log("opened"),
-        onClose: () => console.log("closed"),
-        share: false,
-
-        //Will attempt to reconnect on all close events, such as server shutting down
-        shouldReconnect: (closeEvent) => true,
-        onMessage: (event) => {
-            const message = JSON.parse(event.data);
-            switch (message.command) {
+    const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
+    // ---------------------------------- INIT SOCKET ----------------------------------------------
+    useEffect(() => {
+        // Check if a new JSON message has been received
+        console.log(lastJsonMessage, "----------------not");
+        switch (lastJsonMessage?.command) {
+                case "messageforuser":
+                    console.log("messageforuser");
+                    break
+                case "handleGroupRequest":
+                    console.log("handleGroupRequest");
+                    break
                 case "inviteUser":
-                    console.log("------------invite----------", message);
-            }
+                    console.log("inviteUser");
+                    break
         }
+    
     });
-
     const handleInviteUsers = async (e, invitedId) => {
         const message = {
             invitedId: invitedId,
