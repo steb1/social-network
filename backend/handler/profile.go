@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"server/lib"
 	"server/models"
 )
 
@@ -42,7 +43,7 @@ type Test struct {
 }
 
 func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
-	addCorsHeader(w)
+	addCorsHeader(w, r)
 	if r.Method == http.MethodOptions {
 		w.WriteHeader(http.StatusOK)
 		return
@@ -260,11 +261,7 @@ func HandleGetProfile(w http.ResponseWriter, r *http.Request) {
 }
 
 func ToggleProfilePrivacy(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	lib.AddCorsGet(w, r)
 
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)

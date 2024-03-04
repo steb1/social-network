@@ -24,9 +24,10 @@ type PendingRequest struct {
 	FollowerUserId int    `json:"follower_user_id"`
 }
 
-func addCorsHeader(res http.ResponseWriter) {
+func addCorsHeader(res http.ResponseWriter, r *http.Request) {
 	headers := res.Header()
-	headers.Add("Access-Control-Allow-Origin", "http://localhost:3000")
+	origin := r.Header.Get("Origin")
+	headers.Add("Access-Control-Allow-Origin", origin)
 	headers.Add("Vary", "Origin")
 	headers.Add("Vary", "Access-Control-Request-Method")
 	headers.Add("Vary", "Access-Control-Request-Headers")
@@ -37,7 +38,7 @@ func addCorsHeader(res http.ResponseWriter) {
 }
 
 func SubscriptionHandler(w http.ResponseWriter, r *http.Request) {
-	addCorsHeader(w)
+	addCorsHeader(w, r)
 	if r.Method == http.MethodOptions {
 		w.WriteHeader(http.StatusOK)
 		return
@@ -253,7 +254,7 @@ func AcceptOrRejectPendingRequests(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandlePendingRequests(w http.ResponseWriter, r *http.Request) {
-	addCorsHeader(w)
+	addCorsHeader(w, r)
 	if r.Method == http.MethodOptions {
 		w.WriteHeader(http.StatusOK)
 		return
