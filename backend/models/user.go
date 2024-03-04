@@ -191,7 +191,7 @@ func (ur *UserRepository) GetIDFromUsernameOrEmail(usernameOrEmail string) int {
 	var userId int
 	err := ur.db.QueryRow(query, usernameOrEmail, usernameOrEmail).Scan(&userId)
 	if err != nil {
-		log.Println("🚀 ~ func ~ err:", err)
+		log.Println("🚀 ~ func username of email,", usernameOrEmail, " ~ err:", err)
 		if err == sql.ErrNoRows {
 			return 0
 		}

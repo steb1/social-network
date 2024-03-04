@@ -21,7 +21,7 @@ const AllGroup = ({ DataGroup }) => {
 			<div className="max-w-[1065px] mx-auto max-lg:-m-2.5">
 
             <div className='flex flex-col flew-wrap mb-10'>
-                <div className='flex flex-col mt-20'>
+                <div className='flex flex-col'>
                     <h1 className='text-black text-xl font-bold'>Suggestions</h1>
                     <hr className='mt-3' />
                     <div className='carousel carousel-center w-[1000px] p-4 space-x-4 bg-neutral rounded-box'>
