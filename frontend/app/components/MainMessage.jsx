@@ -10,10 +10,20 @@ import EmojiPicker from "emoji-picker-react";
 import TypingIndicator from "../messages/TypingIndicator";
 import SideBarPreviewGroupChat from "../messages/SideBarPreviewGroupChat";
 import config from "@/config";
-import  {useWebSocketContext}  from "@/public/js/websocketContext";
+import { useWebSocketContext } from "@/public/js/websocketContext";
 
-const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messages, GroupChatter, MessagesPreview }) => {
+const MainMessage = ({
+    AbletoTalk,
+    Chatter,
+    Sender,
+    AvatarSender,
+    Groups,
+    Messages,
+    GroupChatter,
+    MessagesPreview,
+}) => {
     const [messageInput, setMessageInput] = useState("");
+    const [messagesPreview, setMessagesPreview] = useState(MessagesPreview);
     const cmsRef = useRef(null);
 
     const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
@@ -22,80 +32,92 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
         // Check if a new JSON message has been received
         console.log(lastJsonMessage, "----------------not");
         switch (lastJsonMessage?.command) {
-                case "messageforuser":
-                    console.log("------------message----------", lastJsonMessage);
-                    if (lastJsonMessage.body.sender !== Chatter[0]?.nickname && lastJsonMessage.body.sender !== Chatter[0]?.email) {
-                        return;
-                    }
+            case "messageforuser":
+                console.log("------------message----------", lastJsonMessage);
+                if (
+                    lastJsonMessage.body.sender !== Chatter[0]?.nickname &&
+                    lastJsonMessage.body.sender !== Chatter[0]?.email
+                ) {
+                    return;
+                }
 
-                    cms &&
-                        ReactDOM.render(
-                            ReactDOM.createPortal(
-                                <LeftMessage
-                                    Avatar={Chatter[0].avatar}
-                                    Content={lastJsonMessage.body.text}
-                                    Sender={lastJsonMessage.body.sender}
-                                    Time={Date.now()}
-                                />,
-                                cms
-                            ),
-                            document.createElement("div")
-                        );
-                    cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
-                    break;
-                case "messageforgroup":
-                    const senderInGroup =
-                        GroupChatter[0] &&
-                        GroupChatter[0].Users.find((user) => user.NicknameOrEmail === lastJsonMessage.body.sender);
+                cms &&
+                    ReactDOM.render(
+                        ReactDOM.createPortal(
+                            <LeftMessage
+                                Avatar={Chatter[0].avatar}
+                                Content={lastJsonMessage.body.text}
+                                Sender={lastJsonMessage.body.sender}
+                                Time={Date.now()}
+                            />,
+                            cms
+                        ),
+                        document.createElement("div")
+                    );
+                cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+                break;
+            case "messageforgroup":
+                const senderInGroup =
+                    GroupChatter[0] &&
+                    GroupChatter[0].Users.find((user) => user.NicknameOrEmail === lastJsonMessage.body.sender);
 
-                    if (!senderInGroup) {
-                        return;
-                    }
+                if (!senderInGroup) {
+                    return;
+                }
 
-                    cms &&
-                        ReactDOM.render(
-                            ReactDOM.createPortal(
-                                <LeftMessage
-                                    Avatar={senderInGroup.Avatar}
-                                    Content={lastJsonMessage.body.text}
-                                    Sender={lastJsonMessage.body.sender}
-                                    Time={Date.now()}
-                                />,
-                                cms
-                            ),
-                            document.createElement("div")
-                        );
-                    cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+                cms &&
+                    ReactDOM.render(
+                        ReactDOM.createPortal(
+                            <LeftMessage
+                                Avatar={senderInGroup.Avatar}
+                                Content={lastJsonMessage.body.text}
+                                Sender={lastJsonMessage.body.sender}
+                                Time={Date.now()}
+                            />,
+                            cms
+                        ),
+                        document.createElement("div")
+                    );
+                cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
 
-                    break;
-                case "typeinprogress":
-                    if (lastJsonMessage.body.sender !== Chatter[0].nickname && lastJsonMessage.body.sender !== Chatter[0].email) {
-                        return;
-                    }
-                    RenderType();
-                    break;
-                case "nontypeinprogress":
-                    if (lastJsonMessage.body.sender !== Chatter[0].nickname && lastJsonMessage.body.sender !== Chatter[0].email) {
-                        return;
-                    }
+                break;
+            case "typeinprogress":
+                if (
+                    lastJsonMessage.body.sender !== Chatter[0].nickname &&
+                    lastJsonMessage.body.sender !== Chatter[0].email
+                ) {
+                    return;
+                }
+                RenderType();
+                break;
+            case "nontypeinprogress":
+                if (
+                    lastJsonMessage.body.sender !== Chatter[0].nickname &&
+                    lastJsonMessage.body.sender !== Chatter[0].email
+                ) {
+                    return;
+                }
 
-                    if (isRendered) {
-                        const indicatorElement = document.getElementById("indicator");
-                        if (indicatorElement) {
-                            indicatorElement.remove();
-                            isRendered = false;
-                        }
+                if (isRendered) {
+                    const indicatorElement = document.getElementById("indicator");
+                    if (indicatorElement) {
+                        indicatorElement.remove();
+                        isRendered = false;
                     }
-                    break;
-                case "handleGroupRequest":
-                    console.log("handleGroupRequest");
-                    break
-                case "inviteUser":
-                    console.log("inviteUser");
-                default:
-            }
-        },[lastJsonMessage]
-    );
+                }
+                break;
+            case "handleGroupRequest":
+                console.log("handleGroupRequest");
+                break;
+            case "inviteUser":
+                console.log("inviteUser");
+            case "messagepreview":
+                console.log("MessagePreview");
+                setMessagesPreview(lastJsonMessage.body);
+                console.log(lastJsonMessage.body);
+            default:
+        }
+    }, [lastJsonMessage]);
     // ---------------------------------- END SOCKET ----------------------------------------------
     /* You have to init socket and on the initialization you have to set directly what to do on the onMessage state soooo I did, the share options is is I want
 		To share that socket between components that why it is set to true.
@@ -128,6 +150,7 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
         };
 
         sendMessageWeb("messageforuser", message);
+        sendMessageWeb("messagepreview", "");
 
         // TODO: Handle the response from the server before appending the message if the message succesfully sent to the chatter before append
 
@@ -213,17 +236,35 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
                                 </div>
                             </div>
 
-							<div className="space-y-2 p-2 overflow-y-auto md:h-[calc(100vh-204px)] h-[calc(100vh-130px)]">
-								{MessagesPreview &&
-									MessagesPreview.map((user) => {
-										if (user.genre === "group") {
-											const groupToFetch = Groups.find((group) => group.GroupID == user.nickname);
-											const usersInGroup = groupToFetch.Users;
-											return <SideBarPreviewGroupChat key={user.nickname} ID={user.userOrGroupID} GroupName={user.name} Users={usersInGroup} Message={user.lastMessage} Time={user.lastInteractionTime} />;
-										} else {
-											return <SideBarPreviewChat key={user.nickname} PrenomNom={user.name} avatar={user.avatar} To={user.nickname ? user.nickname : user.email} Time={user.lastInteractionTime} Message={user.lastMessage} />;
-										}
-									})}
+                            <div className='space-y-2 p-2 overflow-y-auto md:h-[calc(100vh-204px)] h-[calc(100vh-130px)]'>
+                                {messagesPreview &&
+                                    messagesPreview.map((user) => {
+                                        if (user.genre === "group") {
+                                            const groupToFetch = Groups.find((group) => group.GroupID == user.nickname);
+                                            const usersInGroup = groupToFetch.Users;
+                                            return (
+                                                <SideBarPreviewGroupChat
+                                                    key={user.nickname}
+                                                    ID={user.userOrGroupID}
+                                                    GroupName={user.name}
+                                                    Users={usersInGroup}
+                                                    Message={user.lastMessage}
+                                                    Time={user.lastInteractionTime}
+                                                />
+                                            );
+                                        } else {
+                                            return (
+                                                <SideBarPreviewChat
+                                                    key={user.nickname}
+                                                    PrenomNom={user.name}
+                                                    avatar={user.avatar}
+                                                    To={user.nickname ? user.nickname : user.email}
+                                                    Time={user.lastInteractionTime}
+                                                    Message={user.lastMessage}
+                                                />
+                                            );
+                                        }
+                                    })}
 
                                 {!AbletoTalk && !Groups && (
                                     <p className='text-justify font-bold'>
@@ -471,23 +512,23 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
                                         </div>
                                     </div>
 
-									<div className="relative flex-1">
-										<textarea
-											placeholder="Write your message"
-											rows="1"
-											value={messageInput}
-											onKeyDown={(e) => {
-												if (e.key === "Enter" && !e.shiftKey) {
-													e.preventDefault(); // Prevents the default behavior of a new line on Enter
-													handleSendMessageClick();
-												} else {
-													throttleTyping();
-												}
-											}}
-											onKeyUp={debounceNoTyping}
-											onChange={(e) => setMessageInput(e.target.value)} //  update la valeur du champ de message
-											className="w-full resize-none bg-secondery rounded-full px-4 p-2"
-										></textarea>
+                                    <div className='relative flex-1'>
+                                        <textarea
+                                            placeholder='Write your message'
+                                            rows='1'
+                                            value={messageInput}
+                                            onKeyDown={(e) => {
+                                                if (e.key === "Enter" && !e.shiftKey) {
+                                                    e.preventDefault(); // Prevents the default behavior of a new line on Enter
+                                                    handleSendMessageClick();
+                                                } else {
+                                                    throttleTyping();
+                                                }
+                                            }}
+                                            onKeyUp={debounceNoTyping}
+                                            onChange={(e) => setMessageInput(e.target.value)} //  update la valeur du champ de message
+                                            className='w-full resize-none bg-secondery rounded-full px-4 p-2'
+                                        ></textarea>
 
                                         <button
                                             type='button'
@@ -585,7 +626,6 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
             </div>
         </main>
     );
-    
 };
 
 export default MainMessage;
