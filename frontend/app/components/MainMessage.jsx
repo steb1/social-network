@@ -12,7 +12,7 @@ import TypingIndicator from "../messages/TypingIndicator";
 import SideBarPreviewGroupChat from "../messages/SideBarPreviewGroupChat";
 import config from "@/config";
 
-const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messages, GroupChatter }) => {
+const MainMessage = ({ AbletoTalk, MessagesPreview, Chatter, Sender, AvatarSender, Groups, Messages, GroupChatter }) => {
 	const [messageInput, setMessageInput] = useState("");
 	const cmsRef = useRef(null);
 	let isRendered = false;
@@ -102,9 +102,16 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
 							</div>
 
 							<div className="space-y-2 p-2 overflow-y-auto md:h-[calc(100vh-204px)] h-[calc(100vh-130px)]">
-								{AbletoTalk && AbletoTalk.map((user) => <SideBarPreviewChat key={user.user_id} PrenomNom={`${user.first_name} ${user.last_name}`} avatar={user.avatar} To={user.nickname ? user.nickname : user.email} />)}
-
-								{Groups && Groups.map((group) => <SideBarPreviewGroupChat key={group.GroupID} ID={group.GroupID} GroupName={group.GroupName} Users={group.Users} />)}
+								{MessagesPreview &&
+									MessagesPreview.map((user) => {
+										if (user.genre === "group") {
+											const groupToFetch = Groups.find((group) => group.GroupID == user.nickname);
+											const usersInGroup = groupToFetch.Users;
+											return <SideBarPreviewGroupChat key={user.nickname} ID={user.userOrGroupID} GroupName={user.name} Users={usersInGroup} Message={user.lastMessage} Time={user.lastInteractionTime} />;
+										} else {
+											return <SideBarPreviewChat key={user.nickname} PrenomNom={user.name} avatar={user.avatar} To={user.nickname ? user.nickname : user.email} Time={user.lastInteractionTime} Message={user.lastMessage} />;
+										}
+									})}
 
 								{!AbletoTalk && !Groups && <p className="text-justify font-bold">No chatter available. Follow someone or wait for someone to follow you.</p>}
 							</div>
@@ -227,7 +234,14 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
 											placeholder="Write your message"
 											rows="1"
 											value={messageInput}
-											onKeyDown={throttleTyping}
+											onKeyDown={(e) => {
+												if (e.key === "Enter" && !e.shiftKey) {
+													e.preventDefault(); // Prevents the default behavior of a new line on Enter
+													handleSendMessageClick();
+												} else {
+													throttleTyping();
+												}
+											}}
 											onKeyUp={debounceNoTyping}
 											onChange={(e) => setMessageInput(e.target.value)} //  update la valeur du champ de message
 											className="w-full resize-none bg-secondery rounded-full px-4 p-2"

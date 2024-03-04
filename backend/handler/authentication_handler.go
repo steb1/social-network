@@ -275,7 +275,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	userCreated, err := models.UserRepo.GetUserByEmail(user.Email)
 	if err != nil {
-		apiError.Error = "An error occurred."
+		apiError.Error = "An error occurred. Cannot get User by email"
 		WriteJSON(w, http.StatusBadRequest, apiError)
 		return
 	}

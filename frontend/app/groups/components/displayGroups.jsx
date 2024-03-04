@@ -33,7 +33,6 @@ export async function fetchAllGroups(
       const contentType = response.headers.get("content-type");
       if (contentType && contentType.includes("application/json")) {
         const data = await response.json();
-        console.log(data, "----------- data");
         setPublicGroups(data.publicGroups);
         setOwnGroups(data.ownGroups);
         setSubcribedGroups(data.subcribedGroups);
