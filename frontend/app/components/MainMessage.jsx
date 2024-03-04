@@ -24,7 +24,7 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
         switch (lastJsonMessage?.command) {
                 case "messageforuser":
                     console.log("------------message----------", lastJsonMessage);
-                    if (lastJsonMessage.body.sender !== Chatter[0]?.nickname && lastJsonMessage.body.sender !== Chatter[0].email) {
+                    if (lastJsonMessage.body.sender !== Chatter[0]?.nickname && lastJsonMessage.body.sender !== Chatter[0]?.email) {
                         return;
                     }
 
@@ -87,6 +87,11 @@ const MainMessage = ({ AbletoTalk, Chatter, Sender, AvatarSender, Groups, Messag
                         }
                     }
                     break;
+                case "handleGroupRequest":
+                    console.log("handleGroupRequest");
+                    break
+                case "inviteUser":
+                    console.log("inviteUser");
                 default:
             }
         },[lastJsonMessage]

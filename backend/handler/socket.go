@@ -127,6 +127,9 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 
 			case "handleGroupRequest":
 				handleSendGroupOwnerNotif(message.Command, message.Body, user)
+			case "logout":
+				connections[userId].Conn.Close()
+				fmt.Println("connection is closed")
 			}
 		}
 	}()

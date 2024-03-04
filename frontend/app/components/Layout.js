@@ -6,9 +6,9 @@ import { WebSocketProvider } from "@/public/js/websocketContext";
 export default function Layout({ children }) {        
     return (
         <div id='wrapper'>
-            <Header />
-            <Sidebar />
             <WebSocketProvider>
+                <Header />
+                <Sidebar />
                 {children}
             </WebSocketProvider>
         </div>
