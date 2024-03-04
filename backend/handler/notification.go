@@ -42,6 +42,7 @@ func HandleGetNotifications(w http.ResponseWriter, r *http.Request) {
 		notifications, err := models.NotifRepo.GetNotificationsByUserID(userId)
 		if err != nil {
 			fmt.Println(" --- No notifs retrieved ! ")
+			WriteJSON(w, http.StatusUnauthorized, apiError)
 			return
 		}
 		response := make(map[string]interface{})

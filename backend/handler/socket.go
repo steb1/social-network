@@ -127,12 +127,28 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 
 			case "handleGroupRequest":
 				handleSendGroupOwnerNotif(message.Command, message.Body, user)
+			case "messagepreview":
+				sendMessagePreview(userInfo, userId, "messagepreview")
 			case "logout":
 				connections[userId].Conn.Close()
 				fmt.Println("connection is closed")
 			}
 		}
 	}()
+}
+func sendMessagePreview(userInfo UserInfo, userId int, command string) {
+	messagesPreviews, err := models.MessageRepo.GetMessagePreviewsForAnUser(userId)
+	if err != nil {
+		log.Println("No connected user:")
+		log.Println("Error: User not connected")
+	}
+
+	err = EnvoyerMessage(&userInfo, command, messagesPreviews)
+	if err != nil {
+		log.Println(err.Error())
+		log.Printf("Error sending Message preview")
+	}
+
 }
 
 func handleMessageForUser(message WebSocketMessage, userId int) {
