@@ -352,7 +352,7 @@ export const PostText = ( { posts,  groupId, setPosts , setGroup, setEvents, set
                         </button>
                     </div>
 				</div>
-			)) : <Placeholder/> }
+			)) : <PostPlaceholder/> }
 		</>
 	);
 };

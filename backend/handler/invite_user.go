@@ -15,6 +15,7 @@ func HandleInviteUser(w http.ResponseWriter, r *http.Request) {
 		HandleOptions(w, r)
 		return
 	}
+
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, GET")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
@@ -49,22 +50,22 @@ func HandleInviteUser(w http.ResponseWriter, r *http.Request) {
 	intInvitedId, err := strconv.Atoi(fmt.Sprintf("%v", invitedId))
 
 	if err != nil {
-		http.Error(w, "Erreur group doesn't exist", http.StatusBadRequest)
+		http.Error(w, "Erreur provide a valid int doesn't exist", http.StatusBadRequest)
 		return
 	}
 
 	hasRequested := models.MembershipRepo.CheckIfSubscribed(intInvitedId, intGroupId, "pending")
 
 	if hasRequested {
-		http.Error(w, "Erreur group doesn't exist", http.StatusBadRequest)
+		http.Error(w, "Erreur No requesttt ", http.StatusBadRequest)
 		return
 	}
 
 	senderIsMember := models.MembershipRepo.CheckIfIsMember(userId, intGroupId)
 
-	receiverIsMember := models.MembershipRepo.CheckIfIsMember(userId, intGroupId)
+	receiverIsMember := models.MembershipRepo.CheckIfIsMember(intInvitedId, intGroupId)
 	if receiverIsMember {
-		http.Error(w, "Erreur group doesn't exist", http.StatusBadRequest)
+		http.Error(w, "Erreur Not a member.", http.StatusBadRequest)
 		return
 	}
 
@@ -73,7 +74,7 @@ func HandleInviteUser(w http.ResponseWriter, r *http.Request) {
 	invitationExist := models.InvitationRepo.IsInvited(intInvitedId, intGroupId)
 
 	if invitationExist {
-		http.Error(w, "Erreur group doesn't exist", http.StatusBadRequest)
+		http.Error(w, "Erreur Not invited", http.StatusBadRequest)
 		return
 	}
 
@@ -83,7 +84,6 @@ func HandleInviteUser(w http.ResponseWriter, r *http.Request) {
 	if err == nil {
 		IsOwner = true
 	}
-
 
 	if IsOwner || senderIsMember {
 		var invitation models.Invitation
@@ -96,7 +96,7 @@ func HandleInviteUser(w http.ResponseWriter, r *http.Request) {
 		err := models.InvitationRepo.CreateInvitation(&invitation)
 
 		if err != nil {
-			http.Error(w, "Erreur group doesn't exist", http.StatusBadRequest)
+			http.Error(w, "Erreur Creating Invitation", http.StatusBadRequest)
 			return
 		}
 
@@ -112,7 +112,7 @@ func HandleInviteUser(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func HandleInviteUserResponse (w http.ResponseWriter, r *http.Request) {
+func HandleInviteUserResponse(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodOptions {
 		HandleOptions(w, r)
@@ -150,21 +150,17 @@ func HandleInviteUserResponse (w http.ResponseWriter, r *http.Request) {
 	option := r.FormValue("option")
 	intGroupId, err := strconv.Atoi(fmt.Sprintf("%v", groupId))
 
+	if err != nil {
+		http.Error(w, "Give valid parameters fdp", http.StatusBadRequest)
+		return
+	}
+
+	group, err := models.GroupRepo.GetGroup(intGroupId)
 
 	if err != nil {
 		http.Error(w, "Erreur group doesn't exist", http.StatusBadRequest)
 		return
 	}
-
-
-	group , err := models.GroupRepo.GetGroup(intGroupId)
-
-
-	if err != nil {
-		http.Error(w, "Erreur group doesn't exist", http.StatusBadRequest)
-		return
-	}
-
 
 	hasRequested := models.MembershipRepo.CheckIfSubscribed(userId, intGroupId, "pending")
 
@@ -180,42 +176,42 @@ func HandleInviteUserResponse (w http.ResponseWriter, r *http.Request) {
 		IsOwner = true
 	}
 	if !IsOwner {
-			if (option == "accept" ) {
-				var membership models.Membership
-	
-				membership.GroupID = group.GroupID
-				membership.InvitationStatus = "invite"
-				membership.JoinedAt = time.Now().String()
-				membership.MembershipStatus = "accepted"
-				membership.UserID = userId
-	
-				err = models.MembershipRepo.CreateMembership(&membership)
-	
-				if err != nil {
-					WriteJSON(w, http.StatusUnauthorized, apiError)
-					return
-				}
+		if option == "accept" {
+			var membership models.Membership
 
-				_ = models.InvitationRepo.DeleteInvitation(userId, intGroupId)
-	
-				response := make(map[string]interface{})
-	
-				response["ok"] = true 
-	
-				lib.WriteJSONResponse(w, response)
-			} else {
-				err = models.InvitationRepo.DeleteInvitation(userId, intGroupId)
-	
-				if err != nil {
-					WriteJSON(w, http.StatusUnauthorized, apiError)
-					return
-				}
-	
-				response := make(map[string]interface{})
-	
-				response["ok"] = true 
-	
-				lib.WriteJSONResponse(w, response)
+			membership.GroupID = group.GroupID
+			membership.InvitationStatus = "invite"
+			membership.JoinedAt = time.Now().String()
+			membership.MembershipStatus = "accepted"
+			membership.UserID = userId
+
+			err = models.MembershipRepo.CreateMembership(&membership)
+
+			if err != nil {
+				WriteJSON(w, http.StatusUnauthorized, apiError)
+				return
 			}
+
+			_ = models.InvitationRepo.DeleteInvitation(userId, intGroupId)
+
+			response := make(map[string]interface{})
+
+			response["ok"] = true
+
+			lib.WriteJSONResponse(w, response)
+		} else {
+			err = models.InvitationRepo.DeleteInvitation(userId, intGroupId)
+
+			if err != nil {
+				WriteJSON(w, http.StatusUnauthorized, apiError)
+				return
+			}
+
+			response := make(map[string]interface{})
+
+			response["ok"] = true
+
+			lib.WriteJSONResponse(w, response)
+		}
 	}
 }

@@ -173,15 +173,6 @@ CREATE TABLE IF NOT EXISTS "comments_group_likes" (
   FOREIGN KEY (comment_id) REFERENCES "comments_posts_group" (comment_id)
 );
 
-CREATE TABLE IF NOT EXISTS "notifications" (
-  "notification_id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-  "user_id" integer NOT NULL,
-  "type" text NOT NULL,
-  "status" text NOT NULL,
-  "created_at" datetime NOT NULL DEFAULT(CURRENT_TIMESTAMP),
-  FOREIGN KEY (user_id) REFERENCES "users" (user_id)
-);
-
 CREATE TABLE IF NOT EXISTS "messages" (
   "message_id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
   "sender_id" integer NOT NULL,
@@ -219,4 +210,18 @@ CREATE TABLE IF NOT EXISTS "sessions" (
   "user_id" integer NOT NULL,
   "expiry" datetime NOT NULL,
   FOREIGN KEY (user_id) REFERENCES "users" (user_id)
+);
+CREATE TABLE IF NOT EXISTS "notifications" (
+    notification_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    user_id INTEGER NOT NULL,
+    sender_id INTEGER NOT NULL,
+    notification_type TEXT NOT NULL,
+    group_id INTEGER,
+    event_id INTEGER,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES "users" (user_id),
+    FOREIGN KEY (sender_id) REFERENCES "users" (user_id),
+    FOREIGN KEY (group_id) REFERENCES "groups" (group_id),
+    FOREIGN KEY (event_id) REFERENCES "events" (event_id)
 );

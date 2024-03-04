@@ -2,6 +2,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import config from "@/config";
+import  {useWebSocketContext}  from "@/public/js/websocketContext";
 
 const Logout = () => {
 	const router = useRouter();
@@ -10,6 +11,9 @@ const Logout = () => {
 		document.cookie = `${config.cookieName}=; path=/; max-age=0; Secure`;
 
 		router.replace("/auth/signin");
+		const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
+		closeWebSocket();
+		sendJsonMessage({ command : "logout"})
 	};
 
 	return (
