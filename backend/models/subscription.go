@@ -75,6 +75,83 @@ func (sr *SubscriptionRepository) DeleteSubscription(followeUserId, followingUse
 	return nil
 }
 
+/*  GET ALL THE LAST MESSAGE
+SELECT
+    u.first_name,
+	u.last_name,
+    MAX(COALESCE(sent.sent_time, received.sent_time)) AS last_interaction_time,
+    COALESCE(sent.content, received.content) AS last_message_content
+FROM
+    users u
+LEFT JOIN (
+    SELECT
+        receiver_id AS user_id,
+        MAX(sent_time) AS sent_time,
+        FIRST_VALUE(content) OVER (PARTITION BY receiver_id ORDER BY sent_time DESC) AS content
+    FROM
+        messages
+    WHERE
+        sender_id = 3
+    GROUP BY
+        receiver_id
+) sent ON u.user_id = sent.user_id
+LEFT JOIN (
+    SELECT
+        sender_id AS user_id,
+        MAX(sent_time) AS sent_time,
+        FIRST_VALUE(content) OVER (PARTITION BY sender_id ORDER BY sent_time DESC) AS content
+    FROM
+        messages
+    WHERE
+        receiver_id = 3
+    GROUP BY
+        sender_id
+) received ON u.user_id = received.user_id
+GROUP BY
+    u.user_id,
+    u.nickname
+ORDER BY
+    last_interaction_time DESC NULLS LAST,
+    LOWER(u.nickname);*/
+
+func (sr *SubscriptionRepository) GetAbleToTalk(userID int) ([]*User, error) {
+	query := ` 
+		SELECT u.user_id, u.email, u.first_name, u.last_name, u.date_of_birth, u.avatar, u.nickname, u.about_me
+		FROM subscriptions s
+		JOIN users u ON s.following_user_id = u.user_id
+		WHERE s.follower_user_id = ?
+
+		UNION
+
+		SELECT u.user_id, u.email, u.first_name, u.last_name, u.date_of_birth, u.avatar, u.nickname, u.about_me
+		FROM subscriptions s
+		JOIN users u ON s.follower_user_id = u.user_id
+		WHERE s.following_user_id = ?;
+`
+	rows, err := sr.db.Query(query, userID, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var ableToTalk []*User
+
+	for rows.Next() {
+		var user User
+		err := rows.Scan(&user.UserID, &user.Email, &user.FirstName, &user.LastName, &user.DateOfBirth, &user.Avatar, &user.Nickname, &user.AboutMe)
+		if err != nil {
+			return nil, err
+		}
+		ableToTalk = append(ableToTalk, &user)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return ableToTalk, nil
+}
+
 func (sr *SubscriptionRepository) GetFollowers(userId int) ([]*User, error) {
 	query := ` 
         SELECT u.user_id, u.email, u.first_name, u.last_name, u.date_of_birth, u.avatar, u.nickname, u.about_me

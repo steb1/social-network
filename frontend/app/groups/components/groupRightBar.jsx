@@ -46,7 +46,6 @@ export const GroupRightBar = ( {groupInfo, groupId, invites, setInvites, members
                     <a href="#" className="text-sm text-blue-500">See all</a>
                 </div>
                 <div className="side-list mb-10">
-                    { console.log(invites,  "--------- Invited" ) }
                     { invites ? invites.map( (invites, i) => 
                     <div key={invites.user_id} className="side-list-item">
                     <a href="timeline-group.html">

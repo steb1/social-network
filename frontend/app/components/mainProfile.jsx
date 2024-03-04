@@ -8,6 +8,7 @@ import SeeFollowersFollowees from "./SeeFollowersFollowees.jsx";
 import NoPostUI from "./NoPostUI.jsx";
 import FollowButton from "./FollowButton.jsx";
 import { PostText } from "./PostText.jsx";
+import config from "@/config.js";
 
 const MainProfile = ({ props, Visibility, FollowStatus }) => {
 	const cookieStore = cookies();
@@ -16,7 +17,7 @@ const MainProfile = ({ props, Visibility, FollowStatus }) => {
 			<div className="max-w-[1065px] mx-auto max-lg:-m-2.5">
 				<div className="bg-white shadow lg:rounded-b-2xl lg:-mt-10 dark:bg-dark2">
 					<div className="relative overflow-hidden w-full lg:h-72 h-48">
-						<img src={`http://localhost:8080/img/${props.avatar}`} alt="" className="h-full w-full object-cover inset-0" />
+						<img src={`${config.ServerApiImage}${props.avatar}`} alt="" className="h-full w-full object-cover inset-0" />
 
 						<div className="w-full bottom-0 absolute left-0 bg-gradient-to-t from-black/60 pt-20 z-10"></div>
 					</div>
@@ -25,13 +26,15 @@ const MainProfile = ({ props, Visibility, FollowStatus }) => {
 						<div className="flex flex-col justify-center md:items-center lg:-mt-48 -mt-28">
 							<div className="relative lg:h-48 lg:w-48 w-28 h-28 mb-4 z-10">
 								<div className="relative overflow-hidden rounded-full md:border-[6px] border-gray-100 shrink-0 dark:border-slate-900 shadow">
-									<img src={`http://localhost:8080/img/${props.avatar}`} alt="" className="h-full w-full object-cover inset-0" />
+									<img src={`${config.ServerApiImage}${props.avatar}`} alt="" className="h-full w-full object-cover inset-0" />
 								</div>
 							</div>
 
 							<h3 className="md:text-3xl text-base font-bold text-black dark:text-white">{`${props.firstName.charAt(0).toUpperCase() + props.firstName.slice(1)} ${props.lastName.toUpperCase()}`}</h3>
 
-							<p className="mt-2 text-gray-500 dark:text-white/80">{props.nickname ? `@${props.nickname}` : props.email}</p>
+							<p className="mt-2 text-gray-500 dark:text-white/80">{props.nickname ? `@${props.nickname} / ${props.email}` : props.email}</p>
+
+							<p className="mt-2 badge badge-secondary">{`🎂 ${formatDateString(props.dateOfBirth)} 🥳`}</p>
 
 							<p className="mt-2 max-w-xl text-sm md:font-normal font-light text-center">{props.aboutMe}</p>
 						</div>
@@ -69,9 +72,7 @@ const MainProfile = ({ props, Visibility, FollowStatus }) => {
 				</div>
 
 				<div className="flex 2xl:gap-12 gap-10 mt-8 max-lg:flex-col" id="js-oversized">
-					<div className="flex-1 xl:space-y-6 space-y-3">
-						{Visibility === "Private" ? <PrivateAccountUI /> : <>{!props.userPosts ? <NoPostUI /> : <PostText posts={props.userPosts} />}</>}
-					</div>
+					<div className="flex-1 xl:space-y-6 space-y-3">{Visibility === "Private" ? <PrivateAccountUI /> : <>{!props.userPosts ? <NoPostUI /> : <PostText posts={props.userPosts} />}</>}</div>
 
 					{Visibility !== "Private" ? (
 						<>
@@ -91,7 +92,7 @@ const MainProfile = ({ props, Visibility, FollowStatus }) => {
 													<Link href={`/profile/${follower.user_id}`} key={follower.user_id}>
 														<div>
 															<div className="relative w-full aspect-square rounded-lg overflow-hidden">
-																<img src={`http://localhost:8080/img/${follower.avatar}`} alt="" className="object-cover w-full h-full inset-0" />
+																<img src={`${config.ServerApiImage}${follower.avatar}`} alt="" className="object-cover w-full h-full inset-0" />
 															</div>
 															<div className="mt-2 line-clamp-1">{`${follower.first_name} ${follower.last_name}`}</div>
 														</div>
@@ -110,3 +111,10 @@ const MainProfile = ({ props, Visibility, FollowStatus }) => {
 };
 
 export default MainProfile;
+
+function formatDateString(dateString) {
+	const dateObject = new Date(dateString);
+	const options = { month: "long", day: "numeric" };
+	const formattedDate = dateObject.toLocaleDateString("en-US", options);
+	return formattedDate;
+}

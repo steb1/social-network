@@ -104,8 +104,6 @@ async function handleCreateGroup() {
 			body: JSON.stringify(requestData),
 		});
 
-		console.log(response.ok, "--------ok");
-
 		if (response.ok) {
 			console.log("ooook");
 			name.value = "";
