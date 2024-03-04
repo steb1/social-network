@@ -1,17 +1,28 @@
+"use client"
 import config from "@/config";
-import { socketUrl } from "@/public/js/socket";
-import useWebSocket from "react-use-websocket";
+import { useEffect } from "react";
+import  {useWebSocketContext}  from "@/public/js/websocketContext";
 
 export const GroupOption = ({ group, setGroups, setServerError }) => {
 
-    const { sendJsonMessage } = useWebSocket(socketUrl, {
-        onOpen: () => console.log("opened"),
-        onClose: () => console.log("closed"),
-        share: false,
-    
-        //Will attempt to reconnect on all close events, such as server shutting down
-        shouldReconnect: (closeEvent) => true,
-      });
+    const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
+    // ---------------------------------- INIT SOCKET ----------------------------------------------
+    useEffect(() => {
+        // Check if a new JSON message has been received
+        console.log(lastJsonMessage, "----------------not");
+        switch (lastJsonMessage?.command) {
+                case "messageforuser":
+                    console.log("messageforuser");
+                    break
+                case "handleGroupRequest":
+                    console.log("handleGroupRequest");
+                    break
+                case "inviteUser":
+                    console.log("inviteUser");
+                    break
+
+        }
+    })
 
     async function handleGroupRequest(e, groupid, setGroups, setServerError) {   
         

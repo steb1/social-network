@@ -2,22 +2,29 @@
 import Link from "next/link";
 import config from "@/config";
 import { useEffect } from "react";
-import Logout from "./Logout";
-import useWebSocket from "react-use-websocket";
-import { socketUrl } from "@/public/js/socket";
 import { Element } from "./elements";
+import  {useWebSocketContext}  from "@/public/js/websocketContext";
+
 
 const Header = () => {
-  const {} = useWebSocket(socketUrl, {
-    onOpen: () => console.log("opened"),
-    onClose: () => console.log("closed"),
-    onMessage: () => (event) => {
-      const message = JSON.parse(event.data);
-      console.log(message);
-    },
-    share: false,
-    //Will attempt to reconnect on all close events, such as server shutting down
-    shouldReconnect: (closeEvent) => true,
+    const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
+    // ---------------------------------- INIT SOCKET ----------------------------------------------
+    useEffect(() => {
+        // Check if a new JSON message has been received
+        console.log(lastJsonMessage, "----------------not");
+        switch (lastJsonMessage?.command) {
+                case "messageforuser":
+                    console.log("messageforuser");
+                    break
+                case "handleGroupRequest":
+                    console.log("handleGroupRequest");
+                    break
+                case "inviteUser":
+                    console.log("inviteUser");
+                    break
+
+        }
+    
   });
 
   useEffect(() => {
