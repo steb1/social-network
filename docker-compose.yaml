@@ -1,0 +1,27 @@
+version: '3'
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://172.21.0.4:8080/api/
+      - NEXT_PUBLIC_API_URL_IMG=http://172.21.0.4:8080/img/
+    depends_on:
+      - backend
+    networks:
+      social-network-lala:
+        ipv4_address:  172.21.0.5
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    networks:
+      social-network-lala:
+        ipv4_address:  172.21.0.4
+networks:
+  social-network-lala:
+    driver: bridge
+    ipam:
+      config:
+        - subnet:  172.21.0.0/16
