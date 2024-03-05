@@ -84,13 +84,13 @@ const FormSignupComp = () => {
 	}
 
 	return (
-		<form onSubmit={onSubmit} className="mx-auto flex w-full flex-col gap-5 sm:max-w-md md:max-w-lg">
-			<div className="flex flex-col gap-3 sm:flex-row">
+		<form onSubmit={onSubmit} className="mx-auto flex w-full dark:bg-slate-800  flex-col gap-5 sm:max-w-md md:max-w-lg">
+			<div className="flex flex-col dark:bg-slate-800  gap-3 sm:flex-row">
 				<input value={values.first_name} onChange={handleChange} type="text" name="first_name" placeholder="First Name" className="input input-bordered input-primary w-full max-w-xs text-[#9BA3AF]" />
 				<input value={values.last_name} onChange={handleChange} type="text" name="last_name" placeholder="Last Name" className="input input-bordered input-primary w-full max-w-xs text-[#9BA3AF]" />
 				<input value={values.nickname} onChange={handleChange} type="text" name="nickname" placeholder="Nickname" className="input input-bordered input-primary w-full max-w-xs text-[#9BA3AF]" />
 			</div>
-			<div className="flex flex-col gap-3 sm:flex-row">
+			<div className="flex flex-col dark:bg-slate-800 gap-3 sm:flex-row">
 				{errors.first_name && touched.first_name && <span className="text-red-500 text-xs">{errors.first_name}</span>}
 				{errors.last_name && touched.last_name && <span className="text-red-500 text-xs ml-10">{errors.last_name}</span>}
 				{errors.nickname && touched.nickname && <span className="text-red-500 text-xs">{errors.nickname}</span>}

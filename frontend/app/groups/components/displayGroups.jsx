@@ -75,7 +75,7 @@ export const DisplayGroups = () => {
       id="site__main"
       className="2xl:ml-[--w-side]  xl:ml-[--w-side-sm] p-2.5 h-0 mt-0 mb-11"
     >
-      <div className="max-w-[1065px] mx-auto max-lg:-m-2.5">
+      <div className="max-w-[1065px] dark:bg-slate-800 mx-auto max-lg:-m-2.5">
         <div className="flex flex-col mt-20">
           <h1 className="text-black text-xl font-bold">Suggestions</h1>
           <hr className="mt-3" />

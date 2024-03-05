@@ -30,22 +30,22 @@ const Sidebar = async () => {
 
 	return (
 		<div id="site__sidebar" className="fixed top-0 left-0 z-[99] pt-[--m-top] overflow-hidden transition-transform xl:duration-500 max-xl:w-full max-xl:-translate-x-full">
-			<div className="p-2 max-xl:bg-white shadow-sm 2xl:w-72 sm:w-64 w-[80%] h-[calc(100vh-64px)] relative z-30 max-lg:border-r dark:max-xl:!bg-slate-700 dark:border-slate-700 dark:!bg-slate-800">
+			<div className="p-2 max-xl:bg-white shadow-sm 2xl:w-72 sm:w-64 w-[80%] h-[calc(100vh-64px)] relative z-30 max-lg:border-r dark:max-xl:!bg-slate-700 dark:border-slate-700 dark:!bg-slate-800 ">
 				<div className="pr-6 pt-10" data-simplebar>
 					<nav id="side">
 						<ul className="grid gap-y-5">
-							<li>
-								<Link href="/">
+							<li className="dark:hover:text-slate-800">
+								<Link href="/" >
 									<svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" viewBox="0 0 24 24" className="w-6">
 										<path
 											fill="currentColor"
 											d="M12 16.688q.142 0 .276-.043q.134-.043.247-.14q.606-.56 1.148-1.088q.542-.527.954-1.033q.412-.506.66-.983q.25-.478.25-.928q0-.834-.57-1.385q-.57-.55-1.367-.55q-.494 0-.897.205t-.701.515q-.26-.31-.678-.515q-.418-.205-.875-.205q-.8 0-1.372.548q-.571.548-.571 1.38q0 .453.238.937q.239.484.651.985q.413.502.952 1.031q.539.53 1.134 1.077q.111.106.245.15q.134.042.276.042M6.615 20q-.666 0-1.14-.475Q5 19.051 5 18.385v-7.53l-1.538 1.199q-.177.134-.366.104q-.188-.031-.323-.208t-.11-.365q.024-.189.195-.323l8.148-6.26q.224-.162.478-.242q.254-.081.519-.081q.264 0 .51.08q.246.081.462.243l8.173 6.26q.171.134.192.323q.022.188-.113.369q-.135.167-.323.198q-.189.03-.36-.104L19 10.856v7.529q0 .666-.475 1.14q-.474.475-1.14.475z"
 										/>
 									</svg>
-									<span className="text-base"> Home </span>
+									<span className="text-base "> Home </span>
 								</Link>
 							</li>
-							<li>
+							<li className="dark:hover:text-slate-800">
 								<Link href="/groups">
 									<svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" viewBox="0 0 24 24">
 										<path
@@ -56,7 +56,7 @@ const Sidebar = async () => {
 									<span className="text-base"> Groups </span>
 								</Link>
 							</li>
-							<li>
+							<li className="dark:hover:text-slate-800">
 								<Link href={`/messages/${user.nickname ? user.nickname : user.email}`}>
 									<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
 										<path fill="currentColor" d="M15.85 8.14c.39 0 .77.03 1.14.08C16.31 5.25 13.19 3 9.44 3c-4.25 0-7.7 2.88-7.7 6.43c0 2.05 1.15 3.86 2.94 5.04L3.67 16.5l2.76-1.19c.59.21 1.21.38 1.87.47c-.09-.39-.14-.79-.14-1.21c-.01-3.54 3.44-6.43 7.69-6.43M12 5.89a.96.96 0 1 1 0 1.92a.96.96 0 0 1 0-1.92M6.87 7.82a.96.96 0 1 1 0-1.92a.96.96 0 0 1 0 1.92" />
@@ -65,7 +65,7 @@ const Sidebar = async () => {
 									<span className="text-base"> Messages </span>
 								</Link>
 							</li>
-							<li>
+							<li className="dark:hover:text-slate-800">
 								<Link href="/notifications">
 									<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
 										<path
@@ -76,10 +76,10 @@ const Sidebar = async () => {
 									<span className="text-base"> Notifications </span>
 								</Link>
 							</li>
-							<li className="ml-0">
+							
 								<CreateGroup />
-							</li>
-							<li>
+							
+							<li className="dark:hover:text-slate-800">
 								<Link href={`/profile/${user.user_id}`}>
 									<div className="avatar">
 										<div className="w-7 rounded-full">
@@ -94,7 +94,7 @@ const Sidebar = async () => {
 				</div>
 			</div>
 
-			<div id="site__sidebar__overly" className="absolute top-0 left-0 z-20 w-screen h-screen xl:hidden backdrop-blur-sm" uk-toggle="target: #site__sidebar ; cls :!-translate-x-0"></div>
+			<div id="site__sidebar__overly" className="absolute top-0 left-0 z-20 w-screen h-screen sm:hidden backdrop-blur-sm" uk-toggle="target: #site__sidebar ; cls :!-translate-x-0"></div>
 		</div>
 	);
 };
