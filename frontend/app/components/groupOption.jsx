@@ -7,22 +7,21 @@ export const GroupOption = ({ group, setGroups, setServerError }) => {
 
     const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
     // ---------------------------------- INIT SOCKET ----------------------------------------------
-    useEffect(() => {
-        // Check if a new JSON message has been received
-        console.log(lastJsonMessage, "----------------not");
-        switch (lastJsonMessage?.command) {
-                case "messageforuser":
-                    console.log("messageforuser");
-                    break
-                case "handleGroupRequest":
-                    console.log("handleGroupRequest");
-                    break
-                case "inviteUser":
-                    console.log("inviteUser");
-                    break
-
-        }
-    })
+    // useEffect(() => {
+    //     // Check if a new JSON message has been received
+    //     console.log(lastJsonMessage, "----------------not");
+    //     switch (lastJsonMessage?.command) {
+    //             case "messageforuser":
+    //                 console.log("messageforuser");
+    //                 break
+    //             case "handleGroupRequest":
+    //                 console.log("handleGroupRequest");
+    //                 break
+    //             case "inviteUser":
+    //                 console.log("inviteUser");
+    //                 break
+    //     }
+    // })
 
     async function handleGroupRequest(e, groupid, setGroups, setServerError) {   
         
