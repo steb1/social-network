@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export const PostText = ( { posts,  groupId, setPosts , setGroup, setEvents, setRequests, setMessages, setServerError,  setIsOwner, setMembers } ) => {
 	const [showAllComments, setShowAllComments] = useState({});
-
+	let token = document.cookie.split("=")[1]
 	const toggleCommentsVisibility = (postId) => {
         setShowAllComments((prevState) => ({
             ...prevState,
@@ -36,7 +36,9 @@ export const PostText = ( { posts,  groupId, setPosts , setGroup, setEvents, set
 
 		const response = await fetch(config.serverApiUrl + "createCommentGroup", {
 			method: "POST",
-			credentials: "include",
+			headers: {
+				'Authorization': token,
+			  },
 			body: formDataJson,
 		});
 
@@ -60,7 +62,6 @@ export const PostText = ( { posts,  groupId, setPosts , setGroup, setEvents, set
 	};
 
 	const handleLikeClick = async (PostID) => {
-         let  token = document.cookie.split("=")[1]
         const formData = new FormData();
         formData.append("PostID", PostID);
 		console.log(PostID, 'feeeurr');
@@ -88,7 +89,9 @@ export const PostText = ( { posts,  groupId, setPosts , setGroup, setEvents, set
 	const handleCommentLikeClick = async (comment_id) => {
 		const response = await fetch(config.serverApiUrl + "likeCommentGroup", {
 			method: "POST",
-			credentials: "include",
+			headers: {
+				'Authorization': token,
+			  },
 			body: JSON.stringify({
 				comment_id: comment_id,
 			}),

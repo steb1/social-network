@@ -3,11 +3,14 @@ import config from "@/config";
 import { useState, useEffect } from "react";
 
 const fetchCategories = async (setCategories) => {
+    let token = document.cookie.split("=")[1]
     try {
         const response = await fetch(config.serverApiUrl + "getRightBarCategories", {
             cache: "no-cache",
             method: "GET",
-            credentials: "include",
+            headers: {
+                'Authorization': token,
+              },
         });
         if (response.ok) {
             const data = await response.json();

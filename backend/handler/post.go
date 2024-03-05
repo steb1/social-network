@@ -22,8 +22,8 @@ func HandleCreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cookie, _ := r.Cookie("social-network")
-	session, err := models.SessionRepo.GetSession(cookie.Value)
+	sessionToken := r.Header.Get("Authorization")
+	session, err := models.SessionRepo.GetSession(sessionToken)
 	if err != nil {
 		apiError.Error = "Go connect first !"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
@@ -100,9 +100,9 @@ func HandleGetAllPosts(w http.ResponseWriter, r *http.Request) {
 
 	var apiError ApiError
 
-	cookie, errC := r.Cookie("social-network")
-	session, errS := models.SessionRepo.GetSession(cookie.Value)
-	if errS != nil || errC != nil {
+	sessionToken := r.Header.Get("Authorization")
+	session, err := models.SessionRepo.GetSession(sessionToken)
+	if err != nil{
 		apiError.Error = "Go connect first !"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
 		return
@@ -150,15 +150,9 @@ func HandleGetRightBarCategories(w http.ResponseWriter, r *http.Request) {
 
 	var apiError ApiError
 
-	cookie, errC := r.Cookie("social-network")
-	if errC != nil {
-		apiError.Error = "Cookie not found"
-		WriteJSON(w, http.StatusUnauthorized, apiError)
-		return
-	}
-
-	_, errS := models.SessionRepo.GetSession(cookie.Value)
-	if errS != nil {
+	sessionToken := r.Header.Get("Authorization")
+	_, err := models.SessionRepo.GetSession(sessionToken)
+	if err != nil {
 		apiError.Error = "Invalid session"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
 		return

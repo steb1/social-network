@@ -5,6 +5,7 @@ import { useState } from "react";
 import { PostPlaceholder } from "./posts";
 
 export const PostText = ({ posts, setPosts }) => {
+    let token = document.cookie.split("=")[1]
     const [showAllComments, setShowAllComments] = useState({});
     const [imageSelected, setImageSelected] = useState(false);
 
@@ -49,7 +50,9 @@ export const PostText = ({ posts, setPosts }) => {
 
         const response = await fetch(config.serverApiUrl + "createComment", {
             method: "POST",
-            credentials: "include",
+            headers: {
+                'Authorization': token,
+              },
             body: formDataJson,
         });
         try {
@@ -73,7 +76,9 @@ export const PostText = ({ posts, setPosts }) => {
     const handleLikeClick = async (post_id) => {
         const response = await fetch(config.serverApiUrl + "likePost", {
             method: "POST",
-            credentials: "include",
+            headers: {
+                'Authorization': token,
+              },
             body: JSON.stringify({
                 post_id: post_id,
             }),
@@ -94,7 +99,9 @@ export const PostText = ({ posts, setPosts }) => {
     const handleCommentLikeClick = async (comment_id) => {
         const response = await fetch(config.serverApiUrl + "likeComment", {
             method: "POST",
-            credentials: "include",
+            headers: {
+                'Authorization': token,
+              },
             body: JSON.stringify({
                 comment_id: comment_id,
             }),
