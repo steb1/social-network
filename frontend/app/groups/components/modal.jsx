@@ -2,12 +2,11 @@ import config from "@/config";
 import { fetchGroupDetail } from "./groupDetail";
 
 export const Modal = ( { groupId, setPosts , setGroup, setEvents, setRequests, setMessages, setServerError,  setIsOwner, setMembers, setInvites } ) => {
-  let token = document.cookie.split("=")[1]
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     const NewformData = new FormData(e.currentTarget);
     NewformData.append("groupId", groupId);
-  
+    let token = document.cookie.split("=")[1]
     const response = await fetch(config.serverApiUrl + "createGroupPost", {
       method: "POST",
       headers: {

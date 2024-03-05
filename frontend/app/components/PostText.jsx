@@ -5,7 +5,6 @@ import { useState } from "react";
 import { PostPlaceholder } from "./posts";
 
 export const PostText = ({ posts, setPosts }) => {
-    let token = document.cookie.split("=")[1]
     const [showAllComments, setShowAllComments] = useState({});
     const [imageSelected, setImageSelected] = useState(false);
 
@@ -31,6 +30,7 @@ export const PostText = ({ posts, setPosts }) => {
         }));
     };
     const handleSubmitComment = async (post_id) => {
+        let token = document.cookie.split("=")[1]
         const formId = `create-comment-form-${post_id}`;
         const form = document.getElementById(formId);
         const commentContent = form.querySelector('textarea[name="comment_body"]').value.trim();
@@ -74,6 +74,7 @@ export const PostText = ({ posts, setPosts }) => {
     };
 
     const handleLikeClick = async (post_id) => {
+        let token = document.cookie.split("=")[1]
         const response = await fetch(config.serverApiUrl + "likePost", {
             method: "POST",
             headers: {
@@ -97,6 +98,7 @@ export const PostText = ({ posts, setPosts }) => {
     };
 
     const handleCommentLikeClick = async (comment_id) => {
+        let token = document.cookie.split("=")[1]
         const response = await fetch(config.serverApiUrl + "likeComment", {
             method: "POST",
             headers: {
