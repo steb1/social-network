@@ -5,11 +5,14 @@ import React, { useEffect, useState } from "react";
 import { PostText } from "./PostText";
 
 const fetchAllPosts = async (setPosts, setServerError) => {
+    let token = document.cookie.split("=")[1]
     try {
         const response = await fetch(config.serverApiUrl + "getAllPosts", {
             cache: "no-cache",
             method: "GET",
-            credentials: "include",
+            headers: {
+                'Authorization': token,
+              },
         });
         if (response.ok) {
             const data = await response.json();

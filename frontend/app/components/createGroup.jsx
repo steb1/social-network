@@ -100,7 +100,6 @@ async function handleCreateGroup() {
 				Authorization: token,
 				"Content-Type": "application/json",
 			},
-			credentials: "include",
 			body: JSON.stringify(requestData),
 		});
 
