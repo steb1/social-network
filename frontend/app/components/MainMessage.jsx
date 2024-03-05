@@ -55,6 +55,7 @@ const MainMessage = ({
                         document.createElement("div")
                     );
                 cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+                sendMessageWeb("messagepreview", "");
                 break;
             case "messageforgroup":
                 const senderInGroup =
@@ -79,12 +80,12 @@ const MainMessage = ({
                         document.createElement("div")
                     );
                 cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
-
+                sendMessageWeb("messagepreview", "");
                 break;
             case "typeinprogress":
                 if (
-                    lastJsonMessage.body.sender !== Chatter[0].nickname &&
-                    lastJsonMessage.body.sender !== Chatter[0].email
+                    lastJsonMessage.body.sender !== Chatter[0]?.nickname &&
+                    lastJsonMessage.body.sender !== Chatter[0]?.email
                 ) {
                     return;
                 }
@@ -92,8 +93,8 @@ const MainMessage = ({
                 break;
             case "nontypeinprogress":
                 if (
-                    lastJsonMessage.body.sender !== Chatter[0].nickname &&
-                    lastJsonMessage.body.sender !== Chatter[0].email
+                    lastJsonMessage.body.sender !== Chatter[0]?.nickname &&
+                    lastJsonMessage.body.sender !== Chatter[0]?.email
                 ) {
                     return;
                 }
@@ -108,6 +109,7 @@ const MainMessage = ({
                 break;
             case "handleGroupRequest":
                 console.log("handleGroupRequest");
+                
                 break;
             case "inviteUser":
                 console.log("inviteUser");
