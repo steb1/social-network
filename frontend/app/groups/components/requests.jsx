@@ -54,7 +54,7 @@ export const Requests= ( { request, setPosts, setGroup, setEvents, setRequests, 
 }
     return (
         <div className="flex flex-row gap-2">
-            <div className="flex flex-row h-16 px-1 bg-white gap-3 w-[30rem] border-2 items-center rounded-2xl ">
+            <div className="flex flex-row h-16  dark:bg-slate-800 px-1 bg-white gap-3 w-[30rem] border-2 items-center rounded-2xl ">
                 <div className="w-9 h-9 rounded-full mr-7" >
                     <img src={ !request.avatar ?  "../assets/images/avatars/avatar-5.jpg" : request.avatar } className="rounded-full ml-2" alt="" />
                 </div>

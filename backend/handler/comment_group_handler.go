@@ -15,20 +15,14 @@ import (
 )
 
 func HandleCreateCommentGroup(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodOptions {
-		HandleOptions(w, r)
-		return
-	}
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	lib.AddCorsPost(w, r)
+
 	var comment models.CommentGroup
 	var apiError ApiError
 
-	cookie, errC := r.Cookie("social-network")
-	session, errS := models.SessionRepo.GetSession(cookie.Value)
-	if errS != nil || errC != nil {
+	sessionToken := r.Header.Get("Authorization")
+	session, err := models.SessionRepo.GetSession(sessionToken)
+	if err != nil{
 		apiError.Error = "Go connect first !"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
 		return
@@ -72,26 +66,24 @@ func HandleCreateCommentGroup(w http.ResponseWriter, r *http.Request) {
 
 		response["ok"] = true
 
-		lib.WriteJSONResponse(w, response)
+		lib.WriteJSONResponse(w, r, response)
 	}
 }
 
 func HandleLikeCommentGroup(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	lib.AddCorsPost(w, r)
 
 	var apiError ApiError
 	var commentLike models.CommentGroupLike
 
-	cookie, errC := r.Cookie("social-network")
-	session, errS := models.SessionRepo.GetSession(cookie.Value)
-	if errS != nil || errC != nil {
+	sessionToken := r.Header.Get("Authorization")
+	session, err := models.SessionRepo.GetSession(sessionToken)
+	if err != nil{
 		apiError.Error = "Go connect first !"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
 		return
 	}
+	var errC error
 	commentLike.AuthorID, errC = strconv.Atoi(session.UserID)
 	if errC != nil {
 		apiError.Error = "Error getting user."
@@ -139,10 +131,8 @@ func HandleLikeCommentGroup(w http.ResponseWriter, r *http.Request) {
 }
 
 func ImageHandlerCommentGroup(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodOptions {
-		HandleOptions(w, r)
-		return
-	}
+	lib.AddCorsGet(w, r)
+
 	if r.Method != "GET" {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return

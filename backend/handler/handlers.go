@@ -42,14 +42,12 @@ var Routes = []Route{
 	{Path: "/api/logout", Handler: Logout, Methods: []string{"GET"}},
 	{Path: "/api/imgPost", Handler: ImageHandler, Methods: []string{"GET", "OPTIONS"}},
 	{Path: "/api/imgComment", Handler: ImageHandlerComment, Methods: []string{"GET", "OPTIONS"}},
-	{Path: "/api/imgCommentGroup", Handler: ImageHandlerCommentGroup, Methods: []string{"GET", "OPTIONS"}},
 	{Path: "/api/getAllPosts", Handler: HandleGetAllPosts, Methods: []string{"GET", "OPTIONS"}},
 	{Path: "/api/createComment", Handler: HandleCreateComment, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/createCommentGroup", Handler: HandleCreateCommentGroup, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/likePost", Handler: HandleLikePost, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/likePostGroup", Handler: HandleLikePostGroup, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/likeComment", Handler: HandleLikeComment, Methods: []string{"POST", "OPTIONS"}},
-	{Path: "/api/likeCommentGroup", Handler: HandleLikeCommentGroup, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/getFollowers", Handler: HandleGetFollowers, Methods: []string{"GET", "OPTIONS"}},
 	{Path: "/api/checkAuth", Handler: CheckAutheHandler, Methods: []string{"GET", "OPTIONS", "POST"}},
 	{Path: "/api/createPost", Handler: HandleCreatePost, Methods: []string{"POST", "OPTIONS"}},
@@ -72,6 +70,7 @@ var Routes = []Route{
 	{Path: "/api/handleInvitation", Handler: HandleInviteUserResponse, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/updateNotif", Handler: HandleUpdateNotif, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/handleRequestGroup", Handler: HandleRequestGroup, Methods: []string{"POST", "OPTIONS"}},
+	{Path: "/api/getRightBarCategories", Handler: HandleGetRightBarCategories, Methods: []string{"GET", "OPTIONS"}},
 }
 
 func MiddlewareIsAuthenticated(handler http.HandlerFunc) http.HandlerFunc {

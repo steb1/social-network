@@ -88,7 +88,7 @@ func (cc *CommentRepository) GetComment(commentID int) (*Comment, error) {
 
 func (cc *CommentRepository) GetCommentsByPostID(postID string, currentUserID int) ([]*Comment, error) {
 	// Prepare a SQL query with a placeholder for the post ID
-	stmt, err := db.Prepare("SELECT comment_id, content, createdAt, first_name, last_name, nickname, post_id, has_image, author_id FROM comments,users WHERE comments.author_id=users.user_id and post_id = ? ORDER BY createdAt DESC")
+	stmt, err := db.Prepare("SELECT comment_id, content, createdAt, first_name, last_name, nickname, post_id, has_image, author_id, avatar FROM comments,users WHERE comments.author_id=users.user_id and post_id = ? ORDER BY createdAt DESC")
 	if err != nil {
 		log.Println("error while preparing", err)
 	}
@@ -105,7 +105,7 @@ func (cc *CommentRepository) GetCommentsByPostID(postID string, currentUserID in
 	for rows.Next() {
 		var comment Comment
 		comment.User = &User{}
-		err := rows.Scan(&comment.CommentID, &comment.Content, &comment.CreatedAt, &comment.User.FirstName, &comment.User.LastName, &comment.User.Nickname, &comment.PostID, &comment.HasImage, &comment.AuthorID)
+		err := rows.Scan(&comment.CommentID, &comment.Content, &comment.CreatedAt, &comment.User.FirstName, &comment.User.LastName, &comment.User.Nickname, &comment.PostID, &comment.HasImage, &comment.AuthorID, &comment.User.Avatar)
 		if err != nil {
 			log.Println("error scan in GetCommentsByPostID", err)
 		}
