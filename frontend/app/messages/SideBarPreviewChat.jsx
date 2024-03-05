@@ -6,7 +6,7 @@ const SideBarPreviewChat = ({ PrenomNom, avatar, To, Time, Message }) => {
     return (
         <Link
             href={`/messages/${To}`}
-            className='relative flex items-center gap-4 p-2 duration-200 rounded-xl hover:bg-secondery'
+            className='relative flex items-center gap-4 p-2 duration-200 rounded-xl hover:bg-slate-800'
         >
             <div className='relative w-14 h-14 shrink-0'>
                 <img

@@ -324,7 +324,7 @@ export const PostText = ({ posts, setPosts }) => {
                         </form>
                         <button
                             onClick={() => handleSubmitComment(post.post_id)}
-                            className='text-sm rounded-full py-1.5 px-3.5 bg-secondery'
+                            className='text-sm rounded-full py-1.5 px-3.5 dark:bg-slate-600 bg-secondery'
                         >
                             Send
                         </button>

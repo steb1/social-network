@@ -529,7 +529,7 @@ const MainMessage = ({
                                             }}
                                             onKeyUp={debounceNoTyping}
                                             onChange={(e) => setMessageInput(e.target.value)} //  update la valeur du champ de message
-                                            className='w-full resize-none bg-secondery rounded-full px-4 p-2'
+                                            className='w-full resize-none bg-secondery rounded-full px-4 p-2 dark:bg-slate-600'
                                         ></textarea>
 
                                         <button
