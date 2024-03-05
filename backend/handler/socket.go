@@ -42,11 +42,12 @@ type WebSocketMessage struct {
 }
 
 type MessagePattern struct {
-	Sender   string `json:"sender"`
-	Receiver string `json:"receiver"`
-	Text     string `json:"text"`
-	Time     string `json:"time"`
-	GroupId  int    `json:"groupId"`
+	Sender    string `json:"sender"`
+	Receiver  string `json:"receiver"`
+	Text      string `json:"text"`
+	Time      string `json:"time"`
+	GroupId   int    `json:"groupId"`
+	GroupName string `json:"group_name"`
 }
 
 func SocketHandler(w http.ResponseWriter, r *http.Request) {
@@ -347,8 +348,6 @@ func handleSendGroupOwnerNotif(messageType string, messageBody interface{}, user
 		return
 	}
 
-	fmt.Println("Olalalalaaa 1")
-
 	var messagepattern MessagePattern
 
 	messagepattern.GroupId, _ = strconv.Atoi(fmt.Sprintf("%v", bodyMap["groupId"]))
@@ -358,15 +357,13 @@ func handleSendGroupOwnerNotif(messageType string, messageBody interface{}, user
 
 	messagepattern.Sender = user.FirstName + " " + user.LastName
 	messagepattern.Receiver = receiver.FirstName + " " + receiver.LastName
+	messagepattern.GroupName = group.Title
 
 	tosend, exists := connections[receiver.UserID]
 
 	if !exists {
 		return
 	}
-
-	fmt.Println("Olalalalaaa 2")
-	fmt.Println(len(connections), "len connections")
 
 	if err := EnvoyerMessage(tosend, messageType, messagepattern); err != nil {
 		log.Println("Error writing message", messageType, "to connection:", err)
@@ -387,7 +384,5 @@ func handleSendGroupOwnerNotif(messageType string, messageBody interface{}, user
 	if err != nil {
 		fmt.Println("Notification not created")
 	}
-
-	fmt.Println("Olalalalaaa 3")
 
 }

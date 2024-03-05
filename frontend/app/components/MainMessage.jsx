@@ -30,7 +30,7 @@ const MainMessage = ({
     // ---------------------------------- INIT SOCKET ----------------------------------------------
     useEffect(() => {
         // Check if a new JSON message has been received
-        console.log(lastJsonMessage, "----------------not");
+        console.log(lastJsonMessage, "---------MainMessage-------not");
         switch (lastJsonMessage?.command) {
             case "messageforuser":
                 console.log("------------message----------", lastJsonMessage);
