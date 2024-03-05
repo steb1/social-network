@@ -4,7 +4,6 @@ import Link from "next/link";
 import React from "react";
 import config from "@/config";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { CreateGroup } from "./createGroup";
 import { notFound } from "next/navigation";
 
