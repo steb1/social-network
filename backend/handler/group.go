@@ -385,7 +385,7 @@ func HandleCreateGroupPost(w http.ResponseWriter, r *http.Request) {
 			defer photo.Close()
 			if err := os.MkdirAll("imgPost", os.ModePerm); err != nil {
 			}
-			fichierSortie, _ := os.Create(fmt.Sprintf("imgPost/%d.jpg", postID_))
+			fichierSortie, _ := os.Create(fmt.Sprintf("imgPost/G%d.jpg", postID_))
 
 			defer fichierSortie.Close()
 			_, _ = io.Copy(fichierSortie, photo)
