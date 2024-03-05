@@ -10,7 +10,7 @@ const Messages = async ({ params: { to } }) => {
     const cookieStore = cookies();
 
     const response = await fetch(`${config.serverApiUrl}messageResponse?to=${to}`, {
-        cache: "no-cache",
+        cache: "no-store",
         method: "GET",
         headers: {
             Authorization: cookieStore.get("social-network").value,
