@@ -100,8 +100,9 @@ func ValidateRequest(req *http.Request, res http.ResponseWriter, url, method str
 	return true
 }
 
-func WriteJSONResponse(w http.ResponseWriter, data interface{}) {
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+func WriteJSONResponse(w http.ResponseWriter, r *http.Request, data interface{}) {
+	var origin = r.Header.Get("Origin")
+	w.Header().Set("Access-Control-Allow-Origin", origin)
 	w.Header().Set("Access-Control-Allow-Methods", "POST,OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -405,4 +406,28 @@ func GetStringFromNullString(ns sql.NullString) string {
 		return ns.String
 	}
 	return ""
+}
+
+func AddCorsPost(w http.ResponseWriter, r *http.Request) {
+	var origin = r.Header.Get("Origin")
+	w.Header().Set("Access-Control-Allow-Origin", origin)
+	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+}
+
+func AddCorsGet(w http.ResponseWriter, r *http.Request) {
+	var origin = r.Header.Get("Origin")
+	w.Header().Set("Access-Control-Allow-Origin", origin)
+	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, GET")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 }

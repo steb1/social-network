@@ -222,24 +222,24 @@ export const Element = () => {
                         notification.notification_type === "inviteUser"
                           ? "/groups"
                           : notification.notification_type === "requestGroup"
-                          ? `/groups/${notification.Group.group_id}`
-                          : ""
+                            ? `/groups/${notification.Group.group_id}`
+                            : ""
                       }
-                  
-                        class="relative flex items-center gap-3 p-2 duration-200 rounded-xl pr-10 hover:bg-secondery dark:hover:bg-white/10 bg-teal-500/5 mb-5"
-                        onClick={() =>
-                          updateNotif(notification.notification_id)
-                        }
-                      >
-                        <div class="relative w-12 h-12 shrink-0">
-                          {" "}
-                          <img
-                            src="assets/images/avatars/avatar-3.jpg"
-                            alt=""
-                            class="object-cover w-full h-full rounded-full"
-                          />
-                        </div>
-                        <div class="flex-1 ">
+
+                      class="relative flex items-center gap-3 p-2 duration-200 rounded-xl pr-10 hover:bg-secondery dark:hover:bg-white/10 bg-teal-500/5 mb-5"
+                      onClick={() =>
+                        updateNotif(notification.notification_id)
+                      }
+                    >
+                      <div class="relative w-12 h-12 shrink-0">
+                        {" "}
+                        <img
+                          src="assets/images/avatars/avatar-3.jpg"
+                          alt=""
+                          class="object-cover w-full h-full rounded-full"
+                        />
+                      </div>
+                      <div class="flex-1 ">
                         <p>
                           {" "}
                           <b className="font-bold mr-1">
@@ -253,23 +253,23 @@ export const Element = () => {
                           ) : (
                             ""
                           )}
-                         
-                            <b className="font-bold mr-1"> {notification.Group.title} </b>
-                         
+
+                          <b className="font-bold mr-1"> {notification.Group.title} </b>
+
                         </p>
 
-                          <div class="text-xs text-gray-500 mt-1.5 dark:text-white/80">
-                            {" "}
-                            {notification.created_at}
-                          </div>
-                          {!notification.is_read ? (
-                            <div class="w-2.5 h-2.5 bg-teal-600 rounded-full absolute right-3 top-5"></div>
-                          ) : (
-                            ""
-                          )}
+                        <div class="text-xs text-gray-500 mt-1.5 dark:text-white/80">
+                          {" "}
+                          {notification.created_at}
                         </div>
-                      </Link>
-                    ))
+                        {!notification.is_read ? (
+                          <div class="w-2.5 h-2.5 bg-teal-600 rounded-full absolute right-3 top-5"></div>
+                        ) : (
+                          ""
+                        )}
+                      </div>
+                    </Link>
+                  ))
                   : ""}
               </div>
             </div>

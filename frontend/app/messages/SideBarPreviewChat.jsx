@@ -10,7 +10,7 @@ const SideBarPreviewChat = ({ PrenomNom, avatar, To, Time, Message }) => {
         >
             <div className='relative w-14 h-14 shrink-0'>
                 <img
-                    src={`http://localhost:8080/img/${avatar}`}
+                    src={`${config.ServerApiImage}/${avatar}`}
                     alt=''
                     className='object-cover w-full h-full rounded-full'
                 />
