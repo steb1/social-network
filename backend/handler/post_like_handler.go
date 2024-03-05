@@ -14,13 +14,14 @@ func HandleLikePost(w http.ResponseWriter, r *http.Request) {
 	var apiError ApiError
 	var postLike models.PostLike
 
-	cookie, errC := r.Cookie("social-network")
-	session, errS := models.SessionRepo.GetSession(cookie.Value)
-	if errS != nil || errC != nil {
+	sessionToken := r.Header.Get("Authorization")
+	session, err := models.SessionRepo.GetSession(sessionToken)
+	if err != nil{
 		apiError.Error = "Go connect first !"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
 		return
 	}
+	var errC error
 	postLike.AuthorID, errC = strconv.Atoi(session.UserID)
 	if errC != nil {
 		apiError.Error = "Error getting user."
@@ -77,13 +78,14 @@ func HandleLikeComment(w http.ResponseWriter, r *http.Request) {
 	var apiError ApiError
 	var commentLike models.CommentLike
 
-	cookie, errC := r.Cookie("social-network")
-	session, errS := models.SessionRepo.GetSession(cookie.Value)
-	if errS != nil || errC != nil {
+	sessionToken := r.Header.Get("Authorization")
+	session, err := models.SessionRepo.GetSession(sessionToken)
+	if err != nil{
 		apiError.Error = "Go connect first !"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
 		return
 	}
+	var errC error
 	commentLike.AuthorID, errC = strconv.Atoi(session.UserID)
 	if errC != nil {
 		apiError.Error = "Error getting user."

@@ -317,8 +317,8 @@ func HandleCreateGroupPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cookie, _ := r.Cookie("social-network")
-	session, err := models.SessionRepo.GetSession(cookie.Value)
+	sessionToken := r.Header.Get("Authorization")
+	session, err := models.SessionRepo.GetSession(sessionToken)
 	if err != nil {
 		apiError.Error = "Go connect first !"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
