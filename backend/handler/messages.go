@@ -8,7 +8,7 @@ import (
 
 func GetMessages(w http.ResponseWriter, r *http.Request) {
 
-	addCorsHeader(w)
+	addCorsHeader(w, r)
 	if r.Method == http.MethodOptions {
 		w.WriteHeader(http.StatusOK)
 		return
