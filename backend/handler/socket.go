@@ -127,6 +127,7 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 
 			case "handleGroupRequest":
 				handleSendGroupOwnerNotif(message.Command, message.Body, user)
+				
 			case "messagepreview":
 				sendMessagePreview(userInfo, userId, "messagepreview")
 			case "logout":

@@ -25,7 +25,7 @@ const Logout = () => {
     // </div>
     <div
 	className=" cursor-pointer "
-      onclick="{handleLogout}"
+      onClick={handleLogout}
       style={{ width: "100%", height: "100%", fill: "black" }}
     >
       <svg
