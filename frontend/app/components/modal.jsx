@@ -19,7 +19,6 @@ export const fetchFollowers = async (setFollowers) => {
 };
 
 export const Modal = ({ setPosts, posts }) => {
-    let token = document.cookie.split("=")[1]
     let [followers, setFollowers] = useState([]);
     useEffect(() => {
         fetchFollowers(setFollowers);
@@ -27,6 +26,7 @@ export const Modal = ({ setPosts, posts }) => {
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();
+        let token = document.cookie.split("=")[1]
         const NewformData = new FormData(e.currentTarget);
         const response = await fetch(config.serverApiUrl + "createPost", {
             method: "POST",
