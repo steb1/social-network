@@ -7,7 +7,7 @@ export const GroupRightBar = ({ groupInfo, groupId, invites, setInvites, members
     // ---------------------------------- INIT SOCKET ----------------------------------------------
     useEffect(() => {
         // Check if a new JSON message has been received
-        console.log(lastJsonMessage, "----------------not");
+        console.log(lastJsonMessage, "--------groupRightBar--------not");
         switch (lastJsonMessage?.command) {
                 case "messageforuser":
                     console.log("messageforuser");
