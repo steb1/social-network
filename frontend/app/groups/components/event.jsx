@@ -3,6 +3,52 @@ import { fetchGroupDetail } from "./groupDetail";
 
 
 export const Event = ( { event, setPosts , setGroup, setEvents, setRequests, setMessages, setServerError, groupId, setIsowner, setMembers, setInvites} ) => {
+  async function HandleRegisterEvent ( e, setPosts, setGroup, setEvents, setRequest, setMessages, setServerError, groupId, option, setIsowner, setMembers, setInvites ) {
+    let  token = document.cookie.split("=")[1]
+    if (!e.target.id || !token) {
+        return
+    }
+
+    let eventId = e.target.id
+    
+    const formData = new FormData();
+    formData.append("eventId", eventId);
+    formData.append("option", option)
+
+    if (token) {
+        // Use the token as needed
+        console.log('Token:', token);
+      } else {
+        console.log('Token not found in cookies');
+      }
+
+      try {
+        const response = await fetch(config.serverApiUrl + "registerEvent", {
+          method: "POST",
+          headers: {
+            'Authorization': token,
+          },
+          credentials: "include",
+          body: formData,
+        });
+      
+        if (response.ok) {
+          const contentType = response.headers.get("content-type");
+          if (contentType && contentType.includes("application/json")) {
+            const data = await response.json();
+            fetchGroupDetail(setPosts, setGroup, setEvents, setRequest, setMessages, setServerError, groupId, setIsowner, setMembers, setInvites)
+          } else {
+            console.error("Response is not in JSON format");
+          }
+        } else {
+          const errorResponse = await response.json();
+          const errorMessage = errorResponse.error || "An error occurred.";
+          console.error("No Group retrieved:", errorMessage);
+        }
+      } catch (error) {
+        console.error("Error while fetching groups:", error);
+      }
+}
     return (
         <div id={event.event_id} className="card w-96 bg-base-100 shadow-xl">
         <figure className=" "><img src="https://hire4event.com/blogs/wp-content/uploads/2019/05/Event-Management-Proposal-Hire4event.jpg" alt="Shoes" /></figure>
