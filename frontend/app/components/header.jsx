@@ -5,9 +5,6 @@ import { useEffect } from "react";
 import { Element } from "./elements";
 import  {useWebSocketContext}  from "@/public/js/websocketContext";
 
-import { Element } from "./elements";
-import  {useWebSocketContext}  from "@/public/js/websocketContext";
-
 
 const Header = () => {
     const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
