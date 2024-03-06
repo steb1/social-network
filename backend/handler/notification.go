@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"server/lib"
 	"server/models"
@@ -45,9 +46,18 @@ func HandleGetNotifications(w http.ResponseWriter, r *http.Request) {
 			WriteJSON(w, http.StatusUnauthorized, apiError)
 			return
 		}
+		messagesPreview, err := models.MessageRepo.GetMessagePreviewsForAnUser(userId)
+		if err != nil {
+			log.Println("🚀 ~ func GetMessagePreviewsForAnUser ~ err:", err)
+			var apiError ApiError
+			apiError.Error = "Not found Messages Previews"
+			WriteJSON(w, http.StatusInternalServerError, apiError)
+			return
+		}
 		response := make(map[string]interface{})
 
 		response["notifications"] = notifications
+		response["messagesPreview"] = messagesPreview
 
 		lib.WriteJSONResponse(w, r, response)
 	}
