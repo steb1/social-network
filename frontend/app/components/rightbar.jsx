@@ -105,7 +105,7 @@ export const Rightbar = () => {
                     </div>
                     <div className='space-y-3.5 capitalize text-xs font-normal mt-5 mb-2 text-gray-600 dark:text-white/80'>
                         <>
-                            {categories ? categories.map((category) => (
+                            {categories && Array.isArray(categories) ? categories.map((category) => (
                                 <a href='#' key={category.categoryName}>
                                     <div className='flex items-center gap-3 p'>
                                         <svg

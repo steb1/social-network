@@ -9,6 +9,7 @@ import { CustomAlert } from "./CustomAlert";
 
 const Header = () => {
   const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
   const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
   // ---------------------------------- INIT SOCKET ----------------------------------------------
   useEffect(() => {
@@ -21,10 +22,24 @@ const Header = () => {
       case "handleGroupRequest":
         console.log("handleGroupRequest");
         setShowAlert(true);
+        setAlertMessage(
+          `${lastJsonMessage.body.sender} is interested in joining your group "${lastJsonMessage.body.group_name}".`
+        );
         break;
       case "inviteUser":
         console.log("inviteUser");
-        break
+        setShowAlert(true);
+        setAlertMessage(
+          `${lastJsonMessage.body.sender} has invited you to join the group "${lastJsonMessage.body.group_name}".`
+        );
+        break;
+      case "followPrivate":
+        console.log("followPrivate");
+        setShowAlert(true);
+        setAlertMessage(
+          `${lastJsonMessage.body.sender} wants to follow your private account.`
+        );
+        break;
     }
 
   });
@@ -85,11 +100,12 @@ const Header = () => {
           <Element />
         </div>
       </header>
-      {showAlert &&
+      {showAlert && (
         <CustomAlert
-          message={`${lastJsonMessage.body.sender} is interested in joining your group "${lastJsonMessage.body.group_name}".`}
+          message={alertMessage}
           onClose={() => setShowAlert(false)}
-        />}
+        />
+      )}
     </div>
   );
 };
