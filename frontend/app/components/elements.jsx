@@ -84,8 +84,9 @@ export const Element = () => {
     }
   };
 
-  const countElementsWithCondition = (arr, condition) =>
-    arr.filter(condition).length;
+  const countElementsWithCondition = (arr, condition) => {
+    return arr ? arr.filter(condition).length : 0;
+  };  
 
   useEffect(() => {
     fetchNotification();
