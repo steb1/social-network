@@ -225,7 +225,7 @@ export const Element = () => {
                           : notification.notification_type === "requestGroup"
                             ? `/groups/${notification.Group?.group_id}`
                             : notification.notification_type === "followPrivate"
-                              ? `/profile/${notification.Sender.user_id}`
+                              ? `/followRequests`
                               : ""
                       }
 
