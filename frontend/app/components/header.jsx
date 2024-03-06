@@ -3,30 +3,30 @@ import Link from "next/link";
 import config from "@/config";
 import { useEffect, useState } from "react";
 import { Element } from "./elements";
-import  {useWebSocketContext}  from "@/public/js/websocketContext";
+import { useWebSocketContext } from "@/public/js/websocketContext";
 import { CustomAlert } from "./CustomAlert";
 
 
 const Header = () => {
-    const [showAlert, setShowAlert] = useState(false);
-    const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
-    // ---------------------------------- INIT SOCKET ----------------------------------------------
-    useEffect(() => {
-        // Check if a new JSON message has been received
-        console.log(lastJsonMessage, "---------header-------not");
-        switch (lastJsonMessage?.command) {
-            case "messageforuser":
-                console.log("messageforuser");
-                break
-                case "handleGroupRequest":
-                  console.log("handleGroupRequest");
-                  setShowAlert(true);
-                  break;
-              case "inviteUser":
-                console.log("inviteUser");
-                break
-        }
-    
+  const [showAlert, setShowAlert] = useState(false);
+  const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
+  // ---------------------------------- INIT SOCKET ----------------------------------------------
+  useEffect(() => {
+    // Check if a new JSON message has been received
+    console.log(lastJsonMessage, "---------header-------not");
+    switch (lastJsonMessage?.command) {
+      case "messageforuser":
+        console.log("messageforuser");
+        break
+      case "handleGroupRequest":
+        console.log("handleGroupRequest");
+        setShowAlert(true);
+        break;
+      case "inviteUser":
+        console.log("inviteUser");
+        break
+    }
+
   });
 
   useEffect(() => {
@@ -82,15 +82,14 @@ const Header = () => {
               </Link>
             </div>
           </div>
-          <Element/>
+          <Element />
         </div>
       </header>
-      {showAlert && (
+      {showAlert &&
         <CustomAlert
-          message={`group id: ${lastJsonMessage.body.groupId} group name: ${lastJsonMessage.body.group_name} sender: ${lastJsonMessage.body.sender} text content: ${lastJsonMessage.body.text}`}
+          message={`${lastJsonMessage.body.sender} is interested in joining your group "${lastJsonMessage.body.group_name}".`}
           onClose={() => setShowAlert(false)}
-        />
-      )}
+        />}
     </div>
   );
 };
@@ -119,16 +118,16 @@ async function handleCreateGroup() {
     console.log("Token not found in cookies");
   }
 
-	try {
-		const response = await fetch(config.serverApiUrl + "createGroup", {
-			method: "POST",
-			headers: {
-				Authorization: token,
-				"Content-Type": "application/json",
-			},
-			credentials: "include",
-			body: JSON.stringify(requestData),
-		});
+  try {
+    const response = await fetch(config.serverApiUrl + "createGroup", {
+      method: "POST",
+      headers: {
+        Authorization: token,
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(requestData),
+    });
 
     if (response.ok) {
       console.log("ooook");
