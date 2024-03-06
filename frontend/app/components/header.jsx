@@ -22,6 +22,8 @@ const Header = () => {
                 case "inviteUser":
                     console.log("inviteUser");
                     break
+                case "followPrivate" : 
+                    console.log("followPrivate")
         }
     
   });
