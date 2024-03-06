@@ -1,7 +1,8 @@
 "use client"
 import config from "@/config";
 import { useEffect } from "react";
-import  {useWebSocketContext}  from "@/public/js/websocketContext";
+import { useWebSocketContext } from "@/public/js/websocketContext";
+import { CustomAlert } from "./CustomAlert";
 
 export const GroupOption = ({ group, setGroups, setServerError }) => {
 
@@ -9,25 +10,25 @@ export const GroupOption = ({ group, setGroups, setServerError }) => {
     // ---------------------------------- INIT SOCKET ----------------------------------------------
     useEffect(() => {
         // Check if a new JSON message has been received
-        console.log(lastJsonMessage, "----------------not");
+        // console.log(lastJsonMessage, "--------group option--------not");
         switch (lastJsonMessage?.command) {
-                case "messageforuser":
-                    console.log("messageforuser");
-                    break
-                case "handleGroupRequest":
-                    console.log("handleGroupRequest");
-                    break
-                case "inviteUser":
-                    console.log("inviteUser");
-                    break
+            case "messageforuser":
+                console.log("messageforuser");
+                break
+            case "handleGroupRequest":
+                console.log("handleGroupRequest");
+                break
+            case "inviteUser":
+                console.log("inviteUser");
+                break
 
         }
     })
 
-    async function handleGroupRequest(e, groupid, setGroups, setServerError) {   
-        
+    async function handleGroupRequest(e, groupid, setGroups, setServerError) {
+
         let token = document.cookie.split("=")[1];
-    
+
         if (token) {
             // Use the token as needed
             console.log("Token:", token);
@@ -38,13 +39,13 @@ export const GroupOption = ({ group, setGroups, setServerError }) => {
         const message = {
             groupId: groupid,
             time: Date.now(),
-          };
-      
-          const WebSocketMessage = {
-              command: "handleGroupRequest",
-              body: message,
-          };
-    
+        };
+
+        const WebSocketMessage = {
+            command: "handleGroupRequest",
+            body: message,
+        };
+
         try {
             const response = await fetch(config.serverApiUrl + "createMembership", {
                 method: "POST",
@@ -54,20 +55,20 @@ export const GroupOption = ({ group, setGroups, setServerError }) => {
                 credentials: "include",
                 body: JSON.stringify({ groupid: groupid }),
             });
-    
+
             if (response.ok) {
                 e.target.classList.add("btn-disabled")
                 e.target.classList.remove("bg-primary")
                 sendJsonMessage(WebSocketMessage);
             }
-    
-          
+
+
         } catch (error) {
             console.error("Error while fetching groups:", error);
-          }
+        }
     }
 
-    
+
 
     return (
         <div id={group.group_id} className='card card-compact bg-white-100 shadow-xl carousel-item w-96 h-64'>
@@ -87,10 +88,11 @@ export const GroupOption = ({ group, setGroups, setServerError }) => {
                     >
                         Send request
                     </button>
-      </div>
-    </div>
-  </div>
-)};
+                </div>
+            </div>
+        </div>
+    )
+};
 
 
 
