@@ -44,7 +44,8 @@ func (ur *UserRepository) CreateUser(user *User) error {
 		INSERT INTO users (email, password, first_name, last_name, date_of_birth, avatar, nickname, about_me)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 	`
-	_, err := ur.db.Exec(query, user.Email, user.Password, user.FirstName, user.LastName, user.DateOfBirth, user.Avatar, user.Nickname, user.AboutMe)
+
+	_, err := ur.db.Exec(query, user.Email, user.Password, user.FirstName, user.LastName, user.DateOfBirth, lib.NewNullString(user.Avatar), lib.NewNullString(user.Nickname), user.AboutMe)
 	if err != nil {
 		return err
 	}
@@ -61,7 +62,7 @@ func (ur *UserRepository) UpdateUser(user *User) error {
 		WHERE user_id = ?
 	`
 	_, err := ur.db.Exec(query, user.Email, user.Password, user.FirstName, user.LastName,
-		user.DateOfBirth, user.Avatar, user.Nickname, user.AboutMe, user.UserID)
+		user.DateOfBirth, user.Avatar, lib.NewNullString(user.Nickname), user.AboutMe, user.UserID)
 	if err != nil {
 		return err
 	}
@@ -130,7 +131,7 @@ func (ur *UserRepository) GetUserByEmail(email string) (*User, error) {
         WHERE email = ?
     `
 	row := ur.db.QueryRow(query, email)
-
+	var nickname sql.NullString
 	user := &User{}
 	err := row.Scan(
 		&user.UserID,
@@ -140,13 +141,15 @@ func (ur *UserRepository) GetUserByEmail(email string) (*User, error) {
 		&user.LastName,
 		&user.DateOfBirth,
 		&user.Avatar,
-		&user.Nickname,
+		&nickname,
 		&user.AboutMe,
 		&user.AccountType,
 	)
 	if err != nil {
 		return nil, err
 	}
+
+	user.Nickname = lib.GetStringFromNullString(nickname)
 
 	return user, nil
 }
@@ -158,7 +161,7 @@ func (ur *UserRepository) GetUserByID(userID int) (*User, error) {
         WHERE user_id = ?
     `
 	row := ur.db.QueryRow(query, userID)
-
+	var nickname sql.NullString
 	user := &User{}
 	err := row.Scan(
 		&user.UserID,
@@ -168,13 +171,15 @@ func (ur *UserRepository) GetUserByID(userID int) (*User, error) {
 		&user.LastName,
 		&user.DateOfBirth,
 		&user.Avatar,
-		&user.Nickname,
+		&nickname,
 		&user.AboutMe,
 		&user.AccountType,
 	)
 	if err != nil {
 		return nil, err
 	}
+
+	user.Nickname = lib.GetStringFromNullString(nickname)
 
 	return user, nil
 }
@@ -186,13 +191,12 @@ func (ur *UserRepository) GetIDFromUsernameOrEmail(usernameOrEmail string) int {
 	var userId int
 	err := ur.db.QueryRow(query, usernameOrEmail, usernameOrEmail).Scan(&userId)
 	if err != nil {
-		log.Println("🚀 ~ func ~ err:", err)
+		log.Println("🚀 ~ func username of email,", usernameOrEmail, " ~ err:", err)
 		if err == sql.ErrNoRows {
 			return 0
 		}
 		return 0
 	}
-
 	return userId
 }
 
@@ -204,6 +208,8 @@ func (ur *UserRepository) GetUserByNickname(nickname string) (*User, error) {
     `
 	row := ur.db.QueryRow(query, nickname)
 
+	var nicknameStr sql.NullString
+
 	user := &User{}
 	err := row.Scan(
 		&user.UserID,
@@ -213,14 +219,14 @@ func (ur *UserRepository) GetUserByNickname(nickname string) (*User, error) {
 		&user.LastName,
 		&user.DateOfBirth,
 		&user.Avatar,
-		&user.Nickname,
+		&nicknameStr,
 		&user.AboutMe,
 		&user.AccountType,
 	)
 	if err != nil {
 		return nil, err
 	}
-
+	user.Nickname = lib.GetStringFromNullString(nicknameStr)
 	return user, nil
 }
 
@@ -231,6 +237,7 @@ func (ur *UserRepository) GetUserByNicknameOrEmail(login string) (User, error) {
         WHERE nickname = ? OR email = ? 
     `
 	row := ur.db.QueryRow(query, login, login)
+	var nickname sql.NullString
 
 	var user User
 	err := row.Scan(
@@ -241,13 +248,14 @@ func (ur *UserRepository) GetUserByNicknameOrEmail(login string) (User, error) {
 		&user.LastName,
 		&user.DateOfBirth,
 		&user.Avatar,
-		&user.Nickname,
+		&nickname,
 		&user.AboutMe,
 		&user.AccountType,
 	)
 	if err != nil {
 		return user, err
 	}
+	user.Nickname = lib.GetStringFromNullString(nickname)
 
 	return user, nil
 }
@@ -267,6 +275,7 @@ func (ur *UserRepository) SelectAllUsers() ([]*User, error) {
 
 	for rows.Next() {
 		user := &User{}
+		var nickname sql.NullString
 		err := rows.Scan(
 			&user.UserID,
 			&user.Email,
@@ -275,15 +284,16 @@ func (ur *UserRepository) SelectAllUsers() ([]*User, error) {
 			&user.LastName,
 			&user.DateOfBirth,
 			&user.Avatar,
-			&user.Nickname,
+			&nickname,
 			&user.AboutMe,
 			&user.AccountType,
 		)
 		if err != nil {
 			return nil, err
 		}
-		users = append(users, user)
 
+		user.Nickname = lib.GetStringFromNullString(nickname)
+		users = append(users, user)
 	}
 
 	return users, nil
@@ -298,7 +308,7 @@ func (ur *UserRepository) GetUserByPostID(postID int) (*User, error) {
         WHERE posts.post_id = ?
     `
 	row := ur.db.QueryRow(query, postID)
-
+	var nickname sql.NullString
 	user := &User{}
 	err := row.Scan(
 		&user.UserID,
@@ -308,14 +318,14 @@ func (ur *UserRepository) GetUserByPostID(postID int) (*User, error) {
 		&user.LastName,
 		&user.DateOfBirth,
 		&user.Avatar,
-		&user.Nickname,
+		&nickname,
 		&user.AboutMe,
 		&user.AccountType,
 	)
 	if err != nil {
 		return nil, err
 	}
-
+	user.Nickname = lib.GetStringFromNullString(nickname)
 	return user, nil
 }
 

@@ -9,13 +9,13 @@ const SideBarPreviewGroupChat = ({ ID, GroupName, Users, Message, Time }) => {
     return (
         <Link
             href={`/messages/${ID}`}
-            className='relative flex items-center gap-4 p-2 duration-200 rounded-xl hover:bg-secondery'
+            className='relative flex items-center gap-4 p-2 duration-200 rounded-xl dark:hover:white-400'
         >
             <div className='avatar-group -space-x-6 rtl:space-x-reverse'>
                 {displayedUsers.map((user, index) => (
                     <div key={index} className='avatar'>
                         <div className='w-12'>
-                            <img src={`http://localhost:8080/img/${user.Avatar}`} alt={`User ${index + 1}`} />
+                            <img src={`${config.ServerApiImage}/${user.Avatar}`} alt={`User ${index + 1}`} />
                         </div>
                     </div>
                 ))}

@@ -18,6 +18,7 @@ DROP TABLE IF EXISTS sessions;
 DROP TABLE IF EXISTS group_posts;
 DROP TABLE IF EXISTS post_groups_likes;
 DROP TABLE IF EXISTS comments_posts_group;
+DROP TABLE IF EXISTS notifications;
 
 
 

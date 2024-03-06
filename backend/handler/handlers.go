@@ -41,6 +41,7 @@ var Routes = []Route{
 	{Path: "/api/signin", Handler: SigninHandler, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/logout", Handler: Logout, Methods: []string{"GET"}},
 	{Path: "/api/imgPost", Handler: ImageHandler, Methods: []string{"GET", "OPTIONS"}},
+	{Path: "/api/imgComment", Handler: ImageHandlerComment, Methods: []string{"GET", "OPTIONS"}},
 	{Path: "/api/getAllPosts", Handler: HandleGetAllPosts, Methods: []string{"GET", "OPTIONS"}},
 	{Path: "/api/createComment", Handler: HandleCreateComment, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/createCommentGroup", Handler: HandleCreateCommentGroup, Methods: []string{"POST", "OPTIONS"}},
@@ -58,12 +59,18 @@ var Routes = []Route{
 	{Path: "/api/messages", Handler: GetMessages, Methods: []string{"GET", "OPTIONS"}},
 	{Path: "/api/messageResponse", Handler: GetMessageResponse, Methods: []string{"GET", "POST", "OPTIONS"}},
 	{Path: "/api/getAllGroups", Handler: HandleGetAllGroups, Methods: []string{"GET", "OPTIONS"}},
+	{Path: "/api/getNotifications", Handler: HandleGetNotifications, Methods: []string{"GET", "POST", "OPTIONS"}},
 	{Path: "/api/createMembership", Handler: HandleCreateMembership, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/getGroupDetail", Handler: HandleGetGroupDetail, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/createGroupPost", Handler: HandleCreateGroupPost, Methods: []string{"POST", "OPTIONS"}},
+	{Path: "/api/createGroup", Handler: HandleCreateGroup, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/createEvent", Handler: HandleCreateEvent, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/registerEvent", Handler: HandleRegisterEvent, Methods: []string{"POST", "OPTIONS"}},
+	{Path: "/api/inviteUser", Handler: HandleInviteUser, Methods: []string{"POST", "OPTIONS"}},
+	{Path: "/api/handleInvitation", Handler: HandleInviteUserResponse, Methods: []string{"POST", "OPTIONS"}},
+	{Path: "/api/updateNotif", Handler: HandleUpdateNotif, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/handleRequestGroup", Handler: HandleRequestGroup, Methods: []string{"POST", "OPTIONS"}},
+	{Path: "/api/getRightBarCategories", Handler: HandleGetRightBarCategories, Methods: []string{"GET", "OPTIONS"}},
 }
 
 func MiddlewareIsAuthenticated(handler http.HandlerFunc) http.HandlerFunc {

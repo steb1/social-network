@@ -4,7 +4,6 @@ import Link from "next/link";
 import React from "react";
 import config from "@/config";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { CreateGroup } from "./createGroup";
 import { notFound } from "next/navigation";
 
@@ -30,24 +29,24 @@ const Sidebar = async () => {
 	}
 
 	return (
-		<div id="site__sidebar" className="fixed top-0 left-0 z-[99] pt-[--m-top] overflow-hidden transition-transform xl:duration-500 max-xl:w-full max-xl:-translate-x-full">
-			<div className="p-2 max-xl:bg-white shadow-sm 2xl:w-72 sm:w-64 w-[80%] h-[calc(100vh-64px)] relative z-30 max-lg:border-r dark:max-xl:!bg-slate-700 dark:border-slate-700 dark:!bg-slate-800">
+		<div id="site__sidebar" className="fixed top-0 left-0 z-[99] pt-[--m-top] overflow-hidden transition-transform xl:duration-500 max-xl:w-full max-lg:-translate-x-full">
+			<div className="p-2 max-xl:bg-white shadow-sm 2xl:w-72 sm:w-64 w-[80%] h-[calc(100vh-64px)] relative z-30 max-lg:border-r dark:max-xl:!bg-slate-700 dark:border-slate-700 dark:!bg-slate-800 ">
 				<div className="pr-6 pt-10" data-simplebar>
 					<nav id="side">
 						<ul className="grid gap-y-5">
-							<li key={"home"}>
-								<Link key={"home"} href="/">
+							<li className="dark:hover:text-slate-800">
+								<Link href="/">
 									<svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" viewBox="0 0 24 24" className="w-6">
 										<path
 											fill="currentColor"
 											d="M12 16.688q.142 0 .276-.043q.134-.043.247-.14q.606-.56 1.148-1.088q.542-.527.954-1.033q.412-.506.66-.983q.25-.478.25-.928q0-.834-.57-1.385q-.57-.55-1.367-.55q-.494 0-.897.205t-.701.515q-.26-.31-.678-.515q-.418-.205-.875-.205q-.8 0-1.372.548q-.571.548-.571 1.38q0 .453.238.937q.239.484.651.985q.413.502.952 1.031q.539.53 1.134 1.077q.111.106.245.15q.134.042.276.042M6.615 20q-.666 0-1.14-.475Q5 19.051 5 18.385v-7.53l-1.538 1.199q-.177.134-.366.104q-.188-.031-.323-.208t-.11-.365q.024-.189.195-.323l8.148-6.26q.224-.162.478-.242q.254-.081.519-.081q.264 0 .51.08q.246.081.462.243l8.173 6.26q.171.134.192.323q.022.188-.113.369q-.135.167-.323.198q-.189.03-.36-.104L19 10.856v7.529q0 .666-.475 1.14q-.474.475-1.14.475z"
 										/>
 									</svg>
-									<span className="text-base"> Home </span>
+									<span className="text-base "> Home </span>
 								</Link>
 							</li>
-							<li key={"groups"}>
-								<Link key={"groups"} href="/groups">
+							<li className="dark:hover:text-slate-800">
+								<Link href="/groups">
 									<svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" viewBox="0 0 24 24">
 										<path
 											fill="currentColor"
@@ -57,8 +56,8 @@ const Sidebar = async () => {
 									<span className="text-base"> Groups </span>
 								</Link>
 							</li>
-							<li key={"message"}>
-								<Link key={"message"} href={`/messages/${user.nickname ? user.nickname : user.email}`}>
+							<li className="dark:hover:text-slate-800">
+								<Link href={`/messages/${user?.nickname ? user.nickname : user.email}`}>
 									<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
 										<path fill="currentColor" d="M15.85 8.14c.39 0 .77.03 1.14.08C16.31 5.25 13.19 3 9.44 3c-4.25 0-7.7 2.88-7.7 6.43c0 2.05 1.15 3.86 2.94 5.04L3.67 16.5l2.76-1.19c.59.21 1.21.38 1.87.47c-.09-.39-.14-.79-.14-1.21c-.01-3.54 3.44-6.43 7.69-6.43M12 5.89a.96.96 0 1 1 0 1.92a.96.96 0 0 1 0-1.92M6.87 7.82a.96.96 0 1 1 0-1.92a.96.96 0 0 1 0 1.92" />
 										<path fill="currentColor" d="M22.26 14.57c0-2.84-2.87-5.14-6.41-5.14s-6.41 2.3-6.41 5.14s2.87 5.14 6.41 5.14c.58 0 1.14-.08 1.67-.2L20.98 21l-1.2-2.4c1.5-.94 2.48-2.38 2.48-4.03m-8.34-.32a.96.96 0 1 1 .96-.96c.01.53-.43.96-.96.96m3.85 0a.96.96 0 1 1 0-1.92a.96.96 0 0 1 0 1.92" />
@@ -66,28 +65,17 @@ const Sidebar = async () => {
 									<span className="text-base"> Messages </span>
 								</Link>
 							</li>
-							<li key={"nottification"}>
-								<Link href="/notifications" key={"nottification"}>
-									<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
-										<path
-											fill="currentColor"
-											d="M12 18.5q.625 0 1.063-.437T13.5 17h-3q0 .625.438 1.063T12 18.5M7 16h10v-2h-1v-2.6q0-1.525-.788-2.787T13 7v-.5q0-.425-.288-.712T12 5.5q-.425 0-.712.288T11 6.5V7q-1.425.35-2.212 1.613T8 11.4V14H7zm3-2v-3q0-.825.588-1.412T12 9q.825 0 1.413.588T14 11v3zm2 8q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 2q2.075 0 3.9.788t3.175 2.137q1.35 1.35 2.138 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12q0-3.35-2.325-5.675T12 4Q8.65 4 6.325 6.325T4 12q0 3.35 2.325 5.675T12 20m0-8"
-										/>
-									</svg>
-									<span className="text-base"> Notifications </span>
-								</Link>
-							</li>
-							<li className="ml-0" key="creategroups">
-								<CreateGroup key="creategroups" />
-							</li>
-							<li key="profile">
-								<Link key="profile" href={`/profile/${user.user_id}`}>
+
+							<CreateGroup />
+
+							<li className="dark:hover:text-slate-800">
+								<Link href={`/profile/${user?.user_id}`}>
 									<div className="avatar">
 										<div className="w-7 rounded-full">
-											<img src={`${config.ServerApiImage}${user.avatar}`} />
+											<img src={`${config.ServerApiImage}${user?.avatar}`} />
 										</div>
 									</div>
-									<span className="text-base"> {user.nickname || user.email} </span>
+									<span className="text-base"> {user?.nickname || user?.email} </span>
 								</Link>
 							</li>
 						</ul>
@@ -95,7 +83,7 @@ const Sidebar = async () => {
 				</div>
 			</div>
 
-			<div id="site__sidebar__overly" className="absolute top-0 left-0 z-20 w-screen h-screen xl:hidden backdrop-blur-sm" uk-toggle="target: #site__sidebar ; cls :!-translate-x-0"></div>
+			<div id="site__sidebar__overly" className="absolute top-0 left-0 z-20 w-screen h-screen sm:hidden backdrop-blur-sm" uk-toggle="target: #site__sidebar ; cls :!-translate-x-0"></div>
 		</div>
 	);
 };

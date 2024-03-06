@@ -109,7 +109,8 @@ func (cm *MembershipRepository) CheckIfIsMember(userId, groupId int) bool {
 	query := "SELECT * FROM memberships WHERE group_id = ? AND user_id = ? AND membership_status != 'pending'"
 	var membership Membership
 	err := cm.db.QueryRow(query, groupId, userId).Scan(&membership.MembershipID, &membership.UserID, &membership.GroupID, &membership.JoinedAt, &membership.InvitationStatus, &membership.MembershipStatus)
-
+	// S'il fait la requête et que dans ce cas là si y a aucune ligne donc il va retourner there is no row and the error will be != nil
+	// S'il trouve une ligne l
 	return err == nil
 }
 

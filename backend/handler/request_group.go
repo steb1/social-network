@@ -10,16 +10,8 @@ import (
 )
 
 func HandleRequestGroup(w http.ResponseWriter, r *http.Request) {
+	lib.AddCorsPost(w,r)
 
-	if r.Method == http.MethodOptions {
-		HandleOptions(w, r)
-		return
-	}
-
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, GET")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	_, ok := IsAuthenticated(r)
 
 	var apiError ApiError
@@ -128,7 +120,7 @@ func HandleRequestGroup(w http.ResponseWriter, r *http.Request) {
 
 			response["ok"] = true
 
-			lib.WriteJSONResponse(w, response)
+			lib.WriteJSONResponse(w, r, response)
 
 			return
 
@@ -146,7 +138,7 @@ func HandleRequestGroup(w http.ResponseWriter, r *http.Request) {
 
 			response["ok"] = true
 
-			lib.WriteJSONResponse(w, response)
+			lib.WriteJSONResponse(w, r, response)
 
 			return
 		}

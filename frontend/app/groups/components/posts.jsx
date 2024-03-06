@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export const PostText = ( { posts,  groupId, setPosts , setGroup, setEvents, setRequests, setMessages, setServerError,  setIsOwner, setMembers } ) => {
 	const [showAllComments, setShowAllComments] = useState({});
-
+	let token = document.cookie.split("=")[1]
 	const toggleCommentsVisibility = (postId) => {
         setShowAllComments((prevState) => ({
             ...prevState,
@@ -36,7 +36,9 @@ export const PostText = ( { posts,  groupId, setPosts , setGroup, setEvents, set
 
 		const response = await fetch(config.serverApiUrl + "createCommentGroup", {
 			method: "POST",
-			credentials: "include",
+			headers: {
+				'Authorization': token,
+			  },
 			body: formDataJson,
 		});
 
@@ -60,7 +62,6 @@ export const PostText = ( { posts,  groupId, setPosts , setGroup, setEvents, set
 	};
 
 	const handleLikeClick = async (PostID) => {
-         let  token = document.cookie.split("=")[1]
         const formData = new FormData();
         formData.append("PostID", PostID);
 		console.log(PostID, 'feeeurr');
@@ -88,7 +89,9 @@ export const PostText = ( { posts,  groupId, setPosts , setGroup, setEvents, set
 	const handleCommentLikeClick = async (comment_id) => {
 		const response = await fetch(config.serverApiUrl + "likeCommentGroup", {
 			method: "POST",
-			credentials: "include",
+			headers: {
+				'Authorization': token,
+			  },
 			body: JSON.stringify({
 				comment_id: comment_id,
 			}),
@@ -173,7 +176,7 @@ export const PostText = ( { posts,  groupId, setPosts , setGroup, setEvents, set
 					{post.HasImage === 1 ? (
 						<div>
 							<div className="relative w-full lg:h-96 h-full sm:px-4">
-								<img src={`${config.serverApiUrl}imgPost?id=${post.PostID}`} className="sm:rounded-lg w-full h-full object-cover" />
+								<img src={`${config.serverApiUrl}imgPost?id=G${post.PostID}`} className="sm:rounded-lg w-full h-full object-cover" />
 							</div>
 						</div>
 					) : (
@@ -346,13 +349,13 @@ export const PostText = ( { posts,  groupId, setPosts , setGroup, setEvents, set
                         </form>
                         <button
                             onClick={() => handleSubmitComment(post.PostID)}
-                            className='text-sm rounded-full py-1.5 px-3.5 bg-secondery'
+                            className='text-sm dark:bg-slate-800 dark:hover:bg-slate-600 rounded-full py-1.5 px-3.5 bg-secondery'
                         >
                             Send
                         </button>
                     </div>
 				</div>
-			)) : <Placeholder/> }
+			)) : <PostPlaceholder/> }
 		</>
 	);
 };

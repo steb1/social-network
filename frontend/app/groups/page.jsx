@@ -7,9 +7,7 @@ import config from "@/config";
 const Group = async () => {
 	return (
 		<Layout>
-			<div>
-				<DisplayGroups />
-			</div>
+			<DisplayGroups />
 		</Layout>
 	);
 };
