@@ -1,12 +1,27 @@
 "use client";
 import React, { useState } from "react";
 import config from "@/config";
+import  {useWebSocketContext}  from "@/public/js/websocketContext";
+
 
 const FollowButton = ({ FollowStatus, userId, cookie }) => {
 	const [followStatus, setFollowStatus] = useState(FollowStatus);
 	//const [showAlert, setShowAlert] = useState(false);
 
+    const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
+
 	const follow = async () => {
+		console.log("--------nnnn", userId);
+		const message = {
+			userId: userId,
+            time: Date.now(),
+          };
+      
+          const WebSocketMessage = {
+              command: "followPrivate",
+              body: message,
+          };		  
+
 		try {
 			const response = await fetch(`${config.serverApiUrl}follow`, {
 				method: "POST",
@@ -31,6 +46,7 @@ const FollowButton = ({ FollowStatus, userId, cookie }) => {
 				}
 				if (data.type === "Pending") {
 					setFollowStatus("Pending");
+					sendJsonMessage(WebSocketMessage)
 				}
 			} else {
 				const errorText = await response.text();
