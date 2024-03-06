@@ -53,10 +53,10 @@ export const PostText = ({ posts, setPosts }) => {
             method: "POST",
             headers: {
                 'Authorization': token,
-              },
+            },
             headers: {
                 'Authorization': token,
-              },
+            },
             body: formDataJson,
         });
         try {
@@ -87,7 +87,7 @@ export const PostText = ({ posts, setPosts }) => {
             method: "POST",
             headers: {
                 'Authorization': token,
-              },
+            },
             body: JSON.stringify({
                 post_id: post_id,
             }),
@@ -111,7 +111,7 @@ export const PostText = ({ posts, setPosts }) => {
             method: "POST",
             headers: {
                 'Authorization': token,
-              },
+            },
             body: JSON.stringify({
                 comment_id: comment_id,
             }),
@@ -131,7 +131,7 @@ export const PostText = ({ posts, setPosts }) => {
 
     return (
         <>
-            {posts ? (
+            {posts && Array.isArray(posts) ? (
                 posts.map((post) => (
                     <div
                         key={post.post_id}

@@ -86,7 +86,7 @@ export const Element = () => {
 
   const countElementsWithCondition = (arr, condition) => {
     return arr ? arr.filter(condition).length : 0;
-  };  
+  };
 
   useEffect(() => {
     fetchNotification();
@@ -215,7 +215,7 @@ export const Element = () => {
             <div class="text-sm h-[400px] w-full overflow-y-auto pr-2">
               {/*contents list*/}
               <div class="pl-2 p-1 text-sm font-normal dark:text-white">
-                {notifications
+                {notifications && Array.isArray(notifications)
                   ? notifications.map((notification) => (
                     <Link
                       key={notification.notification_id}
@@ -223,8 +223,10 @@ export const Element = () => {
                         notification.notification_type === "inviteUser"
                           ? "/groups"
                           : notification.notification_type === "requestGroup"
-                            ? `/groups/${notification.Group.group_id}`
-                            : ""
+                            ? `/groups/${notification.Group?.group_id}`
+                            : notification.notification_type === "followPrivate"
+                              ? `/profile/${notification.Sender.user_id}`
+                              : ""
                       }
 
                       class="relative flex items-center gap-3 p-2 duration-200 rounded-xl pr-10 hover:bg-secondery dark:hover:bg-white/10 bg-teal-500/5 mb-5"
@@ -248,15 +250,22 @@ export const Element = () => {
                             {notification.Sender.first_name}{" "}
                           </b>{" "}
                           {notification.notification_type === "inviteUser" ? (
-                            `invited you to join group `
+                            `invited you to join the group `
                           ) : notification.notification_type === "requestGroup" ? (
-                            `request to join group `
+                            `requests to join the group `
+                          ) : notification.notification_type === "followPrivate" ? (
+                            `wants to follow your private account.`
                           ) : (
                             ""
                           )}
 
-                          <b className="font-bold mr-1"> {notification.Group.title} </b>
-
+                          {notification.Group?.title ? (
+                            <>
+                              <b className="font-bold mr-1"> {notification.Group.title} </b>
+                            </>
+                          ) : (
+                            ""
+                          )}
                         </p>
 
                         <div class="text-xs text-gray-500 mt-1.5 dark:text-white/80">

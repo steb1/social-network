@@ -361,6 +361,9 @@ func handleSendInviteNotif(messageType string, messageBody interface{}, user *mo
 	messagepattern.Receiver = invitedUser.FirstName + " " + invitedUser.LastName
 	messagepattern.GroupId, _ = strconv.Atoi(fmt.Sprintf("%v", bodyMap["groupId"]))
 
+	group, _ := models.GroupRepo.GetGroup(messagepattern.GroupId)
+    messagepattern.GroupName = group.Title
+	
 	tosend, exists := connections[invitedUser.UserID]
 
 	if !exists {
