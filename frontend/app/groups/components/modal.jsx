@@ -1,7 +1,10 @@
 import config from "@/config";
 import { fetchGroupDetail } from "./groupDetail";
+import { useWebSocketContext } from "@/public/js/websocketContext";
 
 export const Modal = ( { groupId, setPosts , setGroup, setEvents, setRequests, setMessages, setServerError,  setIsOwner, setMembers, setInvites } ) => {
+  const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     const NewformData = new FormData(e.currentTarget);
@@ -25,6 +28,82 @@ export const Modal = ( { groupId, setPosts , setGroup, setEvents, setRequests, s
       console.error("Erreur lors de la lecture de la réponse JSON :", error);
     }
   };
+
+  async function handleCreateEvent(e, setPosts, setGroup, setEvents, setRequests, setMessages, setServerError) {
+    let  token = document.cookie.split("=")[1]
+    if (!e.target.id) {
+        return
+    }
+
+    let DescriptionEvent = document.getElementById("DescriptionEvent")
+    let EventTime = document.getElementById("EventTime")
+    let EventDate = document.getElementById("EventDate")
+    let EventTitle = document.getElementById("EventTitle")
+
+    const currentDate = new Date();
+    const selectedDate = new Date(EventDate.value);
+
+    // ---------------------------------- INIT SOCKET ---------------------------------------------
+    
+    if (!DescriptionEvent || !EventTime || !EventDate || !EventTitle || !DescriptionEvent.value.trim()  || !EventDate.value.trim() || !EventTitle.value.trim() || selectedDate < currentDate) {
+      alert("Please fill the form properly");
+      return
+    }
+    
+    let groupId = e.target.id
+
+    const message = {
+      groupId: groupId,
+      time: Date.now(),
+    };
+    console.log("1");
+    const WebSocketMessage = {
+        command: "eventCreated",
+        body: message,
+    };
+    
+    const formData = new FormData();
+    formData.append("DescriptionEvent", DescriptionEvent.value);
+    formData.append("EventTime", EventTime.value);
+    formData.append("EventDate", EventDate.value);
+    formData.append("EventTitle", EventTitle.value);
+    formData.append("groupId", groupId);
+      
+      if (token) {
+        // Use the token as needed
+        console.log('Token:', token);
+      } else {
+        console.log('Token not found in cookies');
+      }
+
+      try {
+        const response = await fetch(config.serverApiUrl + "createEvent", {
+          method: "POST",
+          headers: {
+            'Authorization': token,
+          },
+          credentials: "include",
+          body: formData,
+        });
+        if (response.ok) {
+          const contentType = response.headers.get("content-type");
+          if (contentType && contentType.includes("application/json")) {
+            const data = await response.json();
+            fetchGroupDetail(setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId)
+            sendJsonMessage(WebSocketMessage)
+          } else {
+            console.error("Response is not in JSON format");
+          }
+        } else {
+          const errorResponse = await response.json();
+          const errorMessage = errorResponse.error || "An error occurred.";
+          console.error("No Group retrieved:", errorMessage);
+        }
+      } catch (error) {
+        console.error("Error while fetching groups:", error);
+      }
+}
+  
     return (
         <div>            
         
@@ -168,25 +247,34 @@ async function handleCreateEvent(e, setPosts, setGroup, setEvents, setRequests, 
     const currentDate = new Date();
     const selectedDate = new Date(EventDate.value);
 
+    const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
+    // ---------------------------------- INIT SOCKET ---------------------------------------------
 
-
-
-    if (!DescriptionEvent || !EventTime || !EventDate || !EventTitle || !DescriptionEvent.value.trim()  || !EventDate.value.trim() || !EventTitle.value.trim() || selectedDate < currentDate) {
-        alert("Please fill the form properly");
-        return
-    }
-
-
-    let groupId = e.target.id
     
+    
+    if (!DescriptionEvent || !EventTime || !EventDate || !EventTitle || !DescriptionEvent.value.trim()  || !EventDate.value.trim() || !EventTitle.value.trim() || selectedDate < currentDate) {
+      alert("Please fill the form properly");
+      return
+    }
+    
+    let groupId = e.target.id
 
+    const message = {
+      groupId: groupId,
+      time: Date.now(),
+    };
+    console.log("1");
+    const WebSocketMessage = {
+        command: "eventCreated",
+        body: message,
+    };
+    
     const formData = new FormData();
     formData.append("DescriptionEvent", DescriptionEvent.value);
     formData.append("EventTime", EventTime.value);
     formData.append("EventDate", EventDate.value);
     formData.append("EventTitle", EventTitle.value);
     formData.append("groupId", groupId);
-
       
       if (token) {
         // Use the token as needed
@@ -209,6 +297,7 @@ async function handleCreateEvent(e, setPosts, setGroup, setEvents, setRequests, 
           if (contentType && contentType.includes("application/json")) {
             const data = await response.json();
             fetchGroupDetail(setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId)
+            sendJsonMessage(WebSocketMessage)
           } else {
             console.error("Response is not in JSON format");
           }

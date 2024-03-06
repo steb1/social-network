@@ -40,6 +40,12 @@ const Header = () => {
           `${lastJsonMessage.body.sender} wants to follow your private account.`
         );
         break;
+      case "eventCreated" :
+        console.log("eventCreated");
+        setShowAlert(true);
+        setAlertMessage(
+          `${lastJsonMessage.body.sender} created an event in ${lastJsonMessage.body.group_name}.`
+        );
     }
 
   });

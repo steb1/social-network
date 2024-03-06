@@ -133,12 +133,58 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 				sendMessagePreview(userInfo, userId, "messagepreview")
 			case "followPrivate":
 				sendFollowPrivate(userInfo, userId, "followPrivate", message.Body)
+			case "eventCreated":
+				handleEventNotif(userInfo, userId, "eventCreated", message.Body)
 			case "logout":
 				connections[userId].Conn.Close()
 				fmt.Println("connection is closed")
 			}
 		}
 	}()
+}
+
+func handleEventNotif(userInfo UserInfo, userId int, command string, messageBody interface{}) {
+	sender, _ := models.UserRepo.GetUserByID(userId)
+
+	bodyMap, ok := messageBody.(map[string]interface{})
+	if !ok {
+		log.Println("Type de corps non pris en charge pour", ok)
+		return
+	}
+
+	groupId := (bodyMap["groupId"])
+
+	intGroupId, _ := strconv.Atoi(fmt.Sprintf("%v", groupId))
+
+	AllUsersOfGroup, err := models.MembershipRepo.GetAllUsersByGroupID(intGroupId)
+
+	if err != nil {
+		return
+	}
+
+	group, _ := models.GroupRepo.GetGroup(intGroupId)
+	var messagepattern MessagePattern
+	messagepattern.Sender = sender.FirstName + " " + sender.LastName
+	messagepattern.GroupName = group.Title
+
+	fmt.Println("-----------group----", group)
+
+	for _, user := range AllUsersOfGroup {
+		if user.UserID != userId {
+			tosend, exists := connections[user.UserID]
+
+			if !exists {
+				continue
+			}
+
+			if err := EnvoyerMessage(tosend, command, messagepattern); err != nil {
+				log.Println("Error writing message", command, "to connection:", err)
+				continue
+			}
+
+		}
+	}
+	
 }
 
 func sendFollowPrivate(userInfo UserInfo, userId int, command string, messageBody interface{}) {
