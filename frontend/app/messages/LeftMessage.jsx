@@ -14,7 +14,7 @@ const LeftMessage = ({ Avatar, Content, Sender, Time }) => {
 				&nbsp;{Sender}
 				&nbsp;<time className="text-xs opacity-50">{GetTime(Time)}</time>
 			</div>
-			<div className="chat-bubble max-w-sm bg-sky-500/100 from-sky-500 to-blue-500 text-white break-words whitespace-pre-line">{Content}</div>
+			<div className="chat-bubble max-w-sm bg-secondery text-[#4B5563] break-words whitespace-pre-line">{Content}</div>
 		</div>
 	);
 };

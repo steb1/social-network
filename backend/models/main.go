@@ -32,7 +32,7 @@ var (
 	CommentGroupRepo     *CommentGroupRepository
 	CommentGroupLikeRepo *CommentGroupLikeRepository
 	PostGroupLikeRepo    *PostGroupLikeRepository
-	InvitationRepo 		*InvitationRepository
+	InvitationRepo       *InvitationRepository
 )
 
 func init() {
