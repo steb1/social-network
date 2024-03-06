@@ -127,12 +127,78 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 
 			case "handleGroupRequest":
 				handleSendGroupOwnerNotif(message.Command, message.Body, user)
+
+			case "messagepreview":
+				sendMessagePreview(userInfo, userId, "messagepreview")
+			case "followPrivate":
+				sendFollowPrivate(userInfo, userId, "followPrivate", message.Body)
 			case "logout":
 				connections[userId].Conn.Close()
 				fmt.Println("connection is closed")
 			}
 		}
 	}()
+}
+
+func sendFollowPrivate(userInfo UserInfo, userId int, command string, messageBody interface{}) {
+	sender, _ := models.UserRepo.GetUserByID(userId)
+
+	bodyMap, ok := messageBody.(map[string]interface{})
+	if !ok {
+		log.Println("Type de corps non pris en charge pour", ok)
+		return
+	}
+
+	result := (bodyMap["userId"])
+
+	receiverId, _ := strconv.Atoi(fmt.Sprintf("%v", result))
+	receiver, _ := models.UserRepo.GetUserByID(receiverId)
+
+	var messagepattern MessagePattern
+	messagepattern.Sender = sender.FirstName + " " + sender.LastName
+	messagepattern.Receiver = receiver.FirstName + " " + receiver.LastName
+
+	tosend, exists := connections[receiver.UserID]
+
+	if !exists {
+		return
+	}
+
+	fmt.Println(len(connections), "len connections")
+
+	if err := EnvoyerMessage(tosend, command, messagepattern); err != nil {
+		log.Println("Error writing message", command, "to connection:", err)
+		return
+	}
+
+	var notification models.Notification
+
+	notification.CreatedAt = time.Now().String()
+	notification.GroupID = sql.NullInt64{Int64: int64(messagepattern.GroupId), Valid: true}
+	notification.IsRead = false
+	notification.SenderID = sender.UserID
+	notification.UserID = receiver.UserID
+	notification.NotificationType = command
+
+	err := models.NotifRepo.CreateNotification(&notification)
+
+	if err != nil {
+		fmt.Println("Notification not created", err)
+	}
+
+}
+func sendMessagePreview(userInfo UserInfo, userId int, command string) {
+	messagesPreviews, err := models.MessageRepo.GetMessagePreviewsForAnUser(userId)
+	if err != nil {
+		log.Println("No connected user:")
+		log.Println("Error: User not connected")
+	}
+
+	err = EnvoyerMessage(&userInfo, command, messagesPreviews)
+	if err != nil {
+		log.Println(err.Error())
+		log.Printf("Error sending Message preview")
+	}
 }
 
 func handleMessageForUser(message WebSocketMessage, userId int) {

@@ -105,7 +105,7 @@ func (pr *PostRepository) GetPost(postID int) (*Post, error) {
 
 // GetAllPosts retrieves all posts from the database
 func (pr *PostRepository) GetAllPosts(currentUserID int) ([]*Post, error) {
-	rows, err := pr.db.Query("SELECT post_id, title, content, created_at, visibility, has_image, nickname, first_name, last_name, email FROM posts, users WHERE posts.author_id=users.user_id AND visibility='public' ORDER BY created_at DESC")
+	rows, err := pr.db.Query("SELECT post_id, title, content, created_at, visibility, has_image, nickname, first_name, last_name, email, avatar FROM posts, users WHERE posts.author_id=users.user_id AND visibility='public' ORDER BY created_at DESC")
 	if err != nil {
 		return nil, err
 	}
@@ -115,7 +115,7 @@ func (pr *PostRepository) GetAllPosts(currentUserID int) ([]*Post, error) {
 	for rows.Next() {
 		var post Post
 		post.User = &User{}
-		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.HasImage, &post.User.Nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email); err != nil {
+		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.HasImage, &post.User.Nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email, &post.User.Avatar); err != nil {
 			return nil, err
 		}
 		post.CreatedAt = lib.FormatDateDB(post.CreatedAt)
@@ -147,7 +147,8 @@ func (pr *PostRepository) GetAllPostsPublicPrivateAuth(userId int) ([]*Post, err
     users.first_name, 
     users.last_name, 
 	users.email,
-	users.user_id
+	users.user_id,
+	users.avatar
 FROM 
     posts
 JOIN 
@@ -169,7 +170,8 @@ SELECT
     users.first_name,
     users.last_name, 
 	users.email,
-	users.user_id
+	users.user_id,
+	users.avatar
 FROM 
     posts
 JOIN 
@@ -193,7 +195,8 @@ SELECT
     users.first_name, 
     users.last_name, 
 	users.email,
-	users.user_id
+	users.user_id,
+	users.avatar
 FROM 
     posts
 JOIN 
@@ -218,7 +221,8 @@ SELECT
     users.first_name, 
     users.last_name, 
     users.email,
-	users.user_id
+	users.user_id,
+	users.avatar
 FROM 
     posts
 JOIN 
@@ -238,7 +242,7 @@ ORDER BY
 	for rows.Next() {
 		var post Post
 		post.User = &User{}
-		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.AuthorID, &post.HasImage, &post.User.Nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email,&post.User.UserID); err != nil {
+		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.AuthorID, &post.HasImage, &post.User.Nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email, &post.User.UserID, &post.User.Avatar); err != nil {
 			return nil, err
 		}
 		postIDStr := strconv.Itoa(post.PostID)
@@ -271,7 +275,8 @@ func (pr *PostRepository) GetUserOwnPosts(userID int) ([]*Post, error) {
     users.nickname, 
     users.first_name, 
     users.last_name, 
-    users.email 
+    users.email,
+	users.avatar
 FROM 
     posts
 JOIN 
@@ -290,13 +295,16 @@ ORDER BY
 	for rows.Next() {
 		var post Post
 		post.User = &User{}
-		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.HasImage, &post.User.Nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email); err != nil {
+		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.HasImage, &post.User.Nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email, &post.User.Avatar); err != nil {
 			return nil, err
 		}
 		postIDStr := strconv.Itoa(post.PostID)
 		post.CreatedAt = lib.FormatDateDB(post.CreatedAt)
 		post.Category = PostCategoryRepo.GetPostCategory(post.PostID)
 		post.Likes, err = PostLikeRepo.GetNumberOfLikes(post.PostID)
+		if err != nil {
+			return nil, err
+		}
 		comments, err := CommentRepo.GetCommentsByPostID(postIDStr, userID)
 		post.Comments = comments
 		if err != nil {

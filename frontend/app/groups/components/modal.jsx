@@ -2,15 +2,16 @@ import config from "@/config";
 import { fetchGroupDetail } from "./groupDetail";
 
 export const Modal = ( { groupId, setPosts , setGroup, setEvents, setRequests, setMessages, setServerError,  setIsOwner, setMembers, setInvites } ) => {
-  
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     const NewformData = new FormData(e.currentTarget);
     NewformData.append("groupId", groupId);
-  
+    let token = document.cookie.split("=")[1]
     const response = await fetch(config.serverApiUrl + "createGroupPost", {
       method: "POST",
-      credentials: "include",
+      headers: {
+        'Authorization': token,
+      },
       body: NewformData,
     }); 
     try {
@@ -203,7 +204,6 @@ async function handleCreateEvent(e, setPosts, setGroup, setEvents, setRequests, 
           credentials: "include",
           body: formData,
         });
-      
         if (response.ok) {
           const contentType = response.headers.get("content-type");
           if (contentType && contentType.includes("application/json")) {

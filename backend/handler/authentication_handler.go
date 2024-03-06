@@ -42,11 +42,7 @@ type SigninResponse struct {
 }
 
 func SigninHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	lib.AddCorsPost(w,r)
 
 	if r.Method == "OPTIONS" {
 		return
@@ -134,10 +130,7 @@ func IsTokenValid(sessionToken string) (models.Session, bool) {
 }
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, POST")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	w.Header().Set("Content-Type", "multipart/form-data")
+	lib.AddCorsGet(w,r)
 
 	var user models.User
 	var apiError ApiError
@@ -275,7 +268,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	userCreated, err := models.UserRepo.GetUserByEmail(user.Email)
 	if err != nil {
-		apiError.Error = "An error occurred."
+		apiError.Error = "An error occurred. Cannot get User by email"
 		WriteJSON(w, http.StatusBadRequest, apiError)
 		return
 	}

@@ -2,19 +2,17 @@ package handler
 
 import (
 	"net/http"
+	"server/lib"
 	"server/models"
 	"strconv"
 )
 
 func HandleGetFollowers(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	lib.AddCorsGet(w, r)
+
 	var apiError ApiError
-	cookie, _ := r.Cookie("social-network")
-	session, err := models.SessionRepo.GetSession(cookie.Value)
+	sessionToken := r.Header.Get("Authorization")
+	session, err := models.SessionRepo.GetSession(sessionToken)
 	if err != nil {
 		apiError.Error = "Go connect first !"
 		WriteJSON(w, http.StatusUnauthorized, apiError)

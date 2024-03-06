@@ -10,16 +10,8 @@ import (
 )
 
 func HandleInviteUser(w http.ResponseWriter, r *http.Request) {
+	lib.AddCorsPost(w, r)
 
-	if r.Method == http.MethodOptions {
-		HandleOptions(w, r)
-		return
-	}
-
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, GET")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	_, ok := IsAuthenticated(r)
 
 	var apiError ApiError
@@ -106,22 +98,15 @@ func HandleInviteUser(w http.ResponseWriter, r *http.Request) {
 
 		response["Followers"] = Followers
 
-		lib.WriteJSONResponse(w, response)
+		lib.WriteJSONResponse(w, r, response)
 
 	}
 
 }
 
 func HandleInviteUserResponse(w http.ResponseWriter, r *http.Request) {
+	lib.AddCorsPost(w, r)
 
-	if r.Method == http.MethodOptions {
-		HandleOptions(w, r)
-		return
-	}
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, GET")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	_, ok := IsAuthenticated(r)
 
 	var apiError ApiError
@@ -192,26 +177,26 @@ func HandleInviteUserResponse(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			_ = models.InvitationRepo.DeleteInvitation(userId, intGroupId)
-
-			response := make(map[string]interface{})
-
-			response["ok"] = true
-
-			lib.WriteJSONResponse(w, response)
-		} else {
-			err = models.InvitationRepo.DeleteInvitation(userId, intGroupId)
-
-			if err != nil {
-				WriteJSON(w, http.StatusUnauthorized, apiError)
-				return
+				_ = models.InvitationRepo.DeleteInvitation(userId, intGroupId)
+	
+				response := make(map[string]interface{})
+	
+				response["ok"] = true 
+	
+				lib.WriteJSONResponse(w,r, response)
+			} else {
+				err = models.InvitationRepo.DeleteInvitation(userId, intGroupId)
+	
+				if err != nil {
+					WriteJSON(w, http.StatusUnauthorized, apiError)
+					return
+				}
+	
+				response := make(map[string]interface{})
+	
+				response["ok"] = true 
+	
+				lib.WriteJSONResponse(w,r, response)
 			}
-
-			response := make(map[string]interface{})
-
-			response["ok"] = true
-
-			lib.WriteJSONResponse(w, response)
-		}
 	}
 }
