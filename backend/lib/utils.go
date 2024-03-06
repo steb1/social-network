@@ -2,12 +2,12 @@ package lib
 
 import (
 	"bufio"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"mime/multipart"
 	"unicode"
 
-	//"forum/data/models"
 	"io"
 	"log"
 	"net/http"
@@ -100,8 +100,9 @@ func ValidateRequest(req *http.Request, res http.ResponseWriter, url, method str
 	return true
 }
 
-func WriteJSONResponse(w http.ResponseWriter, data interface{}) {
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+func WriteJSONResponse(w http.ResponseWriter, r *http.Request, data interface{}) {
+	var origin = r.Header.Get("Origin")
+	w.Header().Set("Access-Control-Allow-Origin", origin)
 	w.Header().Set("Access-Control-Allow-Methods", "POST,OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -350,7 +351,7 @@ func IsValidDOB(dob string) (bool, string) {
 
 	// Check if the date matches the regular expression
 	if !validDOBRegex.MatchString(dob) {
-		return false, "Invalid format."
+		return false, "Invalid Date format."
 	}
 	// Replace '/' with '-' for consistent parsing
 	dob = regexp.MustCompile(`-`).ReplaceAllString(dob, "/")
@@ -358,7 +359,7 @@ func IsValidDOB(dob string) (bool, string) {
 	// Parse the date string to a time.Time object
 	dateOfBirth, err := time.Parse("2006/01/02", dob)
 	if err != nil {
-		return false, "Invalid Format"
+		return false, "Invalid Date format"
 	}
 
 	// Optional: Check if the person is at least 18 years old
@@ -386,4 +387,47 @@ func IsValidNickname(nickname string) bool {
 	maxLength := 15
 
 	return validNicknameRegex.MatchString(nickname) && len(nickname) >= minLength && len(nickname) <= maxLength
+}
+
+// Sert à envoyer NULL dans la base de données au lieu de recevoir ""
+func NewNullString(s string) sql.NullString {
+	if len(s) == 0 {
+		return sql.NullString{}
+	}
+	return sql.NullString{
+		String: s,
+		Valid:  true,
+	}
+}
+
+// Sert à récupérer les valeurs NULL dans le serveur sinon on a une erreur
+func GetStringFromNullString(ns sql.NullString) string {
+	if ns.Valid {
+		return ns.String
+	}
+	return ""
+}
+
+func AddCorsPost(w http.ResponseWriter, r *http.Request) {
+	var origin = r.Header.Get("Origin")
+	w.Header().Set("Access-Control-Allow-Origin", origin)
+	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+}
+
+func AddCorsGet(w http.ResponseWriter, r *http.Request) {
+	var origin = r.Header.Get("Origin")
+	w.Header().Set("Access-Control-Allow-Origin", origin)
+	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, GET")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 }

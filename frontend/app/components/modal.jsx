@@ -3,10 +3,13 @@ import config from "@/config";
 import React, { useEffect, useState } from "react";
 
 export const fetchFollowers = async (setFollowers) => {
+    let token = document.cookie.split("=")[1]
     const response = await fetch(config.serverApiUrl + "getFollowers", {
         cache: "no-cache",
         method: "GET",
-        credentials: "include",
+        headers: {
+            'Authorization': token,
+          },
     });
     if (response.ok) {
         const followers = await response.json();
@@ -23,10 +26,13 @@ export const Modal = ({ setPosts, posts }) => {
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();
+        let token = document.cookie.split("=")[1]
         const NewformData = new FormData(e.currentTarget);
         const response = await fetch(config.serverApiUrl + "createPost", {
             method: "POST",
-            credentials: "include",
+            headers: {
+                'Authorization': token,
+              },
             body: NewformData,
         });
         try {

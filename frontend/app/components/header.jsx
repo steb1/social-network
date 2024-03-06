@@ -5,6 +5,9 @@ import { useEffect } from "react";
 import { Element } from "./elements";
 import  {useWebSocketContext}  from "@/public/js/websocketContext";
 
+import { Element } from "./elements";
+import  {useWebSocketContext}  from "@/public/js/websocketContext";
+
 
 const Header = () => {
     const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
@@ -22,6 +25,8 @@ const Header = () => {
                 case "inviteUser":
                     console.log("inviteUser");
                     break
+                case "followPrivate" : 
+                    console.log("followPrivate")
         }
     
   });
@@ -54,7 +59,7 @@ const Header = () => {
   }, []);
 
   return (
-    <header className="z-[100] h-[--m-top] fixed top-0 left-0 w-full flex items-center bg-white/80 sky-50 backdrop-blur-xl border-b border-slate-200 dark:bg-dark2 dark:border-slate-800">
+    <header className="z-[100] h-[--m-top] fixed top-0 left-0 w-full flex items-center bg-white/80 sky-50 backdrop-blur-xl border-b border-slate-200 dark:bg-slate-900 dark:border-slate-800">
       <div className="flex items-center w-full xl:px-6 px-2 max-lg:gap-10">
         <div className="2xl:w-[--w-side] lg:w-[--w-side-sm]">
           <div className="flex items-center gap-1">
@@ -108,18 +113,18 @@ async function handleCreateGroup() {
     console.log("Token not found in cookies");
   }
 
-  try {
-    const response = await fetch(config.serverApiUrl + "createGroup", {
-      method: "POST",
-      headers: {
-        Authorization: token,
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify(requestData),
-    });
+	try {
+		const response = await fetch(config.serverApiUrl + "createGroup", {
+			method: "POST",
+			headers: {
+				Authorization: token,
+				"Content-Type": "application/json",
+			},
+			credentials: "include",
+			body: JSON.stringify(requestData),
+		});
 
-    console.log(response.ok, "--------ok");
+		console.log(response.ok, "--------ok");
 
     if (response.ok) {
       console.log("ooook");

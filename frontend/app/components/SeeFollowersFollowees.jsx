@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
+import config from "@/config";
 
 const SeeFollowersFollowees = ({ followersFollowees, visibility, text, modalId }) => {
 	const handleClick = () => {
@@ -25,7 +26,7 @@ const SeeFollowersFollowees = ({ followersFollowees, visibility, text, modalId }
 								<Link href={`/profile/${follower.user_id}`} key={follower.user_id}>
 									<div>
 										<div className="relative w-full aspect-square rounded-lg overflow-hidden">
-											<img src={`http://localhost:8080/img/${follower.avatar}`} alt="" className="object-cover w-full h-full inset-0" />
+											<img src={`${config.ServerApiImage}${follower.avatar}`} alt="" className="object-cover w-full h-full inset-0" />
 										</div>
 										<div className="mt-2 line-clamp-1">{`${follower.first_name} ${follower.last_name}`}</div>
 									</div>

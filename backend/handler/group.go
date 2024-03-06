@@ -14,14 +14,8 @@ import (
 )
 
 func HandleGetAllGroups(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodOptions {
-		HandleOptions(w, r)
-		return
-	}
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, GET")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	lib.AddCorsGet(w, r)
+
 	_, ok := IsAuthenticated(r)
 	var apiError ApiError
 	sessionToken := r.Header.Get("Authorization")
@@ -51,19 +45,13 @@ func HandleGetAllGroups(w http.ResponseWriter, r *http.Request) {
 	response["InvitedGroups"] = InvitedGroups
 
 	if ok {
-		lib.WriteJSONResponse(w, response)
+		lib.WriteJSONResponse(w, r, response)
 	}
 }
 
 func HandleCreateMembership(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodOptions {
-		HandleOptions(w, r)
-		return
-	}
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, GET")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	lib.AddCorsPost(w, r)
+
 	_, ok := IsAuthenticated(r)
 
 	var apiError ApiError
@@ -137,14 +125,8 @@ func HandleCreateMembership(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleCreateGroup(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodOptions {
-		HandleOptions(w, r)
-		return
-	}
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, GET")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	lib.AddCorsPost(w, r)
+
 	_, ok := IsAuthenticated(r)
 
 	var apiError ApiError
@@ -231,14 +213,8 @@ type GroupData struct {
 }
 
 func HandleGetGroupDetail(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodOptions {
-		HandleOptions(w, r)
-		return
-	}
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, GET")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	lib.AddCorsGet(w, r)
+
 	_, ok := IsAuthenticated(r)
 
 	var apiError ApiError
@@ -327,15 +303,13 @@ func HandleGetGroupDetail(w http.ResponseWriter, r *http.Request) {
 		response["IsOwner"] = IsOwner
 		response["Invites"] = Followers
 
-		lib.WriteJSONResponse(w, response)
+		lib.WriteJSONResponse(w, r, response)
 	}
 }
 
 func HandleCreateGroupPost(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	lib.AddCorsPost(w, r)
+
 	var post models.GroupPost
 	var apiError ApiError
 	errs := r.ParseMultipartForm(10 << 20)
@@ -343,8 +317,8 @@ func HandleCreateGroupPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cookie, _ := r.Cookie("social-network")
-	session, err := models.SessionRepo.GetSession(cookie.Value)
+	sessionToken := r.Header.Get("Authorization")
+	session, err := models.SessionRepo.GetSession(sessionToken)
 	if err != nil {
 		apiError.Error = "Go connect first !"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
@@ -411,7 +385,7 @@ func HandleCreateGroupPost(w http.ResponseWriter, r *http.Request) {
 			defer photo.Close()
 			if err := os.MkdirAll("imgPost", os.ModePerm); err != nil {
 			}
-			fichierSortie, _ := os.Create(fmt.Sprintf("imgPost/%d.jpg", postID_))
+			fichierSortie, _ := os.Create(fmt.Sprintf("imgPost/G%d.jpg", postID_))
 
 			defer fichierSortie.Close()
 			_, _ = io.Copy(fichierSortie, photo)

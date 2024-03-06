@@ -4,6 +4,7 @@ import MainProfile from "../../components/mainProfile";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import Layout from "../../components/Layout";
+import AuthMiddleware from "@/middleware/authMiddleware";
 
 const Profile = async ({ params: { id } }) => {
 	const cookieStore = cookies();
@@ -42,19 +43,10 @@ const Profile = async ({ params: { id } }) => {
 	}
 	//TODO : When the request is pending
 	return (
-		// <div id="wrapper">
-		// 	<Header />
-
-		// 	<Sidebar />
-
-		// 	<MainProfile props={profileData} Visibility={Visibility} FollowStatus={profileData.followStatus} />
-		// </div>
 		<Layout>
 			<MainProfile props={profileData} Visibility={Visibility} FollowStatus={profileData.followStatus} />
 		</Layout>
 	);
 };
 
-export default Profile;
-
-// export default authMiddleware(Profile, config.serverApiUrl + "checkAuth");
+export default AuthMiddleware(Profile, config.serverApiUrl + "checkAuth");
