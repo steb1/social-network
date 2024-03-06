@@ -12,6 +12,9 @@ export const Modal = ( { groupId, setPosts , setGroup, setEvents, setRequests, s
       headers: {
         'Authorization': token,
       },
+      headers: {
+        'Authorization': token,
+      },
       body: NewformData,
     }); 
     try {

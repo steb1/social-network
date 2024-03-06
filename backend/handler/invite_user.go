@@ -177,26 +177,26 @@ func HandleInviteUserResponse(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-				_ = models.InvitationRepo.DeleteInvitation(userId, intGroupId)
-	
-				response := make(map[string]interface{})
-	
-				response["ok"] = true 
-	
-				lib.WriteJSONResponse(w,r, response)
-			} else {
-				err = models.InvitationRepo.DeleteInvitation(userId, intGroupId)
-	
-				if err != nil {
-					WriteJSON(w, http.StatusUnauthorized, apiError)
-					return
-				}
-	
-				response := make(map[string]interface{})
-	
-				response["ok"] = true 
-	
-				lib.WriteJSONResponse(w,r, response)
+			_ = models.InvitationRepo.DeleteInvitation(userId, intGroupId)
+
+			response := make(map[string]interface{})
+
+			response["ok"] = true
+
+			lib.WriteJSONResponse(w, r,response)
+		} else {
+			err = models.InvitationRepo.DeleteInvitation(userId, intGroupId)
+
+			if err != nil {
+				WriteJSON(w, http.StatusUnauthorized, apiError)
+				return
 			}
+
+			response := make(map[string]interface{})
+
+			response["ok"] = true
+
+			lib.WriteJSONResponse(w, r,response)
+		}
 	}
 }

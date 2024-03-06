@@ -1,10 +1,12 @@
 "use client";
+"use client";
 import config from "@/config";
 import Link from "next/link";
 import { useState } from "react";
 import { PostPlaceholder } from "./posts";
 
 export const PostText = ({ posts, setPosts }) => {
+    let token = document.cookie.split("=")[1]
     const [showAllComments, setShowAllComments] = useState({});
     const [imageSelected, setImageSelected] = useState(false);
 
@@ -53,6 +55,9 @@ export const PostText = ({ posts, setPosts }) => {
             headers: {
                 'Authorization': token,
               },
+            headers: {
+                'Authorization': token,
+              },
             body: formDataJson,
         });
         try {
@@ -60,6 +65,10 @@ export const PostText = ({ posts, setPosts }) => {
             if (response.ok) {
                 console.log("comment sent");
                 form.reset();
+                setImageSelected((prevSelected) => ({
+                    ...prevSelected,
+                    [post_id]: false,
+                }));
                 setImageSelected((prevSelected) => ({
                     ...prevSelected,
                     [post_id]: false,

@@ -19,6 +19,7 @@ export const fetchFollowers = async (setFollowers) => {
 };
 
 export const Modal = ({ setPosts, posts }) => {
+    let token = document.cookie.split("=")[1]
     let [followers, setFollowers] = useState([]);
     useEffect(() => {
         fetchFollowers(setFollowers);
