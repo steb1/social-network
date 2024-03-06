@@ -176,7 +176,7 @@ export const PostText = ( { posts,  groupId, setPosts , setGroup, setEvents, set
 					{post.HasImage === 1 ? (
 						<div>
 							<div className="relative w-full lg:h-96 h-full sm:px-4">
-								<img src={`${config.serverApiUrl}imgPost?id=${post.PostID}`} className="sm:rounded-lg w-full h-full object-cover" />
+								<img src={`${config.serverApiUrl}imgPost?id=G${post.PostID}`} className="sm:rounded-lg w-full h-full object-cover" />
 							</div>
 						</div>
 					) : (
