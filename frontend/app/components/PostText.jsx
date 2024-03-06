@@ -6,7 +6,6 @@ import { useState } from "react";
 import { PostPlaceholder } from "./posts";
 
 export const PostText = ({ posts, setPosts }) => {
-    let token = document.cookie.split("=")[1]
     const [showAllComments, setShowAllComments] = useState({});
     const [imageSelected, setImageSelected] = useState(false);
 

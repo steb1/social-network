@@ -1,7 +1,6 @@
 "use client";
 import config from "@/config";
 import React, { useEffect, useState } from "react";
-
 export const fetchFollowers = async (setFollowers) => {
     let token = document.cookie.split("=")[1]
     const response = await fetch(config.serverApiUrl + "getFollowers", {
@@ -17,14 +16,11 @@ export const fetchFollowers = async (setFollowers) => {
         return followers;
     }
 };
-
 export const Modal = ({ setPosts, posts }) => {
-    let token = document.cookie.split("=")[1]
     let [followers, setFollowers] = useState([]);
     useEffect(() => {
         fetchFollowers(setFollowers);
     }, []);
-
     const handleFormSubmit = async (e) => {
         e.preventDefault();
         let token = document.cookie.split("=")[1]
@@ -53,11 +49,9 @@ export const Modal = ({ setPosts, posts }) => {
             console.error("Erreur lors de la lecture de la réponse JSON :", error);
         }
     };
-
     if (followers == null) {
         followers = [];
     }
-
     const displayFriend = () => {
         const select = document.getElementById("selectVisibility");
         var selectElement = document.getElementById("friend");
@@ -113,26 +107,7 @@ export const Modal = ({ setPosts, posts }) => {
                             <h1 className='text-lg font-bold text-black'> Chats </h1>
                         </div>
                         {/* search input defaul is hidden */}
-                        <div
-                            className='bg-white p-3 absolute w-full top-11 border-b flex gap-2 hidden dark:border-slate-600 dark:bg-slate-700 z-10'
-                            uk-scrollspy='cls:uk-animation-slide-bottom-small ; repeat: true; duration:0'
-                            id='search__chat'
-                        >
-                            <div className='relative w-full'>
-                                <input
-                                    type='text'
-                                    className='w-full rounded-3xl dark:!bg-white/10'
-                                    placeholder='Search'
-                                />
-                                <button
-                                    type='button'
-                                    className='absolute  right-0  rounded-full shrink-0 px-2 -translate-y-1/2 top-1/2'
-                                    uk-toggle='target: #search__chat ; cls: hidden'
-                                >
-                                    <ion-icon name='close-outline' className='text-xl flex' />
-                                </button>
-                            </div>
-                        </div>
+                       
                         {/* button actions */}
                         <div className='absolute top-0 -right-1 m-5 flex gap-2 text-xl'>
                             <button uk-toggle='target: #search__chat ; cls: hidden'>

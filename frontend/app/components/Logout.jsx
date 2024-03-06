@@ -3,7 +3,6 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import config from "@/config";
 import { useWebSocketContext } from "@/public/js/websocketContext";
-import { useWebSocketContext } from "@/public/js/websocketContext";
 
 const Logout = () => {
     const router = useRouter();
