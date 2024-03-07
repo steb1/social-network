@@ -57,10 +57,10 @@ export const GroupCover = ( { groupInfo, setTab , tab, isowner }) => {
         </div>
         <div className="flex items-center justify-between  border-t border-gray-100 px-2 dark:border-slate-700" >
             <nav className="flex gap-0.5 rounded-xl overflow-hidden -mb-px text-gray-500 font-medium text-sm overflow-x-auto dark:text-white">
-            <span href="#" id="1" onClick={() => HandleTab(1, setTab)} className={`inline-block py-3 leading-8 px-3.5 border-b-2 ${tab === 1 ? 'border-blue-600 text-blue-600' : 'border-gray-300 text-gray-500'}`}>Posts</span>
-            <span href="#" id="3" onClick={() => HandleTab(3, setTab)}  className={`inline-block py-3 leading-8 px-3.5 border-b-2 ${tab === 3 ? 'border-blue-600 text-blue-600' : 'border-gray-300 text-gray-500'}`}>Events</span>
-            <span href="#" id="4" onClick={() => HandleTab(4, setTab)}  className={`inline-block py-3 leading-8 px-3.5 border-b-2 ${tab === 4 ? 'border-blue-600 text-blue-600' : 'border-gray-300 text-gray-500'}`}>Members</span>
-           { isowner ?  <span href="#" id="5" onClick={() => HandleTab(5, setTab)}  className={`inline-block py-3 leading-8 px-3.5 border-b-2 ${tab === 5 ? 'border-blue-600 text-blue-600' : 'border-gray-300 text-gray-500'}`}>Requests</span> : ""}
+            <span href="#" id="1" onClick={() => HandleTab(1, setTab)} className={`inline-block py-3 cursor-pointer leading-8 px-3.5 border-b-2 ${tab === 1 ? 'border-blue-600 text-blue-600' : 'border-gray-300 text-gray-500'}`}>Posts</span>
+            <span href="#" id="3" onClick={() => HandleTab(3, setTab)}  className={`inline-block py-3 cursor-pointer leading-8 px-3.5 border-b-2 ${tab === 3 ? 'border-blue-600 text-blue-600' : 'border-gray-300 text-gray-500'}`}>Events</span>
+            <span href="#" id="4" onClick={() => HandleTab(4, setTab)}  className={`inline-block py-3 cursor-pointer leading-8 px-3.5 border-b-2 ${tab === 4 ? 'border-blue-600 text-blue-600' : 'border-gray-300 text-gray-500'}`}>Members</span>
+           { isowner ?  <span href="#" id="5" onClick={() => HandleTab(5, setTab)}  className={`inline-block py-3 cursor-pointer leading-8 px-3.5 border-b-2 ${tab === 5 ? 'border-blue-600 text-blue-600' : 'border-gray-300 text-gray-500'}`}>Requests</span> : ""}
             </nav>
         </div> 
     </div>

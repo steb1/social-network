@@ -10,15 +10,15 @@ import { CustomAlert } from "./CustomAlert";
 const Header = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
-  const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
+  let { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
   // ---------------------------------- INIT SOCKET ----------------------------------------------
+
   useEffect(() => {
     // Check if a new JSON message has been received
-    console.log(lastJsonMessage, "---------header-------not");
     switch (lastJsonMessage?.command) {
       case "messageforuser":
         console.log("messageforuser");
-        break
+        break;
       case "handleGroupRequest":
         console.log("handleGroupRequest");
         setShowAlert(true);
@@ -48,7 +48,7 @@ const Header = () => {
         );
     }
 
-  });
+  }, [lastJsonMessage]);
 
   useEffect(() => {
     let name = document.getElementById("GroupName");
