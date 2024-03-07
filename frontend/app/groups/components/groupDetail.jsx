@@ -7,10 +7,10 @@ import { Event } from "./event";
 import { AddEvent } from "./addEvent";
 import { Requests } from "./requests";
 import { Members } from "./member";
-import AddStory from "../../components/addStory";
 import { GroupRightBar } from "@/app/groups/components/groupRightBar";
 import { PostText } from "./posts";
 import config from "@/config";
+import { AddStoryGroup } from "./addStroryGroup";
 
 export async function fetchGroupDetail(
   setPosts,
@@ -112,7 +112,7 @@ export const GroupDetail = ({ params }) => {
         </div>
         <div className="flex flex-row">
           <div id="content" className=" flex flex-col gap-5 mx-auto ">
-            {tab === 1 && <AddStory />}
+            {tab === 1 && <AddStoryGroup />}
             {tab === 3 && <AddEvent />}
 
             <Modal

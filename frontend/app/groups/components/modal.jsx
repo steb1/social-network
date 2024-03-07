@@ -18,7 +18,7 @@ export const Modal = ( { groupId, setPosts , setGroup, setEvents, setRequests, s
       const jsonData = await response.json();
       if (response.ok) {
         console.log("post sent");
-        UIkit.modal("#create-status").hide();
+        UIkit.modal("#create-statusGroup").hide();
         fetchGroupDetail(setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId, setIsOwner, setMembers, setInvites)
       }
     } catch (error) {
@@ -47,7 +47,7 @@ export const Modal = ( { groupId, setPosts , setGroup, setEvents, setRequests, s
             </div>
         </div>
         {/* create status */}
-        <div className="hidden lg:p-20 uk- open closed" id="create-status" uk-modal="">
+        <div className="hidden lg:p-20 uk- open closed" id="create-statusGroup" uk-modal="">
 				<form id="create-Grouppost-form" encType="multipart/form-data" onSubmit={handleFormSubmit} action="">
 					<div className="uk-modal-dialog tt relative overflow-hidden mx-auto bg-white shadow-xl rounded-lg md:w-[520px] w-full dark:bg-dark2">
 						<div className="text-center py-4 border-b mb-0 dark:border-slate-700">
