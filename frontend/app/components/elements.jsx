@@ -3,94 +3,128 @@ import { useEffect, useState } from "react";
 import Logout from "./Logout";
 import config from "@/config";
 import Link from "next/link";
+import { useWebSocketContext } from "@/public/js/websocketContext";
 
 export const Element = () => {
-  const [notifications, setNotifications] = useState([]);
+  let [notifications, setNotifications] = useState([]);
+  const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
 
   const fetchNotification = async () => {
-    let token = document.cookie.split("=")[1];
-    if (!token) {
-      return;
-    }
-
-    if (token) {
-      // Use the token as needed
-      console.log("Token:", token);
-    } else {
-      console.log("Token not found in cookies");
-    }
-
-    try {
-      const response = await fetch(config.serverApiUrl + "getNotifications", {
-        method: "GET",
-        headers: {
-          Authorization: token,
-        },
-        credentials: "include",
-      });
-
-      if (response.ok) {
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
-          const data = await response.json();
-          console.log("------ data", data.notifications);
-          setNotifications(data.notifications);
-        } else {
-          console.error("Response is not in JSON format");
-        }
-      } else {
-        const errorResponse = await response.json();
-        const errorMessage = errorResponse.error || "An error occurred.";
-        console.error("No Group retrieved:", errorMessage);
+      let token = document.cookie.split("=")[1];
+      if (!token) {
+        return;
       }
-    } catch (error) {
-      console.error("Error while fetching groups:", error);
-    }
-  };
+
+      if (token) {
+        // Use the token as needed
+        console.log("Token:", token);
+      } else {
+        console.log("Token not found in cookies");
+      }
+
+      try {
+        const response = await fetch(config.serverApiUrl + "getNotifications", {
+          method: "GET",
+
+          headers: {
+            Authorization: token,
+          },
+          credentials: "include",
+        });
+
+        if (response.ok) {
+          const contentType = response.headers.get("content-type");
+          if (contentType && contentType.includes("application/json")) {
+            const data = await response.json();
+            console.log("------ data", data.notifications);
+            setNotifications(data.notifications);
+          } else {
+            console.error("Response is not in JSON format");
+          }
+        } else {
+          const errorResponse = await response.json();
+          const errorMessage = errorResponse.error || "An error occurred.";
+          console.error("No Group retrieved:", errorMessage);
+        }
+      } catch (error) {
+        console.error("Error while fetching groups:", error);
+      }
+};
 
   const updateNotif = async (id) => {
-    let token = document.cookie.split("=")[1];
-    if (!token) {
-      return;
-    }
-
-    if (token) {
-      // Use the token as needed
-      console.log("Token:", token);
-    } else {
-      console.log("Token not found in cookies");
-    }
-
-    const formData = new FormData();
-    formData.append("notifId", id);
-
-    try {
-      const response = await fetch(config.serverApiUrl + "updateNotif", {
-        method: "POST",
-        headers: {
-          Authorization: token,
-        },
-        credentials: "include",
-        body: formData,
-      });
-
-      if (response.ok) {
-        fetchNotification();
-      } else {
-        console.log("Notif not updated");
+      let token = document.cookie.split("=")[1];
+      if (!token) {
+        return;
       }
-    } catch (error) {
-      console.error("Error while fetching groups:", error);
-    }
-  };
 
-  const countElementsWithCondition = (arr, condition) => {
-    return arr ? arr.filter(condition).length : 0;
+      if (token) {
+        // Use the token as needed
+        console.log("Token:", token);
+      } else {
+        console.log("Token not found in cookies");
+      }
+
+      const formData = new FormData();
+      formData.append("notifId", id);
+
+      try {
+        const response = await fetch(config.serverApiUrl + "updateNotif", {
+          method: "POST",
+          headers: {
+            Authorization: token,
+          },
+          credentials: "include",
+          body: formData,
+        });
+
+        if (response.ok) {
+          fetchNotification();
+        } else {
+          console.log("Notif not updated");
+        }
+      } catch (error) {
+        console.error("Error while fetching groups:", error);
+      }
   };
+   
+  let [numberofnotifs, setNumberofnotifs] = useState(0)
 
   useEffect(() => {
     fetchNotification();
+      // Check if a new JSON message has been received
+      // console.log(lastJsonMessage, "--------group option--------not");
+      switch (lastJsonMessage?.command) {
+          case "handleGroupRequest":
+              console.log("handleGroupRequest");
+              fetchNotification()
+              break
+          case "inviteUser":
+              console.log("----------------------inviteUser");
+              fetchNotification()
+              break
+          case "eventCreated" :
+            console.log("eventCreated");
+            fetchNotification()
+            break
+          case "followPrivate":
+            console.log("followPrivate");
+            fetchNotification()
+            break
+          }
   }, []);
+
+  const countElementsWithCondition = (arr, condition) => {
+    return arr ? arr?.filter(condition).length : 0;
+  };
+
+  numberofnotifs =  countElementsWithCondition(
+    notifications,
+    (notification) => !notification.is_read
+  )
+
+  console.log("------numberofnotifs-------", numberofnotifs);
+
+  //setNumberofnotifs(numberofnotifs)
 
   return (
     <div className="flex-1 relative">
@@ -198,10 +232,7 @@ export const Element = () => {
               />
             </svg>
             <div class="absolute top-0 right-0 -m-1 bg-red-600 text-white text-xs px-1 rounded-full">
-              {countElementsWithCondition(
-                notifications,
-                (notification) => !notification.is_read
-              )}
+              {numberofnotifs} 
             </div>
           </button>
           <div

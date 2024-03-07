@@ -11,7 +11,7 @@ const Header = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
-  // ---------------------------------- INIT SOCKET ----------------------------------------------
+   // ---------------------------------- INIT SOCKET ----------------------------------------------
   useEffect(() => {
     // Check if a new JSON message has been received
     console.log(lastJsonMessage, "---------header-------not");
@@ -21,6 +21,7 @@ const Header = () => {
         break
       case "handleGroupRequest":
         console.log("handleGroupRequest");
+        
         setShowAlert(true);
         setAlertMessage(
           `${lastJsonMessage.body.sender} is interested in joining your group "${lastJsonMessage.body.group_name}".`
@@ -28,6 +29,7 @@ const Header = () => {
         break;
       case "inviteUser":
         console.log("inviteUser");
+        
         setShowAlert(true);
         setAlertMessage(
           `${lastJsonMessage.body.sender} has invited you to join the group "${lastJsonMessage.body.group_name}".`
@@ -35,6 +37,7 @@ const Header = () => {
         break;
       case "followPrivate":
         console.log("followPrivate");
+        
         setShowAlert(true);
         setAlertMessage(
           `${lastJsonMessage.body.sender} wants to follow your private account.`
@@ -42,10 +45,13 @@ const Header = () => {
         break;
       case "eventCreated" :
         console.log("eventCreated");
+        
         setShowAlert(true);
         setAlertMessage(
           `${lastJsonMessage.body.sender} created an event in ${lastJsonMessage.body.group_name}.`
         );
+        case "messageforgroup":
+          console.log("eventCreated");
     }
 
   });
@@ -103,7 +109,7 @@ const Header = () => {
               </Link>
             </div>
           </div>
-          <Element />
+          <Element/>
         </div>
       </header>
       {showAlert && (
