@@ -7,120 +7,164 @@ import { useWebSocketContext } from "@/public/js/websocketContext";
 
 export const Element = () => {
   let [notifications, setNotifications] = useState([]);
-  const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
+  const { sendJsonMessage, lastJsonMessage, readyState } =
+    useWebSocketContext();
 
   const fetchNotification = async () => {
-      let token = document.cookie.split("=")[1];
-      if (!token) {
-        return;
-      }
+    let token = document.cookie.split("=")[1];
+    if (!token) {
+      return;
+    }
 
-      if (token) {
-        // Use the token as needed
-        console.log("Token:", token);
-      } else {
-        console.log("Token not found in cookies");
-      }
+    if (token) {
+      // Use the token as needed
+      console.log("Token:", token);
+    } else {
+      console.log("Token not found in cookies");
+    }
 
-      try {
-        const response = await fetch(config.serverApiUrl + "getNotifications", {
-          method: "GET",
+    try {
+      const response = await fetch(config.serverApiUrl + "getNotifications", {
+        method: "GET",
 
-          headers: {
-            Authorization: token,
-          },
-          credentials: "include",
-        });
+        headers: {
+          Authorization: token,
+        },
+        credentials: "include",
+      });
 
-        if (response.ok) {
-          const contentType = response.headers.get("content-type");
-          if (contentType && contentType.includes("application/json")) {
-            const data = await response.json();
-            console.log("------ data", data.notifications);
-            setNotifications(data.notifications);
-          } else {
-            console.error("Response is not in JSON format");
-          }
+      if (response.ok) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const data = await response.json();
+          console.log("------ data", data.notifications);
+          setNotifications(data.notifications);
         } else {
-          const errorResponse = await response.json();
-          const errorMessage = errorResponse.error || "An error occurred.";
-          console.error("No Group retrieved:", errorMessage);
+          console.error("Response is not in JSON format");
         }
-      } catch (error) {
-        console.error("Error while fetching groups:", error);
+      } else {
+        const errorResponse = await response.json();
+        const errorMessage = errorResponse.error || "An error occurred.";
+        console.error("No Group retrieved:", errorMessage);
       }
-};
+    } catch (error) {
+      console.error("Error while fetching groups:", error);
+    }
+  };
 
   const updateNotif = async (id) => {
-      let token = document.cookie.split("=")[1];
-      if (!token) {
-        return;
-      }
+    let token = document.cookie.split("=")[1];
+    if (!token) {
+      return;
+    }
 
-      if (token) {
-        // Use the token as needed
-        console.log("Token:", token);
+    if (token) {
+      // Use the token as needed
+      console.log("Token:", token);
+    } else {
+      console.log("Token not found in cookies");
+    }
+
+    const formData = new FormData();
+    formData.append("notifId", id);
+
+    try {
+      const response = await fetch(config.serverApiUrl + "updateNotif", {
+        method: "POST",
+        headers: {
+          Authorization: token,
+        },
+        credentials: "include",
+        body: formData,
+      });
+
+      if (response.ok) {
+        fetchNotification();
       } else {
-        console.log("Token not found in cookies");
+        console.log("Notif not updated");
       }
-
-      const formData = new FormData();
-      formData.append("notifId", id);
-
-      try {
-        const response = await fetch(config.serverApiUrl + "updateNotif", {
-          method: "POST",
-          headers: {
-            Authorization: token,
-          },
-          credentials: "include",
-          body: formData,
-        });
-
-        if (response.ok) {
-          fetchNotification();
-        } else {
-          console.log("Notif not updated");
-        }
-      } catch (error) {
-        console.error("Error while fetching groups:", error);
-      }
+    } catch (error) {
+      console.error("Error while fetching groups:", error);
+    }
   };
-   
-  let [numberofnotifs, setNumberofnotifs] = useState(0)
+
+  let [numberofnotifs, setNumberofnotifs] = useState(0);
 
   useEffect(() => {
     fetchNotification();
-      // Check if a new JSON message has been received
-      // console.log(lastJsonMessage, "--------group option--------not");
-      switch (lastJsonMessage?.command) {
-          case "handleGroupRequest":
-              console.log("handleGroupRequest");
-              fetchNotification()
-              break
-          case "inviteUser":
-              console.log("----------------------inviteUser");
-              fetchNotification()
-              break
-          case "eventCreated" :
-            console.log("eventCreated");
-            fetchNotification()
-            break
-          case "followPrivate":
-            console.log("followPrivate");
-            fetchNotification()
-            break
-          }
+    // Check if a new JSON message has been received
+    // console.log(lastJsonMessage, "--------group option--------not");
+    switch (lastJsonMessage?.command) {
+      case "handleGroupRequest":
+        console.log("handleGroupRequest");
+        fetchNotification();
+        break;
+      case "inviteUser":
+        console.log("----------------------inviteUser");
+        fetchNotification();
+        break;
+      case "eventCreated":
+        console.log("eventCreated");
+        fetchNotification();
+        break;
+      case "followPrivate":
+        console.log("followPrivate");
+        fetchNotification();
+        break;
+    }
   }, [lastJsonMessage]);
 
   const countElementsWithCondition = (arr, condition) => {
     return arr ? arr?.filter(condition).length : 0;
   };
 
-  numberofnotifs =  countElementsWithCondition(
+  const deleteAllNotif = async () => {
+    let token = document.cookie.split("=")[1];
+    if (!token) {
+      return;
+    }
+    
+
+    if (token) {
+      // Use the token as needed
+      console.log("Token:", token);
+    } else {
+      console.log("Token not found in cookies");
+    }
+
+    try {
+      const response = await fetch(config.serverApiUrl + "deleteAllNotif", {
+        method: "GET",
+
+        headers: {
+          Authorization: token,
+        },
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const data = await response.json();
+          console.log("------ data", data.notifications);
+          setNotifications(data.notifications);
+        } else {
+          console.error("Response is not in JSON format");
+        }
+      } else {
+        const errorResponse = await response.json();
+        const errorMessage = errorResponse.error || "An error occurred.";
+        console.error("No Group retrieved:", errorMessage);
+      }
+    } catch (error) {
+      console.error("Error while fetching groups:", error);
+    }
+  };
+
+  numberofnotifs = countElementsWithCondition(
     notifications,
     (notification) => !notification.is_read
-  )
+  );
 
   console.log("------numberofnotifs-------", numberofnotifs);
 
@@ -230,7 +274,7 @@ export const Element = () => {
               />
             </svg>
             <div class="absolute top-0 right-0 -m-1 bg-red-600 text-white text-xs px-1 rounded-full">
-              {numberofnotifs} 
+              {numberofnotifs}
             </div>
           </button>
           <div
@@ -238,78 +282,91 @@ export const Element = () => {
             uk-drop="offset:6;pos: bottom-right; mode: click; animate-out: true; animation: uk-animation-scale-up uk-transform-origin-top-right "
           >
             {/*heading*/}
-            <div class="flex items-center justify-between gap-2 p-4 pb-2">
-              <h3 class="font-bold text-xl"> Notifications </h3>
+            <div className="flex items-center justify-between gap-2 p-4 pb-2">
+              <h3 className="font-bold text-xl"> Notifications </h3>
+              <div classname=" flex right-0 gap-2 justify-self-end ">
+                <button
+                  onClick={deleteAllNotif}
+                  className=" w-16 h-16 px-1 text-slate-700	dark:text-white"
+                >
+                  🚮 Vider 
+                </button>
+              </div>
             </div>
+
             <div class="text-sm h-[400px] w-full overflow-y-auto pr-2">
               {/*contents list*/}
               <div class="pl-2 p-1 text-sm font-normal dark:text-white">
                 {notifications && Array.isArray(notifications)
                   ? notifications.map((notification) => (
-                    <Link
-                      key={notification.notification_id}
-                      href={
-                        notification.notification_type === "inviteUser"
-                          ? "/groups"
-                          : notification.notification_type === "requestGroup"
-                            ? `/groups/${notification.Group?.group_id}`
-                            : notification.notification_type === "followPrivate"
-                              ? `/followRequests`
-                              : ""
-                      }
-
-                      class="relative flex items-center gap-3 p-2 duration-200 rounded-xl pr-10 hover:bg-secondery dark:hover:bg-white/10 bg-teal-500/5 mb-5"
-                      onClick={() =>
-                        updateNotif(notification.notification_id)
-                      }
-                    >
-                      <div class="relative w-12 h-12 shrink-0">
-                        {" "}
-                        <img
-                          src="assets/images/avatars/avatar-3.jpg"
-                          alt=""
-                          class="object-cover w-full h-full rounded-full"
-                        />
-                      </div>
-                      <div class="flex-1 ">
-                        <p>
+                      <Link
+                        key={notification.notification_id}
+                        href={
+                          notification.notification_type === "inviteUser"
+                            ? "/groups"
+                            : notification.notification_type === "requestGroup"
+                              ? `/groups/${notification.Group?.group_id}`
+                              : notification.notification_type ===
+                                  "followPrivate"
+                                ? `/followRequests`
+                                : ""
+                        }
+                        class="relative flex items-center gap-3 p-2 duration-200 rounded-xl pr-10 hover:bg-secondery dark:hover:bg-white/10 bg-teal-500/5 mb-5"
+                        onClick={() =>
+                          updateNotif(notification.notification_id)
+                        }
+                      >
+                        <div class="relative w-12 h-12 shrink-0">
                           {" "}
-                          <b className="font-bold mr-1">
+                          <img
+                            src="assets/images/avatars/avatar-3.jpg"
+                            alt=""
+                            class="object-cover w-full h-full rounded-full"
+                          />
+                        </div>
+                        <div class="flex-1 ">
+                          <p>
                             {" "}
-                            {notification.Sender.first_name}{" "}
-                          </b>{" "}
-                          {notification.notification_type === "inviteUser" ? (
-                            `invited you to join the group `
-                          ) : notification.notification_type === "requestGroup" ? (
-                            `requests to join the group `
-                          ) : notification.notification_type === "followPrivate" ? (
-                            `wants to follow your private account.`
-                          ) : notification.notification_type === "eventCreated" ? (
-                            `created an event ${notification.notification_type} in group `
-                           ) : ""
-                          }
+                            <b className="font-bold mr-1">
+                              {" "}
+                              {notification.Sender.first_name}{" "}
+                            </b>{" "}
+                            {notification.notification_type === "inviteUser"
+                              ? `invited you to join the group `
+                              : notification.notification_type ===
+                                  "requestGroup"
+                                ? `requests to join the group `
+                                : notification.notification_type ===
+                                    "followPrivate"
+                                  ? `wants to follow your private account.`
+                                  : notification.notification_type ===
+                                      "eventCreated"
+                                    ? `created an event ${notification.notification_type} in group `
+                                    : ""}
+                            {notification.Group?.title ? (
+                              <>
+                                <b className="font-bold mr-1">
+                                  {" "}
+                                  {notification.Group.title}{" "}
+                                </b>
+                              </>
+                            ) : (
+                              ""
+                            )}
+                          </p>
 
-                          {notification.Group?.title ? (
-                            <>
-                              <b className="font-bold mr-1"> {notification.Group.title} </b>
-                            </>
+                          <div class="text-xs text-gray-500 mt-1.5 dark:text-white/80">
+                            {" "}
+                            {notification.created_at}
+                          </div>
+                          {!notification.is_read ? (
+                            <div class="w-2.5 h-2.5 bg-teal-600 rounded-full absolute right-3 top-5"></div>
                           ) : (
                             ""
                           )}
-                        </p>
-
-                        <div class="text-xs text-gray-500 mt-1.5 dark:text-white/80">
-                          {" "}
-                          {notification.created_at}
                         </div>
-                        {!notification.is_read ? (
-                          <div class="w-2.5 h-2.5 bg-teal-600 rounded-full absolute right-3 top-5"></div>
-                        ) : (
-                          ""
-                        )}
-                      </div>
-                    </Link>
-                  ))
+                      </Link>
+                    ))
                   : ""}
               </div>
             </div>
