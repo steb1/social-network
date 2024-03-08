@@ -3,10 +3,11 @@ import { useEffect, useState } from "react";
 import Logout from "./Logout";
 import config from "@/config";
 import Link from "next/link";
-import { formatDate } from "../messages/SideBarPreviewGroupChat";
+import { useWebSocketContext } from "@/public/js/websocketContext";
 
 export const Element = () => {
-    const [notifications, setNotifications] = useState([]);
+    let [notifications, setNotifications] = useState([]);
+    const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
     const [messagesPreview, setMessagesPreview] = useState([]);
     const fetchNotification = async () => {
         let token = document.cookie.split("=")[1];
@@ -87,13 +88,41 @@ export const Element = () => {
         }
     };
 
-    const countElementsWithCondition = (arr, condition) => {
-        return arr ? arr.filter(condition).length : 0;
-    };
+    let [numberofnotifs, setNumberofnotifs] = useState(0);
 
     useEffect(() => {
         fetchNotification();
+        // Check if a new JSON message has been received
+        // console.log(lastJsonMessage, "--------group option--------not");
+        switch (lastJsonMessage?.command) {
+            case "handleGroupRequest":
+                console.log("handleGroupRequest");
+                fetchNotification();
+                break;
+            case "inviteUser":
+                console.log("----------------------inviteUser");
+                fetchNotification();
+                break;
+            case "eventCreated":
+                console.log("eventCreated");
+                fetchNotification();
+                break;
+            case "followPrivate":
+                console.log("followPrivate");
+                fetchNotification();
+                break;
+        }
     }, []);
+
+    const countElementsWithCondition = (arr, condition) => {
+        return arr ? arr?.filter(condition).length : 0;
+    };
+
+    numberofnotifs = countElementsWithCondition(notifications, (notification) => !notification.is_read);
+
+    console.log("------numberofnotifs-------", numberofnotifs);
+
+    //setNumberofnotifs(numberofnotifs)
 
     return (
         <div className='flex-1 relative'>
