@@ -70,6 +70,7 @@ var Routes = []Route{
 	{Path: "/api/updateNotif", Handler: HandleUpdateNotif, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/handleRequestGroup", Handler: HandleRequestGroup, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/getRightBarCategories", Handler: HandleGetRightBarCategories, Methods: []string{"GET", "OPTIONS"}},
+	{Path: "/api/deleteAllNotif", Handler: DeleteAllNotif, Methods: []string{"GET", "OPTIONS"}},
 }
 
 func MiddlewareIsAuthenticated(handler http.HandlerFunc) http.HandlerFunc {
