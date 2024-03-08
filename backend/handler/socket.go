@@ -48,6 +48,7 @@ type MessagePattern struct {
 	Time      string `json:"time"`
 	GroupId   int    `json:"groupId"`
 	GroupName string `json:"group_name"`
+	EventName string
 }
 
 func SocketHandler(w http.ResponseWriter, r *http.Request) {
@@ -156,6 +157,10 @@ func handleEventNotif(userInfo UserInfo, userId int, command string, messageBody
 
 	intGroupId, _ := strconv.Atoi(fmt.Sprintf("%v", groupId))
 
+	eventid := (bodyMap["eventid"])
+	intEventid, _ := strconv.Atoi(fmt.Sprintf("%v", eventid))
+
+
 	AllUsersOfGroup, err := models.MembershipRepo.GetAllUsersByGroupID(intGroupId)
 
 	if err != nil {
@@ -167,7 +172,7 @@ func handleEventNotif(userInfo UserInfo, userId int, command string, messageBody
 	messagepattern.Sender = sender.FirstName + " " + sender.LastName
 	messagepattern.GroupName = group.Title
 
-	fmt.Println("-----------group----", group)
+	fmt.Println("-----------intEventid----", intEventid)
 
 	for _, user := range AllUsersOfGroup {
 		if user.UserID != userId {
@@ -182,8 +187,28 @@ func handleEventNotif(userInfo UserInfo, userId int, command string, messageBody
 				continue
 			}
 
+			var notification models.Notification
+
+			notification.CreatedAt = time.Now().String()
+			notification.GroupID = sql.NullInt64{Int64: int64(messagepattern.GroupId), Valid: true}
+			
+			notification.IsRead = false
+			notification.SenderID = sender.UserID
+			notification.UserID = user.UserID
+			notification.NotificationType = command
+			notification.EventID = sql.NullInt64{Int64: int64(intEventid), Valid: true}
+
+
+			err := models.NotifRepo.CreateNotification(&notification)
+
+			if err != nil {
+				fmt.Println("Notification not created", err)
+			}
+
 		}
 	}
+
+	
 	
 }
 

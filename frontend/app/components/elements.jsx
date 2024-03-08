@@ -124,8 +124,6 @@ export const Element = () => {
 
   console.log("------numberofnotifs-------", numberofnotifs);
 
-  //setNumberofnotifs(numberofnotifs)
-
   return (
     <div className="flex-1 relative">
       <div className="max-w-[1220px] mx-auto flex items-center">
@@ -286,9 +284,10 @@ export const Element = () => {
                             `requests to join the group `
                           ) : notification.notification_type === "followPrivate" ? (
                             `wants to follow your private account.`
-                          ) : (
-                            ""
-                          )}
+                          ) : notification.notification_type === "eventCreated" ? (
+                            `created an event ${notification.notification_type} in group `
+                           ) : ""
+                          }
 
                           {notification.Group?.title ? (
                             <>
