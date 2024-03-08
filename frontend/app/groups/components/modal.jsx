@@ -90,6 +90,9 @@ export const Modal = ( { groupId, setPosts , setGroup, setEvents, setRequests, s
           if (contentType && contentType.includes("application/json")) {
             const data = await response.json();
             fetchGroupDetail(setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId)
+            const id = data?.id
+            console.log("------t---- : ", data?.id);
+            message.id = id
             sendJsonMessage(WebSocketMessage)
           } else {
             console.error("Response is not in JSON format");

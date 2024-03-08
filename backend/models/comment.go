@@ -105,10 +105,12 @@ func (cc *CommentRepository) GetCommentsByPostID(postID string, currentUserID in
 	for rows.Next() {
 		var comment Comment
 		comment.User = &User{}
-		err := rows.Scan(&comment.CommentID, &comment.Content, &comment.CreatedAt, &comment.User.FirstName, &comment.User.LastName, &comment.User.Nickname, &comment.PostID, &comment.HasImage, &comment.AuthorID, &comment.User.Avatar)
+		var nickname sql.NullString
+		err := rows.Scan(&comment.CommentID, &comment.Content, &comment.CreatedAt, &comment.User.FirstName, &comment.User.LastName, &nickname, &comment.PostID, &comment.HasImage, &comment.AuthorID, &comment.User.Avatar)
 		if err != nil {
 			log.Println("error scan in GetCommentsByPostID", err)
 		}
+		comment.User.Nickname = lib.GetStringFromNullString(nickname)
 		comment.CreatedAt = lib.FormatDateDB(comment.CreatedAt)
 		comment.Likes, err = Comment_likeRepo.GetNumberOfCommentLikes(comment.CommentID)
 		if err != nil {

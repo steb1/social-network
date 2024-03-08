@@ -103,3 +103,52 @@ func HandleUpdateNotif(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func DeleteAllNotif(w http.ResponseWriter, r *http.Request) {
+	lib.AddCorsGet(w, r)
+
+	_, ok := IsAuthenticated(r)
+
+	var apiError ApiError
+
+	if !ok {
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	}
+
+	sessionToken := r.Header.Get("Authorization")
+	session, err := models.SessionRepo.GetSession(sessionToken)
+	if err != nil {
+		apiError.Error = "Go connect first !"
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	}
+
+	userId, err := strconv.Atoi(session.UserID)
+	if err != nil {
+		apiError.Error = "Error getting user."
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	}
+
+	err = models.NotifRepo.DeleteNotificationbyUser(userId)
+
+	if err != nil {
+		apiError.Error = "Error getting user."
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	}
+
+	notifications, err := models.NotifRepo.GetNotificationsByUserID(userId)
+	if err != nil {
+		fmt.Println(" --- No notifs retrieved ! ")
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	}
+	response := make(map[string]interface{})
+
+	response["notifications"] = notifications
+
+	lib.WriteJSONResponse(w, r, response)
+
+}
