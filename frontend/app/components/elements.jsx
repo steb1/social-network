@@ -111,7 +111,7 @@ export const Element = () => {
             fetchNotification()
             break
           }
-  }, []);
+  }, [lastJsonMessage]);
 
   const countElementsWithCondition = (arr, condition) => {
     return arr ? arr?.filter(condition).length : 0;
