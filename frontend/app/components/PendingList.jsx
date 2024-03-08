@@ -71,7 +71,7 @@ export const PendingList = ({ Persons, cookie }) => {
 					))}
 				</ul>
 			) : (
-				<p className="my-auto">No new notifications.</p>
+				<p className="my-auto">No new follow requests.</p>
 			)}
 		</div>
 	);
