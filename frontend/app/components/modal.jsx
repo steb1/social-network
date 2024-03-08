@@ -1,6 +1,7 @@
 "use client";
 import config from "@/config";
 import React, { useEffect, useState } from "react";
+
 export const fetchFollowers = async (setFollowers) => {
     let token = document.cookie.split("=")[1]
     const response = await fetch(config.serverApiUrl + "getFollowers", {
@@ -8,7 +9,7 @@ export const fetchFollowers = async (setFollowers) => {
         method: "GET",
         headers: {
             'Authorization': token,
-          },
+        },
     });
     if (response.ok) {
         const followers = await response.json();
@@ -29,7 +30,7 @@ export const Modal = ({ setPosts, posts }) => {
             method: "POST",
             headers: {
                 'Authorization': token,
-              },
+            },
             body: NewformData,
         });
         try {
@@ -63,42 +64,6 @@ export const Modal = ({ setPosts, posts }) => {
     };
     return (
         <div>
-            {/* open chat box */}
-            <div>
-                <button
-                    type='button'
-                    className='sm:m-10 m-5 z-50 px-4 py-2.5 rounded-2xl bg-gradient-to-tr from-blue-500 to-blue-700 text-white shadow fixed bottom-0 right-0 group flex items-center gap-2'
-                >
-                    <svg
-                        className='w-6 h-6 group-aria-expanded:hidden duration-500'
-                        xmlns='http://www.w3.org/2000/svg'
-                        fill='none'
-                        viewBox='0 0 24 24'
-                        strokeWidth={2}
-                        stroke='currentColor'
-                    >
-                        <path
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                            d='M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z'
-                        />
-                    </svg>
-                    <div className='text-base font-semibold max-sm:hidden'> Chat </div>
-                    <svg
-                        className='w-6 h-6 -mr-1 hidden group-aria-expanded:block'
-                        xmlns='http://www.w3.org/2000/svg'
-                        viewBox='0 0 24 24'
-                        fill='currentColor'
-                    >
-                        <path
-                            fillRule='evenodd'
-                            d='M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z'
-                            clipRule='evenodd'
-                        />
-                    </svg>
-                </button>
-                
-            </div>
             {/* create status */}
             <div className='hidden lg:p-20 uk- open closed' id='create-status' uk-modal=''>
                 <form id='create-post-form' encType='multipart/form-data' onSubmit={handleFormSubmit} action=''>
@@ -126,7 +91,7 @@ export const Modal = ({ setPosts, posts }) => {
                                 rows={6}
                                 placeholder='What do you have in mind?'
                                 defaultValue={""}
-                                
+
                             />
                         </div>
                         <div className='flex items-center gap-2 text-sm py-2 px-4 font-medium flex-wrap'>
@@ -139,7 +104,7 @@ export const Modal = ({ setPosts, posts }) => {
                                     name='media_post'
                                     type='file'
                                     className='file-input file-input-bordered file-input-xs w-full max-w-xs'
-                                   
+                                    
                                 />
                             </button>
                             <div className='btn' onClick={() => document.getElementById("my_modal_1").showModal()}>

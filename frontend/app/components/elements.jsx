@@ -3,11 +3,12 @@ import { useEffect, useState } from "react";
 import Logout from "./Logout";
 import config from "@/config";
 import Link from "next/link";
+import { useWebSocketContext } from "@/public/js/websocketContext";
 import { formatDate } from "../messages/SideBarPreviewGroupChat";
 
 export const Element = () => {
     const [notifications, setNotifications] = useState([]);
-    const [messagesPreview, setMessagesPreview] = useState([]);
+
     const fetchNotification = async () => {
         let token = document.cookie.split("=")[1];
         if (!token) {
@@ -167,18 +168,18 @@ export const Element = () => {
                         </div>
 
                         {/*footer*/}
-                        <Link href={`/messages`}>
-                            <div className='text-center py-4 border-t border-slate-100 text-sm font-medium text-blue-600 dark:text-white dark:border-gray-600'>
+                        <a href='#'>
+                            <div class='text-center py-4 border-t border-slate-100 text-sm font-medium text-blue-600 dark:text-white dark:border-gray-600'>
                                 {" "}
                                 See all Messages{" "}
                             </div>
-                        </Link>
-                        <div className='w-3 h-3 absolute -top-1.5 right-3 bg-white border-l border-t rotate-45 max-md:hidden dark:bg-dark3 dark:border-transparent'></div>
+                        </a>
+                        <div class='w-3 h-3 absolute -top-1.5 right-3 bg-white border-l border-t rotate-45 max-md:hidden dark:bg-dark3 dark:border-transparent'></div>
                     </div>
                     {/*notification*/}
                     <button
                         type='button'
-                        className='sm:p-2 p-1 rounded-full relative dark:text-white'
+                        class='sm:p-2 p-1 rounded-full relative dark:text-white'
                         uk-tooltip='title: Notification; pos: bottom; offset:6'
                         onClick={fetchNotification}
                     >
@@ -188,7 +189,7 @@ export const Element = () => {
                             viewBox='0 0 24 24'
                             strokeWidth='1.5'
                             stroke='currentColor'
-                            className='w-7 h-7'
+                            class='w-7 h-7'
                         >
                             <path
                                 strokeLinecap='round'
@@ -196,21 +197,21 @@ export const Element = () => {
                                 d='M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0M3.124 7.5A8.969 8.969 0 0 1 5.292 3m13.416 0a8.969 8.969 0 0 1 2.168 4.5'
                             />
                         </svg>
-                        <div className='absolute top-0 right-0 -m-1 bg-red-600 text-white text-xs px-1 rounded-full'>
+                        <div class='absolute top-0 right-0 -m-1 bg-red-600 text-white text-xs px-1 rounded-full'>
                             {countElementsWithCondition(notifications, (notification) => !notification.is_read)}
                         </div>
                     </button>
                     <div
-                        className='hidden bg-white pr-1.5 rounded-lg drop-shadow-xl dark:bg-slate-700 md:w-[365px] w-screen border2'
+                        class='hidden bg-white pr-1.5 rounded-lg drop-shadow-xl dark:bg-slate-700 md:w-[365px] w-screen border2'
                         uk-drop='offset:6;pos: bottom-right; mode: click; animate-out: true; animation: uk-animation-scale-up uk-transform-origin-top-right '
                     >
                         {/*heading*/}
-                        <div className='flex items-center justify-between gap-2 p-4 pb-2'>
-                            <h3 className='font-bold text-xl'> Notifications </h3>
+                        <div class='flex items-center justify-between gap-2 p-4 pb-2'>
+                            <h3 class='font-bold text-xl'> Notifications </h3>
                         </div>
-                        <div className='text-sm h-[400px] w-full overflow-y-auto pr-2'>
+                        <div class='text-sm h-[400px] w-full overflow-y-auto pr-2'>
                             {/*contents list*/}
-                            <div className='pl-2 p-1 text-sm font-normal dark:text-white'>
+                            <div class='pl-2 p-1 text-sm font-normal dark:text-white'>
                                 {notifications && Array.isArray(notifications)
                                     ? notifications.map((notification) => (
                                           <Link
@@ -224,18 +225,18 @@ export const Element = () => {
                                                           ? `/profile/${notification.Sender.user_id}`
                                                           : ""
                                               }
-                                              className='relative flex items-center gap-3 p-2 duration-200 rounded-xl pr-10 hover:bg-secondery dark:hover:bg-white/10 bg-teal-500/5 mb-5'
+                                              class='relative flex items-center gap-3 p-2 duration-200 rounded-xl pr-10 hover:bg-secondery dark:hover:bg-white/10 bg-teal-500/5 mb-5'
                                               onClick={() => updateNotif(notification.notification_id)}
                                           >
-                                              <div className='relative w-12 h-12 shrink-0'>
+                                              <div class='relative w-12 h-12 shrink-0'>
                                                   {" "}
                                                   <img
                                                       src='assets/images/avatars/avatar-3.jpg'
                                                       alt=''
-                                                      className='object-cover w-full h-full rounded-full'
+                                                      class='object-cover w-full h-full rounded-full'
                                                   />
                                               </div>
-                                              <div className='flex-1 '>
+                                              <div class='flex-1 '>
                                                   <p>
                                                       {" "}
                                                       <b className='font-bold mr-1'>
@@ -261,12 +262,12 @@ export const Element = () => {
                                                       )}
                                                   </p>
 
-                                                  <div className='text-xs text-gray-500 mt-1.5 dark:text-white/80'>
+                                                  <div class='text-xs text-gray-500 mt-1.5 dark:text-white/80'>
                                                       {" "}
                                                       {notification.created_at}
                                                   </div>
                                                   {!notification.is_read ? (
-                                                      <div className='w-2.5 h-2.5 bg-teal-600 rounded-full absolute right-3 top-5'></div>
+                                                      <div class='w-2.5 h-2.5 bg-teal-600 rounded-full absolute right-3 top-5'></div>
                                                   ) : (
                                                       ""
                                                   )}
@@ -278,12 +279,12 @@ export const Element = () => {
                         </div>
                         {/*footer*/}
                         <a href='#'>
-                            <div className='text-center py-4 border-t border-slate-100 text-sm font-medium text-blue-600 dark:text-white dark:border-gray-600'>
+                            <div class='text-center py-4 border-t border-slate-100 text-sm font-medium text-blue-600 dark:text-white dark:border-gray-600'>
                                 {" "}
                                 View Notifications{" "}
                             </div>
                         </a>
-                        <div className='w-3 h-3 absolute -top-1.5 right-3 bg-white border-l border-t rotate-45 max-md:hidden dark:bg-dark3 dark:border-transparent'></div>
+                        <div class='w-3 h-3 absolute -top-1.5 right-3 bg-white border-l border-t rotate-45 max-md:hidden dark:bg-dark3 dark:border-transparent'></div>
                     </div>
                     <Logout />
                 </div>
