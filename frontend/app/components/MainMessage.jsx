@@ -118,7 +118,6 @@ const MainMessage = ({
             case "messagepreview":
                 console.log("MessagePreview");
                 setMessagesPreview(lastJsonMessage.body);
-                console.log(lastJsonMessage.body);
             default:
         }
     }, [lastJsonMessage]);
@@ -146,8 +145,7 @@ const MainMessage = ({
         const message = {
             sender: Sender,
             receiver:
-                (Chatter[0] && Chatter[0].nickname) ||
-                (Chatter[0] && Chatter[0].email) ||
+                (Chatter[0] && Chatter[0].nickname && Chatter[0].nickname !== "" && Chatter[0].email) ||
                 (GroupChatter[0] && String(GroupChatter[0].GroupID)),
             text: messageInput,
             time: Date.now(),
@@ -187,8 +185,7 @@ const MainMessage = ({
         const message = {
             sender: Sender,
             receiver:
-                (Chatter[0] && Chatter[0].nickname) ||
-                (Chatter[0] && Chatter[0].email) ||
+                (Chatter[0] && Chatter[0].nickname && Chatter[0].nickname !== "" && Chatter[0].email) ||
                 (GroupChatter[0] && String(GroupChatter[0].GroupID)),
         };
 
@@ -199,8 +196,7 @@ const MainMessage = ({
         const message = {
             sender: Sender,
             receiver:
-                (Chatter[0] && Chatter[0].nickname) ||
-                (Chatter[0] && Chatter[0].email) ||
+                (Chatter[0] && Chatter[0].nickname && Chatter[0].nickname !== "" && Chatter[0].email) ||
                 (GroupChatter[0] && String(GroupChatter[0].GroupID)),
         };
         sendMessageWeb("nontypeinprogress", message);
@@ -284,7 +280,7 @@ const MainMessage = ({
                                         } else {
                                             return (
                                                 <SideBarPreviewChat
-                                                    key={user.nickname}
+                                                    key={user.name}
                                                     PrenomNom={user.name}
                                                     avatar={user.avatar}
                                                     To={user.nickname ? user.nickname : user.email}

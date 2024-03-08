@@ -184,7 +184,7 @@ func handleEventNotif(userInfo UserInfo, userId int, command string, messageBody
 
 		}
 	}
-	
+
 }
 
 func sendFollowPrivate(userInfo UserInfo, userId int, command string, messageBody interface{}) {
@@ -261,7 +261,7 @@ func handleMessageForUser(message WebSocketMessage, userId int) {
 	receiver, _ := bodyMap["receiver"].(string)
 	text, _ := bodyMap["text"].(string)
 	time, _ := bodyMap["time"].(string)
-
+	fmt.Println("Receiver: ", receiver)
 	messagepattern := MessagePattern{
 		Sender:   sender,
 		Receiver: receiver,
@@ -408,8 +408,8 @@ func handleSendInviteNotif(messageType string, messageBody interface{}, user *mo
 	messagepattern.GroupId, _ = strconv.Atoi(fmt.Sprintf("%v", bodyMap["groupId"]))
 
 	group, _ := models.GroupRepo.GetGroup(messagepattern.GroupId)
-    messagepattern.GroupName = group.Title
-	
+	messagepattern.GroupName = group.Title
+
 	tosend, exists := connections[invitedUser.UserID]
 
 	if !exists {
