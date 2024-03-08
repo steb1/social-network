@@ -177,7 +177,7 @@ ORDER BY
 func (mr *MessageRepository) GetMessagesBetweenUsers(idUser1, idUser2, offset, limit int) (map[string][]MessageResponse, error) {
 	result := make(map[string][]MessageResponse)
 
-	rows, err := db.Query(`SELECT  strftime('%Y-%m-%d', sent_time) as date, content, sent_time, COALESCE(sender.nickname, sender.email) AS sender, COALESCE(receiver.nickname, receiver.email) as receiver
+	rows, err := db.Query(`SELECT  strftime('%Y-%m-%d', sent_time) as date, content, sent_time, COALESCE(sender.nickname, sender.email) AS sender, COALESCE(receiver.nickname, receiver.email) as receiver, sender.avatar
 							FROM messages m
 							JOIN 
 								users sender ON m.sender_id = sender.user_id
@@ -194,7 +194,7 @@ func (mr *MessageRepository) GetMessagesBetweenUsers(idUser1, idUser2, offset, l
 	for rows.Next() {
 		var message MessageResponse
 		var date string
-		err := rows.Scan(&date, &message.Content, &message.SentTime, &message.Sender, &message.Receiver)
+		err := rows.Scan(&date, &message.Content, &message.SentTime, &message.Sender, &message.Receiver, &message.Avatar)
 
 		if err != nil {
 			fmt.Println(err.Error())
