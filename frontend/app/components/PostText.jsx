@@ -31,7 +31,7 @@ export const PostText = ({ posts, setPosts }) => {
         }));
     };
     const handleSubmitComment = async (post_id) => {
-        let token = document.cookie.split("=")[1]
+        let token = document.cookie.split("=")[1];
         const formId = `create-comment-form-${post_id}`;
         const form = document.getElementById(formId);
         const commentContent = form.querySelector('textarea[name="comment_body"]').value.trim();
@@ -52,10 +52,10 @@ export const PostText = ({ posts, setPosts }) => {
         const response = await fetch(config.serverApiUrl + "createComment", {
             method: "POST",
             headers: {
-                'Authorization': token,
+                Authorization: token,
             },
             headers: {
-                'Authorization': token,
+                Authorization: token,
             },
             body: formDataJson,
         });
@@ -82,11 +82,11 @@ export const PostText = ({ posts, setPosts }) => {
     };
 
     const handleLikeClick = async (post_id) => {
-        let token = document.cookie.split("=")[1]
+        let token = document.cookie.split("=")[1];
         const response = await fetch(config.serverApiUrl + "likePost", {
             method: "POST",
             headers: {
-                'Authorization': token,
+                Authorization: token,
             },
             body: JSON.stringify({
                 post_id: post_id,
@@ -106,11 +106,11 @@ export const PostText = ({ posts, setPosts }) => {
     };
 
     const handleCommentLikeClick = async (comment_id) => {
-        let token = document.cookie.split("=")[1]
+        let token = document.cookie.split("=")[1];
         const response = await fetch(config.serverApiUrl + "likeComment", {
             method: "POST",
             headers: {
-                'Authorization': token,
+                Authorization: token,
             },
             body: JSON.stringify({
                 comment_id: comment_id,
@@ -151,7 +151,8 @@ export const PostText = ({ posts, setPosts }) => {
                                     {" "}
                                     <h4 className='text-black dark:text-white'>
                                         {" "}
-                                        {post.User.first_name} {post.User.last_name} ({post.User.nickname}){" "}
+                                        {post.User.first_name} {post.User.last_name}{" "}
+                                        {post.User.nickname && `(${post.User.nickname})`}{" "}
                                     </h4>{" "}
                                 </Link>
                                 <div className='text-xs text-gray-500 dark:text-white/80'> {post.created_at}</div>

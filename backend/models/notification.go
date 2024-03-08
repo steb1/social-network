@@ -165,3 +165,19 @@ func (repo *NotificationRepository) DeleteNotification(notificationID int) error
 
 	return nil
 }
+// DeleteNotification deletes a notification from the database
+func (repo *NotificationRepository) DeleteNotificationbyUser(userID int) error {
+	// Prepare the SQL statement
+	query := `
+		DELETE FROM notifications
+		WHERE user_id = ?
+	`
+
+	// Execute the SQL statement
+	_, err := repo.db.Exec(query, userID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

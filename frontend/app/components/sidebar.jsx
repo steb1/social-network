@@ -87,14 +87,7 @@ const Sidebar = async () => {
                                 <Link href={`/profile/${user?.user_id}`}>
                                     <div className='avatar'>
                                         <div className='w-7 rounded-full'>
-                                            "png-transparent-aquatica-seaworld-orlando-강릉시영상미디어센터-community-group-icon-monochrome-black-noun-project-removebg-preview-removebg-preview.png"
-                                            <img
-                                                src={`${config.ServerApiImage}${
-                                                    user.type === "group"
-                                                        ? "png-transparent-aquatica-seaworld-orlando-강릉시영상미디어센터-community-group-icon-monochrome-black-noun-project-removebg-preview-removebg-preview.png"
-                                                        : user?.avatar
-                                                }`}
-                                            />
+                                            <img src={`${config.ServerApiImage}${user?.avatar}`} />
                                         </div>
                                     </div>
                                     <span className='text-base'> {user?.nickname || user?.email} </span>
