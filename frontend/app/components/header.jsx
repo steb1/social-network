@@ -17,7 +17,6 @@ const Header = () => {
         switch (lastJsonMessage?.command) {
             case "messageforuser":
                 console.log("messageforuser");
-                sendMessageWeb("messagepreview", "");
                 break;
             case "handleGroupRequest":
                 console.log("handleGroupRequest");
@@ -44,8 +43,6 @@ const Header = () => {
                 setAlertMessage(
                     `${lastJsonMessage.body.sender} created an event in ${lastJsonMessage.body.group_name}.`
                 );
-            case "messagepreview":
-                console.log("messagepreview");
         }
     });
 

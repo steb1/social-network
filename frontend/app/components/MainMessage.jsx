@@ -62,7 +62,7 @@ const MainMessage = ({
             case "messageforgroup":
                 const senderInGroup =
                     GroupChatter[0] &&
-                    GroupChatter[0].Users.find((user) => user.NicknameOrEmail === lastJsonMessage.body.sender);
+                    GroupChatter[0]?.Users.find((user) => user?.NicknameOrEmail === lastJsonMessage.body.sender);
 
                 if (!senderInGroup) {
                     return;
@@ -72,9 +72,9 @@ const MainMessage = ({
                     ReactDOM.render(
                         ReactDOM.createPortal(
                             <LeftMessage
-                                Avatar={senderInGroup.Avatar}
-                                Content={lastJsonMessage.body.text}
-                                Sender={lastJsonMessage.body.sender}
+                                Avatar={senderInGroup?.Avatar}
+                                Content={lastJsonMessage.body?.text}
+                                Sender={lastJsonMessage.body?.sender}
                                 Time={Date.now()}
                             />,
                             cms
@@ -120,7 +120,7 @@ const MainMessage = ({
                 setMessagesPreview(lastJsonMessage.body);
             default:
         }
-    }, [lastJsonMessage]);
+    }, []);
     // ---------------------------------- END SOCKET ----------------------------------------------
     /* You have to init socket and on the initialization you have to set directly what to do on the onMessage state soooo I did, the share options is is I want
 		To share that socket between components that why it is set to true.
