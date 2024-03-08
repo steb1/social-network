@@ -81,7 +81,7 @@ func HandleCreateEvent(w http.ResponseWriter, r *http.Request) {
 		event.Title = EventTitle
 		event.Description = DescriptionEvent
 
-		err = models.EventRepo.CreateEvent(&event)
+		err, id := models.EventRepo.CreateEvent(&event)
 
 		if err != nil {
 			WriteJSON(w, http.StatusUnauthorized, apiError)
@@ -91,6 +91,7 @@ func HandleCreateEvent(w http.ResponseWriter, r *http.Request) {
 		response := make(map[string]interface{})
 
 		response["ok"] = true
+		response["id"] = id
 
 		lib.WriteJSONResponse(w, r, response)
 	}
