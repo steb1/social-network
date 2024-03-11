@@ -186,8 +186,8 @@ func handleEventNotif(userInfo UserInfo, userId int, command string, messageBody
 				continue
 			}
 
-		}
-	}
+		
+	
 
 			var notification models.Notification
 
