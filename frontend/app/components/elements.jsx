@@ -9,7 +9,7 @@ import { formatDate } from "../messages/SideBarPreviewGroupChat";
 export const Element = () => {
     let [notifications, setNotifications] = useState([]);
     const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
-    const [messagesPreview, setMessagesPreview] = useState([])
+    const [messagesPreview, setMessagesPreview] = useState([]);
 
     const fetchNotification = async () => {
         let token = document.cookie.split("=")[1];
@@ -111,6 +111,10 @@ export const Element = () => {
                 break;
             case "followPrivate":
                 console.log("followPrivate");
+                fetchNotification();
+                break;
+            case "messagePreview":
+                console.log("messagePreview");
                 fetchNotification();
                 break;
         }
