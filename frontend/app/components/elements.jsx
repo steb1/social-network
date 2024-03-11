@@ -9,7 +9,7 @@ import { formatDate } from "../messages/SideBarPreviewGroupChat";
 export const Element = () => {
     let [notifications, setNotifications] = useState([]);
     const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
-    const [messagesPreview, setMessagesPreview] = useState([]);
+
     const fetchNotification = async () => {
         let token = document.cookie.split("=")[1];
         if (!token) {
@@ -197,12 +197,12 @@ export const Element = () => {
                         </div>
 
                         {/*footer*/}
-                        <Link href={`/messages`}>
+                        <a href='#'>
                             <div class='text-center py-4 border-t border-slate-100 text-sm font-medium text-blue-600 dark:text-white dark:border-gray-600'>
                                 {" "}
                                 See all Messages{" "}
                             </div>
-                        </Link>
+                        </a>
                         <div class='w-3 h-3 absolute -top-1.5 right-3 bg-white border-l border-t rotate-45 max-md:hidden dark:bg-dark3 dark:border-transparent'></div>
                     </div>
                     {/*notification*/}
