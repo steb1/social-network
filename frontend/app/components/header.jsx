@@ -52,6 +52,8 @@ const Header = () => {
         );
         case "messageforgroup":
           console.log("eventCreated");
+        case "messageforuser":
+          console.log("messageforuser");
     }
 
   }, [lastJsonMessage]);

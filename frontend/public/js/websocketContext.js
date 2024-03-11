@@ -11,6 +11,8 @@ export const useWebSocketContext = () => useContext(WebSocketContext);
 export const WebSocketProvider = ({ children }) => {
   const options = {
     // Additional options can be specified here
+    shouldRecoonect : true,
+    share: true, 
 };
 
   const webSocket = useWebSocket(socketUrl, options);
