@@ -186,20 +186,16 @@ func handleEventNotif(userInfo UserInfo, userId int, command string, messageBody
 				continue
 			}
 
-		
-	
-
 			var notification models.Notification
 
 			notification.CreatedAt = time.Now().String()
 			notification.GroupID = sql.NullInt64{Int64: int64(messagepattern.GroupId), Valid: true}
-			
+
 			notification.IsRead = false
 			notification.SenderID = sender.UserID
 			notification.UserID = user.UserID
 			notification.NotificationType = command
 			notification.EventID = sql.NullInt64{Int64: int64(intEventid), Valid: true}
-
 
 			err := models.NotifRepo.CreateNotification(&notification)
 
@@ -210,8 +206,6 @@ func handleEventNotif(userInfo UserInfo, userId int, command string, messageBody
 		}
 	}
 
-	
-	
 }
 
 func sendFollowPrivate(userInfo UserInfo, userId int, command string, messageBody interface{}) {
@@ -288,7 +282,6 @@ func handleMessageForUser(message WebSocketMessage, userId int) {
 	receiver, _ := bodyMap["receiver"].(string)
 	text, _ := bodyMap["text"].(string)
 	time, _ := bodyMap["time"].(string)
-	fmt.Println("Receiver: ", receiver)
 	messagepattern := MessagePattern{
 		Sender:   sender,
 		Receiver: receiver,

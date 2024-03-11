@@ -1,25 +1,24 @@
-"use client"
+"use client";
 
 // WebSocketContext.js
-import React, { createContext, useContext } from 'react';
-import useWebSocket  from 'react-use-websocket';
-import { socketUrl } from './socket';
+import React, { createContext, useContext } from "react";
+import useWebSocket from "react-use-websocket";
+import { socketUrl } from "./socket";
 const WebSocketContext = createContext();
 
 export const useWebSocketContext = () => useContext(WebSocketContext);
 
 export const WebSocketProvider = ({ children }) => {
-  const options = {
-    // Additional options can be specified here
-    shouldRecoonect : true,
-    share: true, 
-};
+    const options = {
+        // Additional options can be specified here
+        shouldRecoonect: true,
+        share: true,
+        retryOnError: true,
+        reconnectInterval: 3000,
+        reconnectAttempts: 10,
+    };
 
-  const webSocket = useWebSocket(socketUrl, options);
+    const webSocket = useWebSocket(socketUrl, options);
 
-  return (
-    <WebSocketContext.Provider value={webSocket}>
-        {children}
-    </WebSocketContext.Provider>
-  );
+    return <WebSocketContext.Provider value={webSocket}>{children}</WebSocketContext.Provider>;
 };
