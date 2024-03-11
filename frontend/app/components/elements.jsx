@@ -4,6 +4,7 @@ import Logout from "./Logout";
 import config from "@/config";
 import Link from "next/link";
 import { useWebSocketContext } from "@/public/js/websocketContext";
+import { formatDate } from "../messages/SideBarPreviewGroupChat";
 
 export const Element = () => {
     let [notifications, setNotifications] = useState([]);
@@ -197,12 +198,12 @@ export const Element = () => {
 
                         {/*footer*/}
                         <Link href={`/messages`}>
-                            <div className='text-center py-4 border-t border-slate-100 text-sm font-medium text-blue-600 dark:text-white dark:border-gray-600'>
+                            <div class='text-center py-4 border-t border-slate-100 text-sm font-medium text-blue-600 dark:text-white dark:border-gray-600'>
                                 {" "}
                                 See all Messages{" "}
                             </div>
                         </Link>
-                        <div className='w-3 h-3 absolute -top-1.5 right-3 bg-white border-l border-t rotate-45 max-md:hidden dark:bg-dark3 dark:border-transparent'></div>
+                        <div class='w-3 h-3 absolute -top-1.5 right-3 bg-white border-l border-t rotate-45 max-md:hidden dark:bg-dark3 dark:border-transparent'></div>
                     </div>
                     {/*notification*/}
                     <button
