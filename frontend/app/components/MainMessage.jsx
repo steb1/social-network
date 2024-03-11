@@ -84,16 +84,6 @@ const MainMessage = ({
                 cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
                 sendMessageWeb("messagepreview", "");
                 break;
-            case "typeinprogress":
-                if (
-                    lastJsonMessage.body.sender !== Chatter[0]?.nickname &&
-                    lastJsonMessage.body.sender !== Chatter[0]?.email
-                ) {
-                    return;
-                }
-                RenderType();
-                break;
-            case "nontypeinprogress":
                 if (
                     lastJsonMessage.body.sender !== Chatter[0]?.nickname &&
                     lastJsonMessage.body.sender !== Chatter[0]?.email
@@ -120,7 +110,7 @@ const MainMessage = ({
                 setMessagesPreview(lastJsonMessage.body);
             default:
         }
-    }, []);
+    }, [lastJsonMessage]);
     // ---------------------------------- END SOCKET ----------------------------------------------
     /* You have to init socket and on the initialization you have to set directly what to do on the onMessage state soooo I did, the share options is is I want
 		To share that socket between components that why it is set to true.

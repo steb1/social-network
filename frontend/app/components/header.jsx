@@ -15,9 +15,6 @@ const Header = () => {
   useEffect(() => {
     // Check if a new JSON message has been received
     switch (lastJsonMessage?.command) {
-      case "messageforuser":
-        console.log("messageforuser");
-        break;
       case "handleGroupRequest":
         console.log("handleGroupRequest");
         
@@ -49,10 +46,6 @@ const Header = () => {
         setAlertMessage(
           `${lastJsonMessage.body.sender} created an event in ${lastJsonMessage.body.group_name}.`
         );
-        case "messageforgroup":
-          console.log("eventCreated");
-        case "messageforuser":
-          console.log("messageforuser");
     }
 
   }, [lastJsonMessage]);
