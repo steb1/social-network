@@ -160,7 +160,6 @@ func handleEventNotif(userInfo UserInfo, userId int, command string, messageBody
 	eventid := (bodyMap["eventid"])
 	intEventid, _ := strconv.Atoi(fmt.Sprintf("%v", eventid))
 
-
 	AllUsersOfGroup, err := models.MembershipRepo.GetAllUsersByGroupID(intGroupId)
 
 	if err != nil {
@@ -186,6 +185,9 @@ func handleEventNotif(userInfo UserInfo, userId int, command string, messageBody
 				log.Println("Error writing message", command, "to connection:", err)
 				continue
 			}
+
+		}
+	}
 
 			var notification models.Notification
 
@@ -286,7 +288,7 @@ func handleMessageForUser(message WebSocketMessage, userId int) {
 	receiver, _ := bodyMap["receiver"].(string)
 	text, _ := bodyMap["text"].(string)
 	time, _ := bodyMap["time"].(string)
-
+	fmt.Println("Receiver: ", receiver)
 	messagepattern := MessagePattern{
 		Sender:   sender,
 		Receiver: receiver,
@@ -433,8 +435,8 @@ func handleSendInviteNotif(messageType string, messageBody interface{}, user *mo
 	messagepattern.GroupId, _ = strconv.Atoi(fmt.Sprintf("%v", bodyMap["groupId"]))
 
 	group, _ := models.GroupRepo.GetGroup(messagepattern.GroupId)
-    messagepattern.GroupName = group.Title
-	
+	messagepattern.GroupName = group.Title
+
 	tosend, exists := connections[invitedUser.UserID]
 
 	if !exists {

@@ -13,17 +13,19 @@ func GetMessages(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
+
 	var apiError ApiError
 	if r.Method == http.MethodGet {
-		cookie, errC := r.Cookie("social-network")
-		session, errS := models.SessionRepo.GetSession(cookie.Value)
-		if errS != nil || errC != nil {
-			apiError.Error = "Go connect first !"
+		sessionToken := r.Header.Get("Authorization")
+		session, exists := models.SessionRepo.SessionExists(sessionToken)
+
+		if !exists {
+			apiError.Error = "Go connect first!"
 			WriteJSON(w, http.StatusUnauthorized, apiError)
 			return
 		}
-
 		sessionUserID, _ := strconv.Atoi(session.UserID)
+
 		username := r.URL.Query().Get("with")
 		userID := models.UserRepo.GetIDFromUsernameOrEmail(username)
 		if userID <= 0 {

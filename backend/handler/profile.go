@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -59,6 +60,7 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 	}
 
 	to := r.URL.Query().Get("to")
+	fmt.Println(to)
 	toID := models.UserRepo.GetIDFromUsernameOrEmail(to)
 
 	// Check if it's a user

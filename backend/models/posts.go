@@ -242,9 +242,11 @@ ORDER BY
 	for rows.Next() {
 		var post Post
 		post.User = &User{}
-		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.AuthorID, &post.HasImage, &post.User.Nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email, &post.User.UserID, &post.User.Avatar); err != nil {
+		var nickname sql.NullString
+		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.AuthorID, &post.HasImage, &nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email, &post.User.UserID, &post.User.Avatar); err != nil {
 			return nil, err
 		}
+		post.User.Nickname = lib.GetStringFromNullString(nickname)
 		postIDStr := strconv.Itoa(post.PostID)
 		post.CreatedAt = lib.FormatDateDB(post.CreatedAt)
 		post.Category = PostCategoryRepo.GetPostCategory(post.PostID)
@@ -271,7 +273,8 @@ func (pr *PostRepository) GetUserOwnPosts(userID int) ([]*Post, error) {
     posts.content, 
     posts.created_at, 
     posts.visibility, 
-    posts.has_image, 
+    posts.has_image,
+	posts.author_id,
     users.nickname, 
     users.first_name, 
     users.last_name, 
@@ -295,9 +298,11 @@ ORDER BY
 	for rows.Next() {
 		var post Post
 		post.User = &User{}
-		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.HasImage, &post.User.Nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email, &post.User.Avatar); err != nil {
+		var nickname sql.NullString
+		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.HasImage, &post.AuthorID, &nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email, &post.User.Avatar); err != nil {
 			return nil, err
 		}
+		post.User.Nickname = lib.GetStringFromNullString(nickname)
 		postIDStr := strconv.Itoa(post.PostID)
 		post.CreatedAt = lib.FormatDateDB(post.CreatedAt)
 		post.Category = PostCategoryRepo.GetPostCategory(post.PostID)

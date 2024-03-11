@@ -45,14 +45,14 @@ const SideBarPreviewGroupChat = ({ ID, GroupName, Users, Message, Time }) => {
 
 export default SideBarPreviewGroupChat;
 
-function IfMessage(message) {
+export function IfMessage(message) {
     if (message === "") {
         return "No message yet.";
     }
     return message;
 }
 
-function formatDate(dateString) {
+export function formatDate(dateString) {
     if (dateString === "") {
         return "";
     }

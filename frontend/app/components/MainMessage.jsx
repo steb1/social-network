@@ -24,9 +24,11 @@ const MainMessage = ({
 }) => {
     const [messageInput, setMessageInput] = useState("");
     const [messagesPreview, setMessagesPreview] = useState(MessagesPreview);
+    const [messages, setMessages] = useState(Messages);
     const cmsRef = useRef(null);
 
     const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
+    let totalMessageCount = 20;
     // ---------------------------------- INIT SOCKET ----------------------------------------------
     useEffect(() => {
         // Check if a new JSON message has been received
@@ -109,13 +111,13 @@ const MainMessage = ({
                 break;
             case "handleGroupRequest":
                 console.log("handleGroupRequest");
+
                 break;
             case "inviteUser":
                 console.log("inviteUser");
             case "messagepreview":
                 console.log("MessagePreview");
                 setMessagesPreview(lastJsonMessage.body);
-                console.log(lastJsonMessage.body);
             default:
         }
     }, []);
@@ -143,8 +145,7 @@ const MainMessage = ({
         const message = {
             sender: Sender,
             receiver:
-                (Chatter[0] && Chatter[0].nickname) ||
-                (Chatter[0] && Chatter[0].email) ||
+                (Chatter[0] && Chatter[0].nickname && Chatter[0].nickname !== "" && Chatter[0].email) ||
                 (GroupChatter[0] && String(GroupChatter[0].GroupID)),
             text: messageInput,
             time: Date.now(),
@@ -184,8 +185,7 @@ const MainMessage = ({
         const message = {
             sender: Sender,
             receiver:
-                (Chatter[0] && Chatter[0].nickname) ||
-                (Chatter[0] && Chatter[0].email) ||
+                (Chatter[0] && Chatter[0].nickname && Chatter[0].nickname !== "" && Chatter[0].email) ||
                 (GroupChatter[0] && String(GroupChatter[0].GroupID)),
         };
 
@@ -196,8 +196,7 @@ const MainMessage = ({
         const message = {
             sender: Sender,
             receiver:
-                (Chatter[0] && Chatter[0].nickname) ||
-                (Chatter[0] && Chatter[0].email) ||
+                (Chatter[0] && Chatter[0].nickname && Chatter[0].nickname !== "" && Chatter[0].email) ||
                 (GroupChatter[0] && String(GroupChatter[0].GroupID)),
         };
         sendMessageWeb("nontypeinprogress", message);
@@ -215,8 +214,33 @@ const MainMessage = ({
     const debounceNoTyping = debounce(() => nontypeinprogress(Sender, Chatter, GroupChatter), 8000);
     const throttleTyping = throttle(() => typeinprogress(Sender, Chatter, GroupChatter), 3000);
 
+    async function getOldMessages() {
+        let token = document.cookie.split("=")[1];
+        const response = await fetch(`${config.serverApiUrl}messages?with=${to}?&offset=${this.totalMessageCount}`, {
+            cache: "no-store",
+            method: "GET",
+            headers: {
+                Authorization: token,
+            },
+        });
+
+        if (response.ok) {
+            const messages = await response.json();
+            setMessages(messages);
+        }
+    }
+
     useEffect(() => {
         cmsRef.current.scrollIntoView({ behavior: "instant", block: "end" });
+        const cms = document.getElementById("cms");
+        cms.addEventListener("scroll", (event) => {
+            const now = new Date().getTime();
+            const delay = 2000; // Adjust the delay as needed
+            if (now - lastScrollTime >= delay && chatDiv.scrollTop === 0) {
+                this.getOldMessages();
+                lastScrollTime = now;
+            }
+        });
     }, []);
 
     return (
@@ -256,7 +280,7 @@ const MainMessage = ({
                                         } else {
                                             return (
                                                 <SideBarPreviewChat
-                                                    key={user.nickname}
+                                                    key={user.name}
                                                     PrenomNom={user.name}
                                                     avatar={user.avatar}
                                                     To={user.nickname ? user.nickname : user.email}
@@ -431,8 +455,8 @@ const MainMessage = ({
 
                                     <div id='cms' ref={cmsRef} className='text-sm font-medium space-y-6'>
                                         {Chatter && Chatter.length
-                                            ? Messages &&
-                                              Object.entries(Messages).map(([date, chatMessages]) => (
+                                            ? messages &&
+                                              Object.entries(messages).map(([date, chatMessages]) => (
                                                   <>
                                                       <div key={date} className='flex justify-center '>
                                                           <div className='font-medium text-gray-500 text-sm dark:text-white/70'>
@@ -460,8 +484,8 @@ const MainMessage = ({
                                                       )}
                                                   </>
                                               ))
-                                            : Messages &&
-                                              Object.entries(Messages).map(([date, chatMessages]) => (
+                                            : messages &&
+                                              Object.entries(messages).map(([date, chatMessages]) => (
                                                   <>
                                                       <div className='flex justify-center '>
                                                           <div
