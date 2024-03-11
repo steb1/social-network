@@ -10,6 +10,7 @@ const SideBarPreviewGroupChat = ({ ID, GroupName, Users, Message, Time }) => {
         <Link
             href={`/messages/${ID}`}
             className='relative flex items-center gap-4 p-2 duration-200 rounded-xl dark:hover:white-400'
+            prefetch={false}
         >
             <div className='avatar-group -space-x-6 rtl:space-x-reverse'>
                 {displayedUsers.map((user, index) => (
