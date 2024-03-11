@@ -134,9 +134,7 @@ const MainMessage = ({
 
         const message = {
             sender: Sender,
-            receiver:
-                (Chatter[0] && Chatter[0].nickname && Chatter[0].nickname !== "" && Chatter[0].email) ||
-                (GroupChatter[0] && String(GroupChatter[0].GroupID)),
+            receiver: Chatter[0]?.nickname || Chatter[0]?.email || String(GroupChatter[0]?.GroupID),
             text: messageInput,
             time: Date.now(),
         };
@@ -174,9 +172,7 @@ const MainMessage = ({
     const typeinprogress = async (Sender, Chatter, GroupChatter) => {
         const message = {
             sender: Sender,
-            receiver:
-                (Chatter[0] && Chatter[0].nickname && Chatter[0].nickname !== "" && Chatter[0].email) ||
-                (GroupChatter[0] && String(GroupChatter[0].GroupID)),
+            receiver: Chatter[0]?.nickname || Chatter[0]?.email || String(GroupChatter[0]?.GroupID),
         };
 
         sendMessageWeb("typeinprogress", message);
@@ -185,9 +181,7 @@ const MainMessage = ({
     const nontypeinprogress = async (Sender, Chatter, GroupChatter) => {
         const message = {
             sender: Sender,
-            receiver:
-                (Chatter[0] && Chatter[0].nickname && Chatter[0].nickname !== "" && Chatter[0].email) ||
-                (GroupChatter[0] && String(GroupChatter[0].GroupID)),
+            receiver: Chatter[0]?.nickname || Chatter[0]?.email || String(GroupChatter[0]?.GroupID),
         };
         sendMessageWeb("nontypeinprogress", message);
     };
@@ -208,6 +202,7 @@ const MainMessage = ({
         let token = document.cookie.split("=")[1];
         const response = await fetch(`${config.serverApiUrl}messages?with=${to}?&offset=${this.totalMessageCount}`, {
             cache: "no-store",
+            revalidate: 0,
             method: "GET",
             headers: {
                 Authorization: token,
