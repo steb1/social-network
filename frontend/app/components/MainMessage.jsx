@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 import SideBarPreviewChat from "../messages/SideBarPreviewChat";
 import LeftMessage from "../messages/LeftMessage";
@@ -11,26 +12,38 @@ import TypingIndicator from "../messages/TypingIndicator";
 import SideBarPreviewGroupChat from "../messages/SideBarPreviewGroupChat";
 import config from "@/config";
 import { useWebSocketContext } from "@/public/js/websocketContext";
+import { fetchMessages } from "./fetchMessages";
 
-const MainMessage = ({
-    AbletoTalk,
-    Chatter,
-    Sender,
-    AvatarSender,
-    Groups,
-    Messages,
-    GroupChatter,
-    MessagesPreview,
-}) => {
+const MainMessage = ({to}) => {
+    let [messages, setMessages] = useState([]);
+    let [messagesPreview, setMessagesPreviews] = useState([]);
+    let [Groups, setGroups] = useState([]);
+    let [Sender, setSender] = useState("");
+    let [AvatarSender, setAvatarsender] = useState('');
+    let [AbletoTalk, setAbletotalk] = useState([]);
+    let [Chatter, setChatter] = useState([])
+    let [GroupChatter, setGroupChatter] = useState([])
+    let [currentChat, setCurrentchat] = useState("")
+   
     const [messageInput, setMessageInput] = useState("");
-    const [messagesPreview, setMessagesPreview] = useState(MessagesPreview);
-    const [messages, setMessages] = useState(Messages);
     const cmsRef = useRef(null);
 
     const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
     let totalMessageCount = 20;
     // ---------------------------------- INIT SOCKET ----------------------------------------------
     useEffect(() => {
+        fetchMessages( 
+            to={to},
+            setMessages,
+            setMessagesPreviews,
+            setGroups,
+            setSender,
+            setAvatarsender,
+            setAbletotalk,
+            setChatter,
+            setGroupChatter,
+        )
+
         // Check if a new JSON message has been received
         console.log(lastJsonMessage, "---------MainMessage-------not");
         switch (lastJsonMessage?.command) {
@@ -101,21 +114,15 @@ const MainMessage = ({
                 break;
             case "handleGroupRequest":
                 console.log("handleGroupRequest");
-
                 break;
             case "inviteUser":
                 console.log("inviteUser");
             case "messagepreview":
                 console.log("MessagePreview");
-                setMessagesPreview(lastJsonMessage.body);
+                setMessagesPreviews(lastJsonMessage.body);
             default:
         }
     }, [lastJsonMessage]);
-    // ---------------------------------- END SOCKET ----------------------------------------------
-    /* You have to init socket and on the initialization you have to set directly what to do on the onMessage state soooo I did, the share options is is I want
-		To share that socket between components that why it is set to true.
-		https://github.com/robtaussig/react-use-websocket?tab=readme-ov-file#example-implementation
- 	 */
 
     function sendMessageWeb(command, body) {
         const WebSocketMessage = {
@@ -134,7 +141,7 @@ const MainMessage = ({
 
         const message = {
             sender: Sender,
-            receiver: Chatter[0]?.nickname || Chatter[0]?.email || String(GroupChatter[0]?.GroupID),
+            receiver: Chatter[0]?.nickname || Chatter[0]?.email || String(GroupChatter.GroupID),
             text: messageInput,
             time: Date.now(),
         };
@@ -260,6 +267,9 @@ const MainMessage = ({
                                                     Users={usersInGroup}
                                                     Message={user.lastMessage}
                                                     Time={user.lastInteractionTime}
+                                                    setMessages={setMessages}
+                                                    setChatter={setChatter}
+                                                    setGroupChatter={setGroupChatter}
                                                 />
                                             );
                                         } else {
@@ -271,6 +281,9 @@ const MainMessage = ({
                                                     To={user.nickname ? user.nickname : user.email}
                                                     Time={user.lastInteractionTime}
                                                     Message={user.lastMessage}
+                                                    setMessages={setMessages}
+                                                    setChatter={setChatter}
+                                                    setGroupChatter={setGroupChatter}
                                                 />
                                             );
                                         }
@@ -290,7 +303,7 @@ const MainMessage = ({
                             uk-toggle='target: #side-chat ; cls: max-md:-translate-x-full'
                         ></div>
                     </div>
-
+                    {/* Message Right bar */}
                     <div className='flex-1'>
                         {(!Chatter || !Chatter.length) && !Groups ? (
                             <>
@@ -416,7 +429,7 @@ const MainMessage = ({
                                                 {" "}
                                                 {Chatter && Chatter.length
                                                     ? `${Chatter[0].first_name} ${Chatter[0].last_name}`
-                                                    : GroupChatter && GroupChatter[0] && GroupChatter[0].GroupName}{" "}
+                                                    : GroupChatter && GroupChatter[0] && GroupChatter[0].GroupName ?  GroupChatter && GroupChatter[0] && GroupChatter[0].GroupName : "Nom user" }
                                             </div>
                                             <div className='text-gray-500 text-sm dark:text-white/80'>
                                                 {Chatter && Chatter[0]
@@ -470,7 +483,7 @@ const MainMessage = ({
                                                   </>
                                               ))
                                             : messages &&
-                                              Object.entries(messages).map(([date, chatMessages]) => (
+                                              Object.entries(messages)?.map(([date, chatMessages]) => (
                                                   <>
                                                       <div className='flex justify-center '>
                                                           <div
@@ -480,7 +493,7 @@ const MainMessage = ({
                                                               {formatDateToLocalDate(date)}
                                                           </div>
                                                       </div>
-                                                      {chatMessages.map((message) =>
+                                                      {chatMessages && chatMessages.length > 0 ? chatMessages.map((message) =>
                                                           message.sender == Sender ? (
                                                               <RightMessage
                                                                   Avatar={AvatarSender}
@@ -498,7 +511,7 @@ const MainMessage = ({
                                                                   key={message.sent_time}
                                                               />
                                                           )
-                                                      )}
+                                                      ) : ""}
                                                   </>
                                               ))}
                                     </div>
@@ -588,24 +601,24 @@ const MainMessage = ({
                                         </>
                                     )}
                                     {GroupChatter &&
-                                        GroupChatter[0] &&
-                                        GroupChatter[0].Users.map((user) => (
+                                        GroupChatter &&
+                                        GroupChatter?.map((user) => (
                                             <>
                                                 <div className='py-10 text-center text-sm pt-20'>
                                                     <img
-                                                        src={`${config.ServerApiImage}${user.Avatar}`}
+                                                        src={`${config.ServerApiImage}${user.avatar}`}
                                                         className='w-24 h-24 rounded-full mx-auto mb-3'
                                                         alt=''
                                                     />
                                                     <div className='mt-8'>
                                                         <div className='md:text-xl text-base font-medium text-black dark:text-white'></div>
                                                         <div className='text-gray-500 text-sm mt-1 dark:text-white/80'>
-                                                            {user.NicknameOrEmail}
+                                                            {user.nickname || user.email}
                                                         </div>
                                                     </div>
                                                     <div className='mt-5'>
                                                         <Link
-                                                            href={`/profile/${user.ID}`}
+                                                            href={`/profile/${user.user_id}`}
                                                             className='inline-block rounded-full px-4 py-1.5 text-sm font-semibold bg-secondery'
                                                         >
                                                             View profile

@@ -36,6 +36,7 @@ type ChatResponse struct {
 	MessagesPreview   []*models.MessagePreview            `json:"messagesPreview"`
 	Messages          map[string][]models.MessageResponse `json:"messages"`
 	Groups            []*models.GroupInfo                 `json:"groups"`
+	User              models.User
 }
 
 type Test struct {
@@ -62,6 +63,7 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 	to := r.URL.Query().Get("to")
 	fmt.Println(to)
 	toID := models.UserRepo.GetIDFromUsernameOrEmail(to)
+	var toTalk *models.User
 
 	// Check if it's a user
 	userExists, _ := models.UserRepo.UserExists(toID)
@@ -125,7 +127,7 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 			offset = 0
 		}
 		error = nil
-
+		toTalk, _ = models.UserRepo.GetUserByID(toID)
 		limit := 20
 		messages, _ = models.MessageRepo.GetMessagesBetweenUsers(user.UserID, toID, offset, limit)
 		if err != nil {
@@ -163,6 +165,7 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 		MessagesPreview:   messagesPreview,
 		Groups:            Groups,
 		Messages:          messages,
+		User:              *toTalk,
 	}
 
 	WriteJSON(w, http.StatusOK, chatResponse)

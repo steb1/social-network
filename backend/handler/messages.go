@@ -1,9 +1,11 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"server/models"
 	"strconv"
+	"strings"
 )
 
 func GetMessages(w http.ResponseWriter, r *http.Request) {
@@ -26,12 +28,33 @@ func GetMessages(w http.ResponseWriter, r *http.Request) {
 		}
 		sessionUserID, _ := strconv.Atoi(session.UserID)
 
-		username := r.URL.Query().Get("with")
+		username := strings.Split(r.URL.String(), "/")[3]
+		fmt.Println("c'est icoooo", username)
+		
+
 		userID := models.UserRepo.GetIDFromUsernameOrEmail(username)
+		intUsername, _ := strconv.Atoi(username)
+		var tabUser []models.User
+		
 		if userID <= 0 {
-			var apiError ApiError
-			apiError.Error = "The user you want to chat with doesn't exist..."
-			WriteJSON(w, http.StatusBadRequest, apiError)
+			fmt.Println("----------------------------------jjjjjj")
+			messages, err := models.GroupChatRepo.GetMessagesOfAGroup(intUsername, 20, 0)
+
+			if err != nil {
+				var apiError ApiError
+				fmt.Println("c'est ici")
+				apiError.Error = "The user you want to chat with doesn't exist..."
+				WriteJSON(w, http.StatusBadRequest, apiError)
+			}
+
+			AllUsersOfGroup, _ := models.MembershipRepo.GetAllUsersByGroupID(intUsername)
+			
+			result := make(map[string]interface{})
+
+			result["messages"] = messages
+			result["user"] = AllUsersOfGroup
+
+			WriteJSON(w, http.StatusOK, result)
 			return
 		}
 
@@ -51,6 +74,13 @@ func GetMessages(w http.ResponseWriter, r *http.Request) {
 		}
 
 		messages, error := models.MessageRepo.GetMessagesBetweenUsers(sessionUserID, userID, offset, limit)
+		result := make(map[string]interface{})
+
+
+		ToSend, _ :=  models.UserRepo.GetUserByID(userID)
+		tabUser = append(tabUser, *ToSend)
+		result["messages"] = messages
+		result["user"] = tabUser
 
 		if error != nil {
 			var apiError ApiError
@@ -59,6 +89,6 @@ func GetMessages(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		WriteJSON(w, http.StatusOK, messages)
+		WriteJSON(w, http.StatusOK, result)
 	}
 }
