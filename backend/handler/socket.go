@@ -310,6 +310,8 @@ func handleMessageForUser(message WebSocketMessage, userId int) {
 		handleGroupMessage(messagepattern, userId, AllUsersOfGroup, idGroup)
 	}
 
+	fmt.Println("--------------UserId", )
+
 	if userExists {
 		handleUserMessage(messagepattern, userId)
 	}
@@ -333,6 +335,8 @@ func handleGroupMessage(messagepattern MessagePattern, userId int, AllUsersOfGro
 
 func handleUserMessage(messagepattern MessagePattern, userId int) {
 	log.Println(" 🚀 ~ Message ~ ONE USER")
+	log.Println(" 🚀 ~ message pattern", models.UserRepo.GetIDFromUsernameOrEmail(messagepattern.Receiver))
+
 	sendMessageToUser(userId, messagepattern, models.UserRepo.GetIDFromUsernameOrEmail(messagepattern.Receiver), "chat", 0)
 }
 

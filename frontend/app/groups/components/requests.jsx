@@ -1,8 +1,6 @@
 import config from "@/config"; 
 import { fetchGroupDetail } from "./groupDetail";
 
-
-
 export const Requests= ( { request, setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId, setIsowner, setMembers, setInvites }) => {
 
   async function handleRequest (e, option, requesterId) {

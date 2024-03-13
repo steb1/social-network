@@ -1,12 +1,59 @@
 import React from "react";
-import Link from "next/link";
 import config from "@/config";
 
-const SideBarPreviewChat = ({ PrenomNom, avatar, To, Time, Message }) => {
+const SideBarPreviewChat = ({ PrenomNom, avatar, To, Time, Message, setMessages, setChatter, setGroupChatter }) => {
+
+    const LoadMessage = async () => {
+        let  token = document.cookie.split("=")[1]
+            if ( !token) {
+                return
+            }               
+
+            if (token) {
+                // Use the token as needed
+                console.log('Token:', token);
+            } else {
+                console.log('Token not found in cookies');
+            }
+
+            try {
+                const response = await fetch(config.serverApiUrl + `messages/${To}`, {
+                method: "GET",
+                headers: {
+                    'Authorization': token,
+                },
+                credentials: "include",
+                
+                });
+            
+                if (response.ok) {
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.includes("application/json")) {
+                    const data = await response.json();
+                    console.log(data, "-------datam-----------");
+                    console.log(To , "-------to-----------");
+                    setMessages(data.messages)
+                    setChatter(data.user)
+                    setGroupChatter("")
+
+                } else {
+                    console.error("Response is not in JSON format");
+                }
+                } else {
+
+                    
+                const errorResponse = await response.json();
+                const errorMessage = errorResponse.error || "An error occurred.";
+                console.error("No Group retrieved:", errorMessage);
+                }
+            } catch (error) {
+                console.error("Error while fetching groups:", error);
+            }
+    }
     return (
-        <Link
-            href={`/messages/${To}`}
-            className='relative flex items-center gap-4 p-2 duration-200 rounded-xl hover:bg-slate-800'
+        <div
+            onClick={LoadMessage}
+            className='relative flex items-center cursor-pointer gap-4 p-2 duration-200 rounded-xl hover:bg-slate-800'
             prefetch={false}
         >
             <div className='relative w-14 h-14 shrink-0'>
@@ -28,7 +75,7 @@ const SideBarPreviewChat = ({ PrenomNom, avatar, To, Time, Message }) => {
                     {IfMessage(Message)}
                 </div>
             </div>
-        </Link>
+        </div>
     );
 };
 

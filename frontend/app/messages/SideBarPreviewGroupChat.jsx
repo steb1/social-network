@@ -1,15 +1,64 @@
 import React from "react";
-import Link from "next/link";
 import config from "@/config";
 
-const SideBarPreviewGroupChat = ({ ID, GroupName, Users, Message, Time }) => {
-    const displayedUsers = Users.slice(0, 3);
-    const remainingUsersCount = Users.length - displayedUsers.length;
+const SideBarPreviewGroupChat = ({ ID, GroupName, Users, Message, Time, setMessages, setChatter, setGroupChatter }) => {
+    const displayedUsers = Users?.slice(0, 3);
+    const remainingUsersCount = Users?.length - displayedUsers.length;
+
+    const LoadMessage = async () => {
+        let  token = document.cookie.split("=")[1]
+            if ( !token) {
+                return
+            }    
+            const formData = new FormData();
+            formData.append("toChatId", ID);
+           
+
+            if (token) {
+                // Use the token as needed
+                console.log('Token:', token);
+            } else {
+                console.log('Token not found in cookies');
+            }
+
+            try {
+                const response = await fetch(config.serverApiUrl + `messages/${ID}`, {
+                method: "GET",
+                headers: {
+                    'Authorization': token,
+                },
+                credentials: "include",
+                
+                });
+            
+                if (response.ok) {
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.includes("application/json")) {
+                    const data = await response.json();
+                  
+                    setMessages(data.messages)
+                    setChatter("")
+                    setGroupChatter(data.user)
+
+                    console.log(data);
+                } else {
+                    console.error("Response is not in JSON format");
+                }
+                } else {
+
+                const errorResponse = await response.json();
+                const errorMessage = errorResponse.error || "An error occurred.";
+                console.error("No Group retrieved:", errorMessage);
+                }
+            } catch (error) {
+                console.error("Error while fetching groups:", error);
+            }
+    }
 
     return (
-        <Link
-            href={`/messages/${ID}`}
-            className='relative flex items-center gap-4 p-2 duration-200 rounded-xl dark:hover:white-400'
+        <div
+            onClick={ LoadMessage }
+            className='relative flex items-center gap-4 p-2 duration-200 cursor-pointer rounded-xl dark:hover:white-400'
             prefetch={false}
         >
             <div className='avatar-group -space-x-6 rtl:space-x-reverse'>
@@ -40,7 +89,7 @@ const SideBarPreviewGroupChat = ({ ID, GroupName, Users, Message, Time }) => {
                     {IfMessage(Message)}
                 </div>
             </div>
-        </Link>
+        </div>
     );
 };
 

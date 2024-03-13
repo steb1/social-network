@@ -22,6 +22,7 @@ type MessageResponse struct {
 	Content  string `json:"content"`
 	SentTime string `json:"sent_time"`
 	Avatar   string `json:"avatar"`
+	User     []User
 }
 
 type MessagePreview struct {
@@ -207,6 +208,8 @@ func (mr *MessageRepository) GetMessagesBetweenUsers(idUser1, idUser2, offset, l
 	for date, messages := range result {
 		result[date] = reverseMessages(messages)
 	}
+
+	
 	return result, nil
 }
 

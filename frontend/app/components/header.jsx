@@ -9,19 +9,11 @@ import { CustomAlert } from "./CustomAlert";
 const Header = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState(""); 
-  let { sendJsonMessage, lastJsonMessage, readyState, onClose } = useWebSocketContext();
+  let { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
   // ---------------------------------- INIT SOCKET ----------------------------------------------
 
   useEffect(() => {
-
-    const handleWebSocketClose = (event) => {
-      // Handle WebSocket closure event
-      console.log('WebSocket closed with code:', event.code, 'and reason:', event.reason);
-      // You can add your custom logic here, such as initiating reconnection or showing an alert
-    };
-
     // Attach the onClose callback
-    
     // Check if a new JSON message has been received
     switch (lastJsonMessage?.command) {
       case "handleGroupRequest":
@@ -57,14 +49,7 @@ const Header = () => {
         );
     }
 
-    onClose(handleWebSocketClose);
-
-    return () => {
-      // Cleanup: Remove the onClose callback when the component unmounts
-      onClose(null);
-    };
-
-  }, [lastJsonMessage, onClose]);
+  }, [lastJsonMessage]);
 
     useEffect(() => {
         let name = document.getElementById("GroupName");

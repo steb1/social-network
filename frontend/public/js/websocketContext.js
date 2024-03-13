@@ -11,13 +11,12 @@ export const useWebSocketContext = () => useContext(WebSocketContext);
 export const WebSocketProvider = ({ children }) => {
     const options = {
         // Additional options can be specified here
-        shouldRecoonect: true,
-    reconnectInterval: 2000, // Set the reconnect interval to 2 seconds
+        shouldReconnect: true,
         share: true,
         retryOnError: true,
         reconnectInterval: 3000,
         reconnectAttempts: 10,
-    };
+      };
 
     const webSocket = useWebSocket(socketUrl, options);
 
