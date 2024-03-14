@@ -1,56 +1,63 @@
 import React from "react";
 import config from "@/config";
 
-const SideBarPreviewChat = ({ PrenomNom, avatar, To, Time, Message, setMessages, setChatter, setGroupChatter }) => {
-
+const SideBarPreviewChat = ({
+    PrenomNom,
+    avatar,
+    To,
+    Time,
+    Message,
+    setMessages,
+    setChatter,
+    setGroupChatter,
+    cmsRef,
+}) => {
     const LoadMessage = async () => {
-        let  token = document.cookie.split("=")[1]
-            if ( !token) {
-                return
-            }               
+        let token = document.cookie.split("=")[1];
+        if (!token) {
+            return;
+        }
 
-            if (token) {
-                // Use the token as needed
-                console.log('Token:', token);
-            } else {
-                console.log('Token not found in cookies');
-            }
+        if (token) {
+            // Use the token as needed
+            console.log("Token:", token);
+        } else {
+            console.log("Token not found in cookies");
+        }
 
-            try {
-                const response = await fetch(config.serverApiUrl + `messages/${To}`, {
+        try {
+            const response = await fetch(config.serverApiUrl + `messages/${To}`, {
                 method: "GET",
                 headers: {
-                    'Authorization': token,
+                    Authorization: token,
                 },
                 credentials: "include",
-                
-                });
-            
-                if (response.ok) {
+            });
+
+            if (response.ok) {
                 const contentType = response.headers.get("content-type");
                 if (contentType && contentType.includes("application/json")) {
                     const data = await response.json();
                     console.log(data, "-------datam-----------");
-                    console.log(To , "-------to-----------");
-                    setMessages("")
-                    setMessages(data.messages)
-                    setChatter(data.user)
-                    setGroupChatter("")
+                    console.log(To, "-------to-----------");
+                    setMessages("");
+                    setMessages(data.messages);
+                    setChatter(data.user);
+                    setGroupChatter("");
 
+                    cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
                 } else {
                     console.error("Response is not in JSON format");
                 }
-                } else {
-
-
+            } else {
                 const errorResponse = await response.json();
                 const errorMessage = errorResponse.error || "An error occurred.";
                 console.error("No Group retrieved:", errorMessage);
-                }
-            } catch (error) {
-                console.error("Error while fetching groups:", error);
             }
-    }
+        } catch (error) {
+            console.error("Error while fetching groups:", error);
+        }
+    };
     return (
         <div
             onClick={LoadMessage}

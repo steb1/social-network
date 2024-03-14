@@ -13,7 +13,7 @@ import config from "@/config.js";
 const MainProfile = ({ props, Visibility, FollowStatus }) => {
     const cookieStore = cookies();
     return (
-        <main id='site__main' className='2xl:ml-[--w-side]  xl:ml-[--w-side-sm] p-2.5 h-0 mt-0'>
+        <div className='2xl:ml-[--w-side]  xl:ml-[--w-side-sm] p-2.5 h-0 mt-0'>
             <div className='max-w-[1065px] mx-auto max-lg:-m-2.5'>
                 <div className='bg-white shadow lg:rounded-b-2xl lg:-mt-10 dark:bg-dark2'>
                     <div className='relative overflow-hidden w-full lg:h-72 h-48'>
@@ -159,7 +159,7 @@ const MainProfile = ({ props, Visibility, FollowStatus }) => {
                     ) : null}
                 </div>
             </div>
-        </main>
+        </div>
     );
 };
 

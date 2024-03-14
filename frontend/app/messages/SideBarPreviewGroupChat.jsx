@@ -11,6 +11,7 @@ const SideBarPreviewGroupChat = ({
     setChatter,
     setGroupChatter,
     setGroup,
+    cmsRef,
 }) => {
     const displayedUsers = Users?.slice(0, 3);
     const remainingUsersCount = Users?.length - displayedUsers.length;
@@ -50,9 +51,8 @@ const SideBarPreviewGroupChat = ({
                     setGroupChatter(data.user);
                     setGroup("");
                     setGroup(data.group);
-                    cms = document.getElementById("cms");
-                    console.log(cms);
 
+                    cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
                     console.log("---GroupChatter----", data.group.title);
                 } else {
                     console.error("Response is not in JSON format");

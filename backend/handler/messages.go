@@ -30,15 +30,14 @@ func GetMessages(w http.ResponseWriter, r *http.Request) {
 
 		username := strings.Split(r.URL.String(), "/")[3]
 		fmt.Println("c'est icoooo", username)
-		
 
 		userID := models.UserRepo.GetIDFromUsernameOrEmail(username)
 		intUsername, _ := strconv.Atoi(username)
 		var tabUser []models.User
-		
+
 		if userID <= 0 {
 			fmt.Println("----------------------------------jjjjjj")
-			messages, err := models.GroupChatRepo.GetMessagesOfAGroup(intUsername, 20, 0)
+			messages, err := models.GroupChatRepo.GetMessagesOfAGroup(intUsername)
 
 			if err != nil {
 				var apiError ApiError
@@ -49,7 +48,7 @@ func GetMessages(w http.ResponseWriter, r *http.Request) {
 
 			AllUsersOfGroup, _ := models.MembershipRepo.GetAllUsersByGroupID(intUsername)
 			group, _ := models.GroupRepo.GetGroup(intUsername)
-			
+
 			result := make(map[string]interface{})
 
 			result["messages"] = messages
@@ -60,26 +59,25 @@ func GetMessages(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		offset, error := strconv.Atoi(r.URL.Query().Get("offset"))
-		if error != nil {
-			offset = 0
-		}
-		error = nil
+		// offset, error := strconv.Atoi(r.URL.Query().Get("offset"))
+		// if error != nil {
+		// 	offset = 0
+		// }
+		// error = nil
 
-		limit := 20
+		// limit := 20
 
-		if error != nil {
-			var apiError ApiError
-			apiError.Error = error.Error() + " Frooooom offline"
-			WriteJSON(w, http.StatusBadRequest, apiError)
-			return
-		}
+		// if error != nil {
+		// 	var apiError ApiError
+		// 	apiError.Error = error.Error() + " Frooooom offline"
+		// 	WriteJSON(w, http.StatusBadRequest, apiError)
+		// 	return
+		// }
 
-		messages, error := models.MessageRepo.GetMessagesBetweenUsers(sessionUserID, userID, offset, limit)
+		messages, error := models.MessageRepo.GetMessagesBetweenUsers(sessionUserID, userID)
 		result := make(map[string]interface{})
 
-
-		ToSend, _ :=  models.UserRepo.GetUserByID(userID)
+		ToSend, _ := models.UserRepo.GetUserByID(userID)
 		tabUser = append(tabUser, *ToSend)
 		result["messages"] = messages
 		result["user"] = tabUser
