@@ -8,24 +8,23 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import ReactDOM from "react-dom";
 import EmojiPicker from "emoji-picker-react";
-import TypingIndicator from "../messages/TypingIndicator";
 import SideBarPreviewGroupChat from "../messages/SideBarPreviewGroupChat";
 import config from "@/config";
 import { useWebSocketContext } from "@/public/js/websocketContext";
 import { fetchMessages } from "./fetchMessages";
 
-const MainMessage = ({to}) => {
+const MainMessage = ({ to }) => {
     let [messages, setMessages] = useState([]);
     let [messagesPreview, setMessagesPreviews] = useState([]);
     let [Groups, setGroups] = useState([]);
     let [Sender, setSender] = useState("");
-    let [AvatarSender, setAvatarsender] = useState('');
+    let [AvatarSender, setAvatarsender] = useState("");
     let [AbletoTalk, setAbletotalk] = useState([]);
-    let [Chatter, setChatter] = useState([])
-    let [GroupChatter, setGroupChatter] = useState([])
-    let [currentChat, setCurrentchat] = useState("")
-    let [group, setGroup] = useState()
-   
+    let [Chatter, setChatter] = useState([]);
+    let [GroupChatter, setGroupChatter] = useState([]);
+    let [currentChat, setCurrentchat] = useState("");
+    let [group, setGroup] = useState();
+
     const [messageInput, setMessageInput] = useState("");
     const cmsRef = useRef(null);
 
@@ -33,8 +32,8 @@ const MainMessage = ({to}) => {
     let totalMessageCount = 20;
     // ---------------------------------- INIT SOCKET ----------------------------------------------
     useEffect(() => {
-        fetchMessages( 
-            to={to},
+        fetchMessages(
+            (to = { to }),
             setMessages,
             setMessagesPreviews,
             setGroups,
@@ -42,8 +41,8 @@ const MainMessage = ({to}) => {
             setAvatarsender,
             setAbletotalk,
             setChatter,
-            setGroupChatter,
-        )
+            setGroupChatter
+        );
 
         // Check if a new JSON message has been received
         console.log(lastJsonMessage, "---------MainMessage-------not");
@@ -51,13 +50,14 @@ const MainMessage = ({to}) => {
             case "messageforuser":
                 console.log("------------message----------", lastJsonMessage);
                 if (
+                    Chatter &&
+                    Chatter[0] &&
                     lastJsonMessage.body.sender !== Chatter[0]?.nickname &&
                     lastJsonMessage.body.sender !== Chatter[0]?.email
                 ) {
                     return;
                 }
 
-                
                 cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
                 sendMessageWeb("messagepreview", "");
                 break;
@@ -128,7 +128,14 @@ const MainMessage = ({to}) => {
             return;
         }
 
-        console.log(Chatter[0]?.nickname , "---------", Chatter[0]?.email , "---------", String(GroupChatter.GroupID), "totttttttttttttttt");
+        console.log(
+            Chatter[0]?.nickname,
+            "---------",
+            Chatter[0]?.email,
+            "---------",
+            String(GroupChatter.GroupID),
+            "totttttttttttttttt"
+        );
 
         const message = {
             sender: Sender,
@@ -143,39 +150,10 @@ const MainMessage = ({to}) => {
         // TODO: Handle the response from the server before appending the message if the message succesfully sent to the chatter before append
 
         const cms = document.getElementById("cms");
-        
+
         cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
     };
     let isRendered = false;
-
-    const RenderType = () => {
-        if (!isRendered) {
-            const cms = document.getElementById("cms");
-            cms &&
-                ReactDOM.render(
-                    ReactDOM.createPortal(<TypingIndicator Avatar={Chatter[0].avatar} />, cms),
-                    document.createElement("div")
-                );
-            cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
-            isRendered = true;
-        }
-    };
-    const typeinprogress = async (Sender, Chatter, GroupChatter) => {
-        const message = {
-            sender: Sender,
-            receiver: Chatter[0]?.nickname || Chatter[0]?.email || String(GroupChatter[0]?.GroupID),
-        };
-
-        sendMessageWeb("typeinprogress", message);
-    };
-
-    const nontypeinprogress = async (Sender, Chatter, GroupChatter) => {
-        const message = {
-            sender: Sender,
-            receiver: Chatter[0]?.nickname || Chatter[0]?.email || group?.group_id,
-        };
-        sendMessageWeb("nontypeinprogress", message);
-    };
 
     const handleSendMessageClick = () => {
         handleSendMessage(messageInput, Sender, Chatter, AvatarSender, cmsRef, GroupChatter);
@@ -186,8 +164,8 @@ const MainMessage = ({to}) => {
         setMessageInput((prevMessage) => prevMessage + emojiData.emoji);
     };
 
-    const debounceNoTyping = debounce(() => nontypeinprogress(Sender, Chatter, GroupChatter), 8000);
-    const throttleTyping = throttle(() => typeinprogress(Sender, Chatter, GroupChatter), 3000);
+    // const debounceNoTyping = debounce(() => nontypeinprogress(Sender, Chatter, GroupChatter), 8000);
+    // const throttleTyping = throttle(() => typeinprogress(Sender, Chatter, GroupChatter), 3000);
 
     async function getOldMessages() {
         let token = document.cookie.split("=")[1];
@@ -368,7 +346,9 @@ const MainMessage = ({to}) => {
                                                 {" "}
                                                 {Chatter && Chatter[0]
                                                     ? `${Chatter[0].first_name} ${Chatter[0].last_name}`
-                                                    : GroupChatter ? group && group?.title : "Group"}
+                                                    : GroupChatter
+                                                      ? group && group?.title
+                                                      : "Group"}
                                             </div>
                                             <div className='text-xs text-green-500 font-semibold'> Online</div>
                                         </div>
@@ -414,7 +394,9 @@ const MainMessage = ({to}) => {
                                                 {" "}
                                                 {Chatter && Chatter.length
                                                     ? `${Chatter[0].first_name} ${Chatter[0].last_name}`
-                                                    : GroupChatter && group ?  group?.title : "Nom user" }
+                                                    : GroupChatter && group
+                                                      ? group?.title
+                                                      : "Nom user"}
                                             </div>
                                             <div className='text-gray-500 text-sm dark:text-white/80'>
                                                 {Chatter && Chatter[0]
@@ -478,25 +460,27 @@ const MainMessage = ({to}) => {
                                                               {formatDateToLocalDate(date)}
                                                           </div>
                                                       </div>
-                                                      {chatMessages && chatMessages.length > 0 ? chatMessages.map((message) =>
-                                                          message.sender == Sender ? (
-                                                              <RightMessage
-                                                                  Avatar={AvatarSender}
-                                                                  Content={message.content}
-                                                                  Sender={"(You)"}
-                                                                  Time={message.sent_time}
-                                                                  key={message.sent_time}
-                                                              />
-                                                          ) : (
-                                                              <LeftMessage
-                                                                  Avatar={message.avatar}
-                                                                  Content={message.content}
-                                                                  Sender={message.sender}
-                                                                  Time={message.sent_time}
-                                                                  key={message.sent_time}
-                                                              />
-                                                          )
-                                                      ) : ""}
+                                                      {chatMessages && chatMessages.length > 0
+                                                          ? chatMessages.map((message) =>
+                                                                message.sender == Sender ? (
+                                                                    <RightMessage
+                                                                        Avatar={AvatarSender}
+                                                                        Content={message.content}
+                                                                        Sender={"(You)"}
+                                                                        Time={message.sent_time}
+                                                                        key={message.sent_time}
+                                                                    />
+                                                                ) : (
+                                                                    <LeftMessage
+                                                                        Avatar={message.avatar}
+                                                                        Content={message.content}
+                                                                        Sender={message.sender}
+                                                                        Time={message.sent_time}
+                                                                        key={message.sent_time}
+                                                                    />
+                                                                )
+                                                            )
+                                                          : ""}
                                                   </>
                                               ))}
                                     </div>
@@ -529,11 +513,8 @@ const MainMessage = ({to}) => {
                                                 if (e.key === "Enter" && !e.shiftKey) {
                                                     e.preventDefault(); // Prevents the default behavior of a new line on Enter
                                                     handleSendMessageClick();
-                                                } else {
-                                                    throttleTyping();
                                                 }
                                             }}
-                                            onKeyUp={debounceNoTyping}
                                             onChange={(e) => setMessageInput(e.target.value)} //  update la valeur du champ de message
                                             className='w-full resize-none bg-secondery rounded-full px-4 p-2 dark:bg-slate-600'
                                         ></textarea>

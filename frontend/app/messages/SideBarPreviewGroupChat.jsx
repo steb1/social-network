@@ -1,66 +1,75 @@
 import React from "react";
 import config from "@/config";
 
-const SideBarPreviewGroupChat = ({ ID, GroupName, Users, Message, Time, setMessages, setChatter, setGroupChatter, setGroup }) => {
+const SideBarPreviewGroupChat = ({
+    ID,
+    GroupName,
+    Users,
+    Message,
+    Time,
+    setMessages,
+    setChatter,
+    setGroupChatter,
+    setGroup,
+}) => {
     const displayedUsers = Users?.slice(0, 3);
     const remainingUsersCount = Users?.length - displayedUsers.length;
 
     const LoadMessage = async () => {
-        let  token = document.cookie.split("=")[1]
-            if ( !token) {
-                return
-            }    
-            const formData = new FormData();
-            formData.append("toChatId", ID);
-           
+        let token = document.cookie.split("=")[1];
+        if (!token) {
+            return;
+        }
+        const formData = new FormData();
+        formData.append("toChatId", ID);
 
-            if (token) {
-                // Use the token as needed
-                console.log('Token:', token);
-            } else {
-                console.log('Token not found in cookies');
-            }
+        if (token) {
+            // Use the token as needed
+            console.log("Token:", token);
+        } else {
+            console.log("Token not found in cookies");
+        }
 
-            try {
-                const response = await fetch(config.serverApiUrl + `messages/${ID}`, {
+        try {
+            const response = await fetch(config.serverApiUrl + `messages/${ID}`, {
                 method: "GET",
                 headers: {
-                    'Authorization': token,
+                    Authorization: token,
                 },
                 credentials: "include",
-                
-                });
-            
-                if (response.ok) {
+            });
+
+            if (response.ok) {
                 const contentType = response.headers.get("content-type");
                 if (contentType && contentType.includes("application/json")) {
                     const data = await response.json();
-                  
-                    setMessages("")
-                    setMessages(data.messages)
-                    setChatter("")
-                    setGroupChatter(data.user)
-                    setGroup("")
-                    setGroup(data.group)
 
-                    console.log('---GroupChatter----', data.group.title)
+                    setMessages("");
+                    setMessages(data.messages);
+                    setChatter("");
+                    setGroupChatter(data.user);
+                    setGroup("");
+                    setGroup(data.group);
+                    cms = document.getElementById("cms");
+                    console.log(cms);
+
+                    console.log("---GroupChatter----", data.group.title);
                 } else {
                     console.error("Response is not in JSON format");
                 }
-                } else {
-
+            } else {
                 const errorResponse = await response.json();
                 const errorMessage = errorResponse.error || "An error occurred.";
                 console.error("No Group retrieved:", errorMessage);
-                }
-            } catch (error) {
-                console.error("Error while fetching groups:", error);
             }
-    }
+        } catch (error) {
+            console.error("Error while fetching groups:", error);
+        }
+    };
 
     return (
         <div
-            onClick={ LoadMessage }
+            onClick={LoadMessage}
             className='relative flex items-center gap-4 p-2 duration-200 cursor-pointer rounded-xl dark:hover:white-400'
             prefetch={false}
         >
