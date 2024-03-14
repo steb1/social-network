@@ -32,6 +32,7 @@ const SideBarPreviewChat = ({ PrenomNom, avatar, To, Time, Message, setMessages,
                     const data = await response.json();
                     console.log(data, "-------datam-----------");
                     console.log(To , "-------to-----------");
+                    setMessages("")
                     setMessages(data.messages)
                     setChatter(data.user)
                     setGroupChatter("")
@@ -41,7 +42,7 @@ const SideBarPreviewChat = ({ PrenomNom, avatar, To, Time, Message, setMessages,
                 }
                 } else {
 
-                    
+
                 const errorResponse = await response.json();
                 const errorMessage = errorResponse.error || "An error occurred.";
                 console.error("No Group retrieved:", errorMessage);

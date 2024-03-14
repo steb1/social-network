@@ -36,11 +36,10 @@ const SideBarPreviewGroupChat = ({ ID, GroupName, Users, Message, Time, setMessa
                 if (contentType && contentType.includes("application/json")) {
                     const data = await response.json();
                   
+                    setMessages("")
                     setMessages(data.messages)
                     setChatter("")
                     setGroupChatter(data.user)
-
-                    console.log(data);
                 } else {
                     console.error("Response is not in JSON format");
                 }

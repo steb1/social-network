@@ -74,7 +74,7 @@ func (mr *MessageRepository) GetMessage(messageID int) (*Message, error) {
 	return &message, nil
 }
 
-func (mr *MessageRepository) GetMessagePreviewsForAnUser(userID int) ([]*MessagePreview, error) {
+func (mr *MessageRepository) 	GetMessagePreviewsForAnUser(userID int) ([]*MessagePreview, error) {
 	query := `
 	-- Query for messages between users
 SELECT
