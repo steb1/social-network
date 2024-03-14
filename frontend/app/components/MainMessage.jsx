@@ -24,6 +24,7 @@ const MainMessage = ({to}) => {
     let [Chatter, setChatter] = useState([])
     let [GroupChatter, setGroupChatter] = useState([])
     let [currentChat, setCurrentchat] = useState("")
+    let [group, setGroup] = useState()
    
     const [messageInput, setMessageInput] = useState("");
     const cmsRef = useRef(null);
@@ -56,19 +57,7 @@ const MainMessage = ({to}) => {
                     return;
                 }
 
-                cms &&
-                    ReactDOM.render(
-                        ReactDOM.createPortal(
-                            <LeftMessage
-                                Avatar={Chatter[0].avatar}
-                                Content={lastJsonMessage.body.text}
-                                Sender={lastJsonMessage.body.sender}
-                                Time={Date.now()}
-                            />,
-                            cms
-                        ),
-                        document.createElement("div")
-                    );
+                
                 cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
                 sendMessageWeb("messagepreview", "");
                 break;
@@ -139,9 +128,11 @@ const MainMessage = ({to}) => {
             return;
         }
 
+        console.log(Chatter[0]?.nickname , "---------", Chatter[0]?.email , "---------", String(GroupChatter.GroupID), "totttttttttttttttt");
+
         const message = {
             sender: Sender,
-            receiver: Chatter[0]?.nickname || Chatter[0]?.email || String(GroupChatter.GroupID),
+            receiver: Chatter[0]?.nickname || Chatter[0]?.email || String(group.group_id),
             text: messageInput,
             time: Date.now(),
         };
@@ -181,7 +172,7 @@ const MainMessage = ({to}) => {
     const nontypeinprogress = async (Sender, Chatter, GroupChatter) => {
         const message = {
             sender: Sender,
-            receiver: Chatter[0]?.nickname || Chatter[0]?.email || String(GroupChatter[0]?.GroupID),
+            receiver: Chatter[0]?.nickname || Chatter[0]?.email || group?.group_id,
         };
         sendMessageWeb("nontypeinprogress", message);
     };
@@ -263,6 +254,7 @@ const MainMessage = ({to}) => {
                                                     setMessages={setMessages}
                                                     setChatter={setChatter}
                                                     setGroupChatter={setGroupChatter}
+                                                    setGroup={setGroup}
                                                 />
                                             );
                                         } else {
@@ -376,7 +368,7 @@ const MainMessage = ({to}) => {
                                                 {" "}
                                                 {Chatter && Chatter[0]
                                                     ? `${Chatter[0].first_name} ${Chatter[0].last_name}`
-                                                    : GroupChatter && GroupChatter[0] && GroupChatter[0].GroupName}
+                                                    : GroupChatter ? group && group?.title : "Group"}
                                             </div>
                                             <div className='text-xs text-green-500 font-semibold'> Online</div>
                                         </div>
@@ -422,7 +414,7 @@ const MainMessage = ({to}) => {
                                                 {" "}
                                                 {Chatter && Chatter.length
                                                     ? `${Chatter[0].first_name} ${Chatter[0].last_name}`
-                                                    : GroupChatter && GroupChatter[0] && GroupChatter[0].GroupName ?  GroupChatter && GroupChatter[0] && GroupChatter[0].GroupName : "Nom user" }
+                                                    : GroupChatter && group ?  group?.title : "Nom user" }
                                             </div>
                                             <div className='text-gray-500 text-sm dark:text-white/80'>
                                                 {Chatter && Chatter[0]

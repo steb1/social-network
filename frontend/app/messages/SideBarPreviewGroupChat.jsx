@@ -1,7 +1,7 @@
 import React from "react";
 import config from "@/config";
 
-const SideBarPreviewGroupChat = ({ ID, GroupName, Users, Message, Time, setMessages, setChatter, setGroupChatter }) => {
+const SideBarPreviewGroupChat = ({ ID, GroupName, Users, Message, Time, setMessages, setChatter, setGroupChatter, setGroup }) => {
     const displayedUsers = Users?.slice(0, 3);
     const remainingUsersCount = Users?.length - displayedUsers.length;
 
@@ -40,6 +40,10 @@ const SideBarPreviewGroupChat = ({ ID, GroupName, Users, Message, Time, setMessa
                     setMessages(data.messages)
                     setChatter("")
                     setGroupChatter(data.user)
+                    setGroup("")
+                    setGroup(data.group)
+
+                    console.log('---GroupChatter----', data.group.title)
                 } else {
                     console.error("Response is not in JSON format");
                 }

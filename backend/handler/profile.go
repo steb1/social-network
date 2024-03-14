@@ -143,6 +143,9 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 		error = nil
 
 		limit := 20
+
+		
+
 		messages, err = models.GroupChatRepo.GetMessagesOfAGroup(mess[0].UserOrGroupID, limit, offset)
 		if err != nil {
 			log.Println("��� ~ func GetMessagesOfAGroup ~ err:", err)
