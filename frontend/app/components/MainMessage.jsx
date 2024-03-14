@@ -60,6 +60,8 @@ const MainMessage = ({ to }) => {
                     return;
                 }
 
+                
+
                 cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
                 sendMessageWeb("messagepreview", "");
                 break;
