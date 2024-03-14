@@ -32,6 +32,10 @@ const MainMessage = ({ to }) => {
     let totalMessageCount = 20;
     // ---------------------------------- INIT SOCKET ----------------------------------------------
     useEffect(() => {
+        cmsRef.current.addEventListener("scroll", () => {
+            console.log("Scrolling....");
+        });
+
         fetchMessages(
             (to = { to }),
             setMessages,
@@ -39,9 +43,7 @@ const MainMessage = ({ to }) => {
             setGroups,
             setSender,
             setAvatarsender,
-            setAbletotalk,
-            setChatter,
-            setGroupChatter
+            setAbletotalk
         );
 
         // Check if a new JSON message has been received
@@ -62,9 +64,11 @@ const MainMessage = ({ to }) => {
                 sendMessageWeb("messagepreview", "");
                 break;
             case "messageforgroup":
-                const senderInGroup =
-                    GroupChatter[0] &&
-                    GroupChatter[0]?.Users.find((user) => user?.NicknameOrEmail === lastJsonMessage.body.sender);
+                console.log("------------messageFORGROUPPP----------", lastJsonMessage);
+                console.log("GROUPE CHATTEEER", GroupChatter);
+                console.log("GROUPPPP", group);
+                const senderInGroup = lastJsonMessage.receiver == group.group_id;
+                console.log("SenderIngroup:", senderInGroup);
 
                 if (!senderInGroup) {
                     return;
@@ -85,21 +89,6 @@ const MainMessage = ({ to }) => {
                     );
                 cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
                 sendMessageWeb("messagepreview", "");
-                break;
-                if (
-                    lastJsonMessage.body.sender !== Chatter[0]?.nickname &&
-                    lastJsonMessage.body.sender !== Chatter[0]?.email
-                ) {
-                    return;
-                }
-
-                if (isRendered) {
-                    const indicatorElement = document.getElementById("indicator");
-                    if (indicatorElement) {
-                        indicatorElement.remove();
-                        isRendered = false;
-                    }
-                }
                 break;
             case "handleGroupRequest":
                 console.log("handleGroupRequest");
@@ -139,7 +128,7 @@ const MainMessage = ({ to }) => {
 
         const message = {
             sender: Sender,
-            receiver: Chatter[0]?.nickname || Chatter[0]?.email || String(group.group_id),
+            receiver: Chatter[0]?.nickname || Chatter[0]?.email || String(group?.group_id),
             text: messageInput,
             time: Date.now(),
         };
@@ -148,8 +137,6 @@ const MainMessage = ({ to }) => {
         sendMessageWeb("messagepreview", "");
 
         // TODO: Handle the response from the server before appending the message if the message succesfully sent to the chatter before append
-
-        const cms = document.getElementById("cms");
 
         cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
     };
@@ -184,24 +171,8 @@ const MainMessage = ({ to }) => {
         }
     }
 
-    useEffect(() => {
-        cmsRef.current.scrollIntoView({ behavior: "instant", block: "end" });
-        const cms = document.getElementById("cms");
-        cms.addEventListener("scroll", (event) => {
-            const now = new Date().getTime();
-            const delay = 2000; // Adjust the delay as needed
-            if (now - lastScrollTime >= delay && chatDiv.scrollTop === 0) {
-                this.getOldMessages();
-                lastScrollTime = now;
-            }
-        });
-    }, []);
-
     return (
-        <main
-            id='site__main'
-            className='2xl:ml-[--w-side]  xl:ml-[--w-side-sm] p-2.5 h-[calc(100vh-var(--m-top))] mt-[--m-top]'
-        >
+        <div className='2xl:ml-[--w-side]  xl:ml-[--w-side-sm] p-2.5 h-[calc(100vh-var(--m-top))] mt-[--m-top]'>
             <div className='relative overflow-hidden border -m-2.5 dark:border-slate-700'>
                 <div className='flex bg-white dark:bg-dark2'>
                     <div className='md:w-[360px] relative border-r dark:border-slate-700'>
@@ -220,7 +191,7 @@ const MainMessage = ({ to }) => {
                                     messagesPreview.map((user) => {
                                         if (user.genre === "group") {
                                             const groupToFetch = Groups.find((group) => group.GroupID == user.nickname);
-                                            const usersInGroup = groupToFetch.Users;
+                                            const usersInGroup = groupToFetch?.Users;
                                             return (
                                                 <SideBarPreviewGroupChat
                                                     key={user.nickname}
@@ -233,6 +204,7 @@ const MainMessage = ({ to }) => {
                                                     setChatter={setChatter}
                                                     setGroupChatter={setGroupChatter}
                                                     setGroup={setGroup}
+                                                    cmsRef={cmsRef}
                                                 />
                                             );
                                         } else {
@@ -247,6 +219,7 @@ const MainMessage = ({ to }) => {
                                                     setMessages={setMessages}
                                                     setChatter={setChatter}
                                                     setGroupChatter={setGroupChatter}
+                                                    cmsRef={cmsRef}
                                                 />
                                             );
                                         }
@@ -613,7 +586,7 @@ const MainMessage = ({ to }) => {
                     )}
                 </div>
             </div>
-        </main>
+        </div>
     );
 };
 

@@ -74,7 +74,7 @@ func (mr *MessageRepository) GetMessage(messageID int) (*Message, error) {
 	return &message, nil
 }
 
-func (mr *MessageRepository) 	GetMessagePreviewsForAnUser(userID int) ([]*MessagePreview, error) {
+func (mr *MessageRepository) GetMessagePreviewsForAnUser(userID int) ([]*MessagePreview, error) {
 	query := `
 	-- Query for messages between users
 SELECT
@@ -175,7 +175,7 @@ ORDER BY
 	return messages, nil
 }
 
-func (mr *MessageRepository) GetMessagesBetweenUsers(idUser1, idUser2, offset, limit int) (map[string][]MessageResponse, error) {
+func (mr *MessageRepository) GetMessagesBetweenUsers(idUser1, idUser2 int) (map[string][]MessageResponse, error) {
 	result := make(map[string][]MessageResponse)
 
 	rows, err := db.Query(`SELECT  strftime('%Y-%m-%d', sent_time) as date, content, sent_time, COALESCE(sender.nickname, sender.email) AS sender, COALESCE(receiver.nickname, receiver.email) as receiver, sender.avatar
@@ -187,7 +187,7 @@ func (mr *MessageRepository) GetMessagesBetweenUsers(idUser1, idUser2, offset, l
 							 WHERE (sender_id = ? AND receiver_id = ?)
 								OR (sender_id = ? AND receiver_id = ?)
 							ORDER BY sent_time DESC 
-							LIMIT ?  OFFSET ? `, idUser1, idUser2, idUser2, idUser1, limit, offset)
+							 `, idUser1, idUser2, idUser2, idUser1)
 	if err != nil {
 		return nil, err
 	}
@@ -209,7 +209,6 @@ func (mr *MessageRepository) GetMessagesBetweenUsers(idUser1, idUser2, offset, l
 		result[date] = reverseMessages(messages)
 	}
 
-	
 	return result, nil
 }
 

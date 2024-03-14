@@ -102,32 +102,31 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 
 	var tabUsers []models.User
 	mess, err := models.MessageRepo.GetMessagePreviewsForAnUser(user.UserID)
-		if err != nil {
-			log.Println("🚀 ~ GetMessagePreviewsForAnUser ~ err:", err)
-			var apiError ApiError
-			apiError.Error = "Not found followings"
-			WriteJSON(w, http.StatusInternalServerError, apiError)
-			return
-		}
+	if err != nil {
+		log.Println("🚀 ~ GetMessagePreviewsForAnUser ~ err:", err)
+		var apiError ApiError
+		apiError.Error = "Not found followings"
+		WriteJSON(w, http.StatusInternalServerError, apiError)
+		return
+	}
 
 	messages := map[string][]models.MessageResponse{}
-	
+
 	if mess[0].Genre == "user" {
-		offset, error := strconv.Atoi(r.URL.Query().Get("offset"))
-		if error != nil {
-			offset = 0
-		}
-		error = nil
+		// offset, error := strconv.Atoi(r.URL.Query().Get("offset"))
+		// if error != nil {
+		// 	offset = 0
+		// }
+		// error = nil
 
+		// toTalk, _ := models.UserRepo.GetUserByID(mess[0].UserOrGroupID)
 
-		toTalk, _ := models.UserRepo.GetUserByID(mess[0].UserOrGroupID)
+		// if err == nil {
+		// 	tabUsers = append(tabUsers, *toTalk)
+		// }
 
-		if err == nil {
-			tabUsers = append(tabUsers, *toTalk)
-		}
-
-		limit := 20
-		messages, _ = models.MessageRepo.GetMessagesBetweenUsers(user.UserID, mess[0].UserOrGroupID, offset, limit)
+		// limit := 20
+		messages, _ = models.MessageRepo.GetMessagesBetweenUsers(user.UserID, mess[0].UserOrGroupID)
 		if err != nil {
 			log.Println("��� ~ funcHandleGetProfileGetMessagesBetweenUsers ~ err:", err)
 			var apiError ApiError
@@ -136,17 +135,15 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else {
-		offset, error := strconv.Atoi(r.URL.Query().Get("offset"))
-		if error != nil {
-			offset = 0
-		}
-		error = nil
+		// offset, error := strconv.Atoi(r.URL.Query().Get("offset"))
+		// if error != nil {
+		// 	offset = 0
+		// }
+		// error = nil
 
-		limit := 20
+		// limit := 20
 
-		
-
-		messages, err = models.GroupChatRepo.GetMessagesOfAGroup(mess[0].UserOrGroupID, limit, offset)
+		messages, err = models.GroupChatRepo.GetMessagesOfAGroup(mess[0].UserOrGroupID)
 		if err != nil {
 			log.Println("��� ~ func GetMessagesOfAGroup ~ err:", err)
 			var apiError ApiError
