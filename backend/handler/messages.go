@@ -48,11 +48,13 @@ func GetMessages(w http.ResponseWriter, r *http.Request) {
 			}
 
 			AllUsersOfGroup, _ := models.MembershipRepo.GetAllUsersByGroupID(intUsername)
+			group, _ := models.GroupRepo.GetGroup(intUsername)
 			
 			result := make(map[string]interface{})
 
 			result["messages"] = messages
 			result["user"] = AllUsersOfGroup
+			result["group"] = group
 
 			WriteJSON(w, http.StatusOK, result)
 			return
