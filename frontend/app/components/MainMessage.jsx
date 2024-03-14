@@ -152,14 +152,7 @@ const MainMessage = ({to}) => {
         // TODO: Handle the response from the server before appending the message if the message succesfully sent to the chatter before append
 
         const cms = document.getElementById("cms");
-        cms &&
-            ReactDOM.render(
-                ReactDOM.createPortal(
-                    <RightMessage Avatar={AvatarSender} Content={message.text} Sender={"(You)"} Time={Date.now()} />,
-                    cms
-                ),
-                document.createElement("div")
-            );
+        
         cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
     };
     let isRendered = false;
