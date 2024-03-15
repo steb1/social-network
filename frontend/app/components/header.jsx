@@ -16,6 +16,7 @@ const Header = () => {
     // Attach the onClose callback
     // Check if a new JSON message has been received
     switch (lastJsonMessage?.command) {
+        
       case "handleGroupRequest":
         console.log("handleGroupRequest");
         
@@ -47,6 +48,21 @@ const Header = () => {
         setAlertMessage(
           `${lastJsonMessage.body.sender} created an event in ${lastJsonMessage.body.group_name}.`
         );
+        break
+     case "messageforgroup" :
+            console.log("eventCreated");
+            
+            setShowAlert(true);
+            setAlertMessage(
+              `${lastJsonMessage.body.sender} sent a message in group.`
+            );     
+     case "messageforuser" :
+            console.log("eventCreated");
+            
+            setShowAlert(true);
+            setAlertMessage(
+              `${lastJsonMessage.body.sender} sent a message.`
+            );     
     }
 
   }, [lastJsonMessage]);
