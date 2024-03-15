@@ -44,8 +44,8 @@ type WebSocketMessage struct {
 type MessagePattern struct {
 	Sender    string `json:"sender"`
 	Receiver  string `json:"receiver"`
-	Text      string `json:"text"`
-	Time      string `json:"time"`
+	Text      string `json:"content"`
+	Time      string `json:"sent_time"`
 	GroupId   int    `json:"groupId"`
 	GroupName string `json:"group_name"`
 	EventName string
@@ -280,8 +280,8 @@ func handleMessageForUser(message WebSocketMessage, userId int) {
 
 	sender, _ := bodyMap["sender"].(string)
 	receiver, _ := bodyMap["receiver"].(string)
-	text, _ := bodyMap["text"].(string)
-	time, _ := bodyMap["time"].(string)
+	text, _ := bodyMap["content"].(string)
+	time, _ := bodyMap["sent_time"].(string)
 	messagepattern := MessagePattern{
 		Sender:   sender,
 		Receiver: receiver,
@@ -310,7 +310,7 @@ func handleMessageForUser(message WebSocketMessage, userId int) {
 		handleGroupMessage(messagepattern, userId, AllUsersOfGroup, idGroup)
 	}
 
-	fmt.Println("--------------UserId", )
+	fmt.Println("--------------UserId")
 
 	if userExists {
 		handleUserMessage(messagepattern, userId)

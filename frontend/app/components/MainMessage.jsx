@@ -43,7 +43,11 @@ const MainMessage = ({ to }) => {
       setGroups,
       setSender,
       setAvatarsender,
-      setAbletotalk
+      setAbletotalk,
+      undefined,
+      undefined,
+      lastJsonMessage,
+      Chatter
     );
 
     // Check if a new JSON message has been received
@@ -67,7 +71,7 @@ const MainMessage = ({ to }) => {
         console.log("------------messageFORGROUPPP----------", lastJsonMessage);
         console.log("GROUPE CHATTEEER", GroupChatter);
         console.log("GROUPPPP", group);
-        const senderInGroup = lastJsonMessage.receiver == group.group_id;
+        const senderInGroup = lastJsonMessage.receiver == group?.group_id;
         console.log("SenderIngroup:", senderInGroup);
 
         if (!senderInGroup) {
@@ -96,7 +100,6 @@ const MainMessage = ({ to }) => {
       case "inviteUser":
         console.log("inviteUser");
       case "messagepreview":
-        console.log("MessagePreview");
         setMessagesPreviews(lastJsonMessage.body);
       default:
     }
@@ -137,9 +140,24 @@ const MainMessage = ({ to }) => {
       sender: Sender,
       receiver:
         Chatter[0]?.nickname || Chatter[0]?.email || String(group?.group_id),
-      text: messageInput,
-      time: Date.now(),
+      content: messageInput,
+      sent_time: new Date(Date.now())
+        .toISOString()
+        .replace("T", " ")
+        .split(".")[0],
     };
+    let currentDate = new Date(Date.now());
+    let formattedDate = currentDate.toISOString().split("T")[0];
+
+    setMessages((prevState) => {
+      const newState = { ...prevState };
+      if (newState.hasOwnProperty(formattedDate)) {
+        newState[formattedDate] = [...newState[formattedDate], message];
+      } else {
+        newState[formattedDate] = [message];
+      }
+      return newState;
+    });
 
     sendMessageWeb("messageforuser", message);
     sendMessageWeb("messagepreview", "");
@@ -242,7 +260,8 @@ const MainMessage = ({ to }) => {
           </div>
           {/* Message Right bar */}
           <div className="flex-1">
-            {(!Chatter || !Chatter.length) && (!GroupChatter || !GroupChatter.length) ? (
+            {(!Chatter || !Chatter.length) &&
+            (!GroupChatter || !GroupChatter.length) ? (
               <>
                 <div className="flex items-center justify-between gap-2 w- px-6 py-3.5 z-10 border-b dark:border-slate-700 uk-animation-slide-top-medium">
                   <div className="flex items-center sm:gap-4 gap-2">
@@ -443,7 +462,9 @@ const MainMessage = ({ to }) => {
                             )}
                           </>
                         ))
-                      : messages && GroupChatter && GroupChatter.length &&
+                      : messages &&
+                        GroupChatter &&
+                        GroupChatter.length &&
                         Object.entries(messages)?.map(
                           ([date, chatMessages]) => (
                             <>
