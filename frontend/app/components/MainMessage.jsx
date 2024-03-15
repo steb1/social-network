@@ -242,7 +242,7 @@ const MainMessage = ({ to }) => {
           </div>
           {/* Message Right bar */}
           <div className="flex-1">
-            {(!Chatter || !Chatter.length) && !Groups ? (
+            {(!Chatter || !Chatter.length) && (!GroupChatter || !GroupChatter.length) ? (
               <>
                 <div className="flex items-center justify-between gap-2 w- px-6 py-3.5 z-10 border-b dark:border-slate-700 uk-animation-slide-top-medium">
                   <div className="flex items-center sm:gap-4 gap-2">
@@ -443,7 +443,7 @@ const MainMessage = ({ to }) => {
                             )}
                           </>
                         ))
-                      : messages &&
+                      : messages && GroupChatter && GroupChatter.length &&
                         Object.entries(messages)?.map(
                           ([date, chatMessages]) => (
                             <>
