@@ -11,6 +11,7 @@ export const Element = () => {
   const { sendJsonMessage, lastJsonMessage, readyState } =
     useWebSocketContext();
   const [messagesPreview, setMessagesPreview] = useState([]);
+  const [newMessage, setNewmessage] = useState(false)
 
   const fetchNotification = async () => {
     let token = document.cookie.split("=")[1];
@@ -120,6 +121,16 @@ export const Element = () => {
         console.log("messagePreview");
         fetchNotification();
         break;
+      case "messageforuser":
+        console.log("messagePreview");
+        fetchNotification();
+        setNewmessage(true)
+        break;
+      case "messageforgroup":
+        console.log("messagePreview");
+        fetchNotification();
+        setNewmessage(true)
+        break;
     }
   }, [lastJsonMessage]);
 
@@ -135,6 +146,45 @@ export const Element = () => {
   console.log("------numberofnotifs-------", numberofnotifs);
 
   //setNumberofnotifs(numberofnotifs)
+
+  const deleteAllNotif = async () => {
+    let token = document.cookie.split("=")[1];
+    if (!token) {
+      return;
+    }
+    
+    if (token) {
+      // Use the token as needed
+      console.log("Token:", token);
+    } else {
+      console.log("Token not found in cookies");
+    }
+    try {
+      const response = await fetch(config.serverApiUrl + "deleteAllNotif", {
+        method: "GET",
+        headers: {
+          Authorization: token,
+        },
+        credentials: "include",
+      });
+      if (response.ok) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const data = await response.json();
+          console.log("------ data", data.notifications);
+          setNotifications(data.notifications);
+        } else {
+          console.error("Response is not in JSON format");
+        }
+      } else {
+        const errorResponse = await response.json();
+        const errorMessage = errorResponse.error || "An error occurred.";
+        console.error("No Group retrieved:", errorMessage);
+      }
+    } catch (error) {
+      console.error("Error while fetching groups:", error);
+    }
+  };
 
   return (
     <div className="flex-1 relative">
@@ -159,9 +209,9 @@ export const Element = () => {
                 d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"
               />
             </svg>
-            <div className="absolute top-0 right-0 -m-1 bg-red-600 text-white text-xs px-1 rounded-full">
-              3
-            </div>
+            { newMessage ? (<div className="absolute top-0 right-0 -m-1 bg-red-600 text-white text-xs px-1 rounded-full">
+              
+            </div>) : ""}
           </button>
           <div
             className="hidden bg-white pr-1.5 rounded-lg drop-shadow-xl dark:bg-slate-700 md:w-[360px] w-screen border2"
@@ -256,6 +306,14 @@ export const Element = () => {
             {/*heading*/}
             <div className="flex items-center justify-between gap-2 p-4 pb-2">
               <h3 className="font-bold text-xl"> Notifications </h3>
+              <div classname=" flex right-0 gap-2 justify-self-end ">
+                <button
+                  onClick={deleteAllNotif}
+                  className=" w-16 h-16 px-1 text-slate-700	dark:text-white"
+                >
+                  🚮 Vider 
+                </button>
+              </div>
             </div>
             <div className="text-sm h-[400px] w-full overflow-y-auto pr-2">
               {/*contents list*/}
