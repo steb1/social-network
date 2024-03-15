@@ -5,16 +5,14 @@ import config from "@/config";
 import { useWebSocketContext } from "@/public/js/websocketContext";
 
 const Logout = () => {
-    const router = useRouter();
-
-    const handleLogout = () => {
-        document.cookie = `${config.cookieName}=; path=/; max-age=0; Secure`;
-        localStorage.clear();
-        router.replace("/auth/signin");
-        const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
-        closeWebSocket();
-        sendJsonMessage({ command: "logout" });
-    };
+  const router = useRouter();
+  const { sendJsonMessage } = useWebSocketContext();
+  const handleLogout = () => {
+    document.cookie = `${config.cookieName}=; path=/; max-age=0; Secure`;
+    localStorage.clear();
+    router.replace("/auth/signin");
+    sendJsonMessage({ command: "logout" });
+  };
 
   return (
     // <div className="relative cursor-pointer shrink-0" onClick={handleLogout}>
@@ -23,7 +21,7 @@ const Logout = () => {
     // 	</svg>
     // </div>
     <div
-	className=" cursor-pointer "
+      className=" cursor-pointer "
       onClick={handleLogout}
       style={{ width: "100%", height: "100%", fill: "black" }}
     >
