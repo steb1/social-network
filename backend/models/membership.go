@@ -143,7 +143,7 @@ func (cm *MembershipRepository) GetAllRequestByGroupID(groupID int) ([]User, err
 
 		err := rows.Scan(
 			&user.UserID, &user.Email, &user.Password, &user.FirstName, &user.LastName,
-			&user.DateOfBirth, &user.Avatar, nickname, &user.AboutMe, &user.AccountType,
+			&user.DateOfBirth, &user.Avatar, &nickname, &user.AboutMe, &user.AccountType,
 		)
 		user.Nickname = lib.GetStringFromNullString(nickname)
 		if err != nil {
