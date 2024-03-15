@@ -21,6 +21,7 @@ const Profile = async ({ params: { id } }) => {
 
     if (response.ok) {
       profileData = await response.json();
+      console.log(profileData);
     } else {
       return notFound();
     }

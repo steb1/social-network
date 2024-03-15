@@ -37,18 +37,13 @@ const FormSignInComp = () => {
         if (response.ok) {
           const data = await response.json();
           // TODO SET AUTREMENT
-          if (data.token) {
-            document.cookie = `${config.cookieName}=${data.token}; path=/; max-age=${3 * 60 * 60}`;
-            localStorage.setItem("avatar", data.user?.avatar);
-            localStorage.setItem("nickname", data.user?.nickname);
-            localStorage.setItem("firstname", data.user?.first_name);
-            localStorage.setItem("lastname", data.user?.last_name);
-            router.replace("/");
-          } else {
-            const errorMessage = data.error || "An error occurred.";
-            console.error("Authentication failed:", errorMessage);
-            setServerError(`Authentication failed: ${errorMessage}`);
-          }
+
+          document.cookie = `${config.cookieName}=${data.token}; path=/; max-age=${3 * 60 * 60}`;
+          localStorage.setItem("avatar", data.user?.avatar);
+          localStorage.setItem("nickname", data.user?.nickname);
+          localStorage.setItem("firstname", data.user?.first_name);
+          localStorage.setItem("lastname", data.user?.last_name);
+          router.replace("/");
         } else {
           const errorResponse = await response.json();
           const errorMessage = errorResponse.error || "An error occurred.";

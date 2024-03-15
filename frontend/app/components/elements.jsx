@@ -271,7 +271,7 @@ export const Element = () => {
                               ? `/groups/${notification.Group?.group_id}`
                               : notification.notification_type ===
                                   "followPrivate"
-                                ? `/profile/${notification.Sender.user_id}`
+                                ? `/followRequests`
                                 : ""
                         }
                         className="relative flex items-center gap-3 p-2 duration-200 rounded-xl pr-10 hover:bg-secondery dark:hover:bg-white/10 bg-teal-500/5 mb-5"
