@@ -138,13 +138,14 @@ async function handleCreateGroup() {
 
     try {
         const response = await fetch(config.serverApiUrl + "createGroup", {
-            method: "POST",
-            headers: {
-                Authorization: token,
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify(requestData),
+          method: "POST",
+          cache: "no-cache",
+          headers: {
+            Authorization: token,
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(requestData),
         });
 
         if (response.ok) {
