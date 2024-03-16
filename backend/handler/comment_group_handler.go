@@ -22,7 +22,7 @@ func HandleCreateCommentGroup(w http.ResponseWriter, r *http.Request) {
 
 	sessionToken := r.Header.Get("Authorization")
 	session, err := models.SessionRepo.GetSession(sessionToken)
-	if err != nil{
+	if err != nil {
 		apiError.Error = "Go connect first !"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
 		return
@@ -78,7 +78,7 @@ func HandleLikeCommentGroup(w http.ResponseWriter, r *http.Request) {
 
 	sessionToken := r.Header.Get("Authorization")
 	session, err := models.SessionRepo.GetSession(sessionToken)
-	if err != nil{
+	if err != nil {
 		apiError.Error = "Go connect first !"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
 		return
@@ -133,10 +133,6 @@ func HandleLikeCommentGroup(w http.ResponseWriter, r *http.Request) {
 func ImageHandlerCommentGroup(w http.ResponseWriter, r *http.Request) {
 	lib.AddCorsGet(w, r)
 
-	if r.Method != "GET" {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return
-	}
 	imageId := r.URL.Query().Get("id")
 	img, err := os.ReadFile("imgCommentGroup/" + imageId + ".jpg")
 	if err != nil {

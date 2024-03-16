@@ -77,10 +77,6 @@ func HandleCreateComment(w http.ResponseWriter, r *http.Request) {
 
 func ImageHandlerComment(w http.ResponseWriter, r *http.Request) {
 	lib.AddCorsGet(w, r)
-	if r.Method != "GET" {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return
-	}
 	imageId := r.URL.Query().Get("id")
 	img, err := os.ReadFile("imgComment/" + imageId + ".jpg")
 	if err != nil {
