@@ -166,6 +166,9 @@ ORDER BY
 		if err := rows.Scan(&message.UserOrGroupID, &message.Name, &message.Avatar, &nickname, &message.Email, &lastInteraction, &lastmessage, &message.Genre); err != nil {
 			return nil, err
 		}
+		if message.Genre == "group" {
+			message.Avatar = "png-transparent-aquatica-seaworld-orlando-강릉시영상미디어센터-community-group-icon-monochrome-black-noun-project-removebg-preview-removebg-preview.png"
+		}
 		message.LastInteractionTime = lastInteraction.String
 		message.LastMessage = lastmessage.String
 		message.Nickname = nickname.String
