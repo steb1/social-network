@@ -13,9 +13,6 @@ export const WebSocketProvider = ({ children }) => {
         // Additional options can be specified here
         shouldReconnect: true,
         share: true,
-        retryOnError: true,
-        reconnectInterval: 3000,
-        reconnectAttempts: 10,
       };
 
     const webSocket = useWebSocket(socketUrl, options);

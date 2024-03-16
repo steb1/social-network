@@ -126,6 +126,7 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 				handleInProgressMessage(message.Command, message.Body)
 
 			case "inviteUser":
+				fmt.Println("Yaaa")
 				handleSendInviteNotif(message.Command, message.Body, user)
 
 			case "handleGroupRequest":
@@ -178,13 +179,8 @@ func handleEventNotif(userInfo UserInfo, userId int, command string, messageBody
 		if user.UserID != userId {
 			tosend, exists := connections[user.UserID]
 
-			if !exists {
-				continue
-			}
-
-			if err := EnvoyerMessage(tosend, command, messagepattern); err != nil {
+			if err := EnvoyerMessage(tosend, command, messagepattern); err != nil || !exists{
 				log.Println("Error writing message", command, "to connection:", err)
-				continue
 			}
 
 			var notification models.Notification
@@ -229,15 +225,10 @@ func sendFollowPrivate(userInfo UserInfo, userId int, command string, messageBod
 
 	tosend, exists := connections[receiver.UserID]
 
-	if !exists {
-		return
-	}
-
 	fmt.Println(len(connections), "len connections")
 
-	if err := EnvoyerMessage(tosend, command, messagepattern); err != nil {
+	if err := EnvoyerMessage(tosend, command, messagepattern); err != nil || !exists {
 		log.Println("Error writing message", command, "to connection:", err)
-		return
 	}
 
 	var notification models.Notification
@@ -406,11 +397,8 @@ func handleInProgressMessage(messageType string, messageBody interface{}) {
 
 	// TODO CHECK IF THE MESSAGE IS FROM A GROUP OR FROM A SIMPLE DISCUSSION
 	tosend, exists := connections[models.UserRepo.GetIDFromUsernameOrEmail(messagepattern.Receiver)]
-	if !exists {
-		return
-	}
 
-	if err := EnvoyerMessage(tosend, messageType, messagepattern); err != nil {
+	if err := EnvoyerMessage(tosend, messageType, messagepattern); err != nil && exists {
 		log.Println("Error writing message", messageType, "to connection:", err)
 	}
 }
@@ -426,8 +414,9 @@ func handleSendInviteNotif(messageType string, messageBody interface{}, user *mo
 	invitedUser, err := models.UserRepo.GetUserByID(intInvitedId)
 
 	if err != nil {
+		fmt.Println("waaaouuw why tf bro")
 		return
-	}
+	} 
 
 	var messagepattern MessagePattern
 	messagepattern.Sender = user.FirstName + " " + user.LastName
@@ -439,15 +428,10 @@ func handleSendInviteNotif(messageType string, messageBody interface{}, user *mo
 
 	tosend, exists := connections[invitedUser.UserID]
 
-	if !exists {
-		return
-	}
-
 	fmt.Println(len(connections), "len connections")
 
-	if err := EnvoyerMessage(tosend, messageType, messagepattern); err != nil {
+	if err := EnvoyerMessage(tosend, messageType, messagepattern); err != nil || !exists {
 		log.Println("Error writing message", messageType, "to connection:", err)
-		return
 	}
 
 	var notification models.Notification
@@ -460,6 +444,7 @@ func handleSendInviteNotif(messageType string, messageBody interface{}, user *mo
 	notification.NotificationType = "inviteUser"
 
 	err = models.NotifRepo.CreateNotification(&notification)
+	fmt.Println("Yes yes yo")
 
 	if err != nil {
 		fmt.Println("Notification not created")
@@ -487,13 +472,9 @@ func handleSendGroupOwnerNotif(messageType string, messageBody interface{}, user
 
 	tosend, exists := connections[receiver.UserID]
 
-	if !exists {
-		return
-	}
-
-	if err := EnvoyerMessage(tosend, messageType, messagepattern); err != nil {
+	if err := EnvoyerMessage(tosend, messageType, messagepattern); err != nil || !exists {
 		log.Println("Error writing message", messageType, "to connection:", err)
-		return
+		
 	}
 
 	var notification models.Notification
