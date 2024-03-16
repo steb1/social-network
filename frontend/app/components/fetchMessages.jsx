@@ -1,4 +1,5 @@
 import config from "@/config";
+import { clearConfigCache } from "prettier";
 
 export const fetchMessages = async (
   to,
@@ -11,7 +12,8 @@ export const fetchMessages = async (
   setChatter,
   setGroupChatter,
   lastJsonMessage,
-  chatter
+  chatter,
+  groupChatterID
 ) => {
   let token = document.cookie.split("=")[1];
   console.log(to.to, "(((((((((((à============))))");
@@ -43,12 +45,9 @@ export const fetchMessages = async (
     const Chatter =
       ableToTalk &&
       ableToTalk.filter((user) => user.nickname === to || user.email === to);
+    console.log(groups, "----------------------------------------groups");
     const GroupChatter =
-      groups && groups.filter((group) => group.GroupID == to);
-
-    console.log(ableToTalk, "------------ableToTalk", " ------ to", to);
-    console.log(Chatter, "------------Chatter");
-    console.log(messages, "------------messagesPreview");
+      groups && groups.filter((group) => group.GroupID == groupChatterID);
     console.log(
       lastJsonMessage,
       "----------------------------lastJsonMessageeeeeeeuh"
@@ -57,18 +56,19 @@ export const fetchMessages = async (
     setAbletoTalk(ableToTalk);
     if (lastJsonMessage) {
       console.log("GUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU", chatter);
-      if (
-        (chatter[0]?.nickname == lastJsonMessage.body.sender ||
-          chatter[0]?.email == lastJsonMessage.body.sender) &&
-        lastJsonMessage.command === "messageforuser"
-      ) {
-        console.log("REFRESHHHH MESSSAGE CHACAL");
-        setMessages(messages);
-        setAvatarsender(avatar);
+      if (lastJsonMessage.command === "messageforuser") {
+        if (
+          chatter[0]?.nickname == lastJsonMessage.body.sender ||
+          chatter[0]?.email == lastJsonMessage.body.sender
+        ) {
+          console.log("REFRESHHHH MESSSAGE CHACAL");
+          setMessages(messages);
+          setAvatarsender(avatar);
+        }
       }
-    } else {
-      setMessages(messages);
-      setAvatarsender(avatar);
+      if (lastJsonMessage.command === "messageforgroup") {
+        console.log("MESSSS GROUPPP", GroupChatter);
+      }
     }
     setGroups(groups);
     setSender(nickname_requester);

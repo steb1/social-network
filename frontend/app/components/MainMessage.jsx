@@ -24,6 +24,7 @@ const MainMessage = ({ to }) => {
   let [GroupChatter, setGroupChatter] = useState([]);
   let [currentChat, setCurrentchat] = useState("");
   let [group, setGroup] = useState();
+  let [groupChatterID, setGroupChatterId] = useState("");
 
   const [messageInput, setMessageInput] = useState("");
   const cmsRef = useRef(null);
@@ -47,7 +48,8 @@ const MainMessage = ({ to }) => {
       undefined,
       undefined,
       lastJsonMessage,
-      Chatter
+      Chatter,
+      groupChatterID
     );
 
     // Check if a new JSON message has been received
@@ -61,6 +63,7 @@ const MainMessage = ({ to }) => {
           lastJsonMessage.body.sender !== Chatter[0]?.nickname &&
           lastJsonMessage.body.sender !== Chatter[0]?.email
         ) {
+          console.log("Je suis retourné...");
           return;
         }
 
@@ -69,28 +72,31 @@ const MainMessage = ({ to }) => {
         break;
       case "messageforgroup":
         console.log("------------messageFORGROUPPP----------", lastJsonMessage);
+        console.log("Chatterrrr", Chatter);
         console.log("GROUPE CHATTEEER", GroupChatter);
         console.log("GROUPPPP", group);
-        const senderInGroup = lastJsonMessage.receiver == group?.group_id;
+        const senderInGroup =
+          lastJsonMessage.body.receiver == group?.group_id && !Chatter;
         console.log("SenderIngroup:", senderInGroup);
-
         if (!senderInGroup) {
+          console.log("finishh");
           return;
         }
-
-        cms &&
-          ReactDOM.render(
-            ReactDOM.createPortal(
-              <LeftMessage
-                Avatar={senderInGroup?.Avatar}
-                Content={lastJsonMessage.body?.text}
-                Sender={lastJsonMessage.body?.sender}
-                Time={Date.now()}
-              />,
-              cms
-            ),
-            document.createElement("div")
-          );
+        console.log("J'ai continué....");
+        let currentDate = new Date(Date.now());
+        let formattedDate = currentDate.toISOString().split("T")[0];
+        setMessages((prevState) => {
+          const newState = { ...prevState };
+          if (newState.hasOwnProperty(formattedDate)) {
+            newState[formattedDate] = [
+              ...newState[formattedDate],
+              lastJsonMessage.body,
+            ];
+          } else {
+            newState[formattedDate] = [lastJsonMessage.body];
+          }
+          return newState;
+        });
         cmsRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
         sendMessageWeb("messagepreview", "");
         break;
@@ -141,6 +147,7 @@ const MainMessage = ({ to }) => {
       receiver:
         Chatter[0]?.nickname || Chatter[0]?.email || String(group?.group_id),
       content: messageInput,
+      avatar: AvatarSender,
       sent_time: new Date(Date.now())
         .toISOString()
         .replace("T", " ")
@@ -222,6 +229,7 @@ const MainMessage = ({ to }) => {
                           setChatter={setChatter}
                           setGroupChatter={setGroupChatter}
                           setGroup={setGroup}
+                          setGroupChatterId={setGroupChatterId}
                           cmsRef={cmsRef}
                         />
                       );
@@ -237,6 +245,7 @@ const MainMessage = ({ to }) => {
                           setMessages={setMessages}
                           setChatter={setChatter}
                           setGroupChatter={setGroupChatter}
+                          setGroupChatterId={setGroupChatterId}
                           cmsRef={cmsRef}
                         />
                       );
@@ -444,7 +453,7 @@ const MainMessage = ({ to }) => {
                             {chatMessages.map((message) =>
                               message.sender == Sender ? (
                                 <RightMessage
-                                  Avatar={AvatarSender}
+                                  Avatar={message.avatar}
                                   Content={message.content}
                                   Sender={"(You)"}
                                   Time={message.sent_time}
@@ -452,7 +461,7 @@ const MainMessage = ({ to }) => {
                                 />
                               ) : (
                                 <LeftMessage
-                                  Avatar={Chatter[0].avatar}
+                                  Avatar={message.avatar}
                                   Content={message.content}
                                   Sender={message.sender}
                                   Time={message.sent_time}
@@ -480,7 +489,7 @@ const MainMessage = ({ to }) => {
                                 ? chatMessages.map((message) =>
                                     message.sender == Sender ? (
                                       <RightMessage
-                                        Avatar={AvatarSender}
+                                        Avatar={message.avatar}
                                         Content={message.content}
                                         Sender={"(You)"}
                                         Time={message.sent_time}
