@@ -48,6 +48,7 @@ type MessagePattern struct {
 	Time      string `json:"sent_time"`
 	GroupId   int    `json:"groupId"`
 	GroupName string `json:"group_name"`
+	Avatar    string `json:"avatar"`
 	EventName string
 }
 
@@ -282,11 +283,13 @@ func handleMessageForUser(message WebSocketMessage, userId int) {
 	receiver, _ := bodyMap["receiver"].(string)
 	text, _ := bodyMap["content"].(string)
 	time, _ := bodyMap["sent_time"].(string)
+	avatar, _ := bodyMap["avatar"].(string)
 	messagepattern := MessagePattern{
 		Sender:   sender,
 		Receiver: receiver,
 		Text:     text,
 		Time:     time,
+		Avatar:   avatar,
 	}
 
 	var (
