@@ -2,12 +2,13 @@ package models
 
 import (
 	"database/sql"
+	"fmt"
 )
 
 const (
 	StatusPending  = "pending"
 	StatusAccepted = "accepted"
-	StatusRejected = "rejected"
+	StatusRejected = "declined"
 )
 
 // FollowRequest structure represents the "subscriptions" table
@@ -126,12 +127,14 @@ func (sr *FollowRequestRepository) RejectFollowingRequest(followerUserID, follow
 	_, err := sr.db.Exec(query, StatusRejected, followerUserID, followingUserId)
 
 	if err != nil {
+		fmt.Println(err.Error())
 		return err
 	}
 
 	// Delete the follow Request because of the UNIQUE constraint on the Follow Request table
 	err = sr.DeleteFollowRequest(followerUserID, followingUserId)
 	if err != nil {
+		fmt.Println(err.Error())
 		return err
 	}
 

@@ -96,7 +96,7 @@ func (pr *PostRepository) CreatePost(post *Post, photo multipart.File, categorie
 func (pr *PostRepository) GetPost(postID int) (*Post, error) {
 	query := "SELECT * FROM posts WHERE post_id = ?"
 	var post Post
-	err := pr.db.QueryRow(query, postID).Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.AuthorID, &post.Visibility)
+	err := pr.db.QueryRow(query, postID).Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.AuthorID, &post.Visibility, &post.HasImage)
 	if err != nil {
 		return nil, err
 	}
@@ -280,7 +280,8 @@ func (pr *PostRepository) GetUserOwnPosts(userID, CurrentUser int) ([]*Post, err
     users.first_name, 
     users.last_name, 
     users.email,
-	users.avatar
+	users.avatar,
+	users.user_id
 FROM 
     posts
 JOIN 
@@ -301,7 +302,8 @@ ORDER BY
     users.first_name, 
     users.last_name, 
     users.email,
-	users.avatar
+	users.avatar,
+	users.user_id
 FROM 
     posts
 JOIN 
@@ -320,7 +322,8 @@ SELECT
     users.first_name, 
     users.last_name, 
 	users.email,
-	users.avatar
+	users.avatar,
+	users.user_id
 FROM 
     posts
 JOIN 
@@ -341,7 +344,8 @@ posts.author_id=? and  post_visibilities.user_id_authorized = ?
 		users.first_name,
 		users.last_name, 
 		users.email,
-		users.avatar
+		users.avatar,
+		users.user_id
 	FROM 
 		posts
 	JOIN 
@@ -363,7 +367,7 @@ ORDER BY
 	for rows.Next() {
 		var post Post
 		post.User = &User{}
-		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.HasImage, &post.User.Nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email, &post.User.Avatar); err != nil {
+		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.HasImage, &post.User.Nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email, &post.User.Avatar, &post.AuthorID); err != nil {
 			return nil, err
 		}
 		postIDStr := strconv.Itoa(post.PostID)

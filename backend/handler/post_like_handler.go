@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"server/lib"
 	"server/models"
@@ -27,12 +28,38 @@ func HandleLikePost(w http.ResponseWriter, r *http.Request) {
 		apiError.Error = "Error getting user."
 		WriteJSON(w, http.StatusBadRequest, apiError)
 		return
-	}
+	} 
 
 	if err := json.NewDecoder(r.Body).Decode(&postLike); err != nil {
 		apiError.Error = "Failed to decode like request body."
 		WriteJSON(w, http.StatusBadRequest, apiError)
 		return
+	}
+	intUserId, _ := strconv.Atoi(session.UserID)
+
+	post, err := models.PostRepo.GetPost(postLike.PostID)
+	if err != nil {
+		apiError.Error = "Error cannot get post !!!"
+		WriteJSON(w, http.StatusBadRequest, apiError)
+		return
+	}
+
+
+	if post.Visibility == "private" {
+		exist, err := models.SubscriptionRepo.UserAlreadyFollow(intUserId, post.AuthorID)
+		if err != nil {
+			fmt.Println("-----error----", err)
+
+			apiError.Error = "Error cannot get post !!!"
+			WriteJSON(w, http.StatusBadRequest, apiError)
+			return
+		}
+
+		if !exist {
+			apiError.Error = "Error: User is not allowed to comment" 
+			WriteJSON(w, http.StatusMethodNotAllowed, apiError)
+			return
+		}
 	}
 	postLike.Rate = 1
 
@@ -99,6 +126,39 @@ func HandleLikeComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	commentLike.Rate = 1
+
+	comment, err := models.CommentRepo.GetComment(commentLike.CommentID)
+	if err != nil {
+		fmt.Println("-----error 0000 comment----", err)
+		apiError.Error = "Error cannot get post !!!"
+		WriteJSON(w, http.StatusBadRequest, apiError)
+		return
+	}
+
+	intUserId, _ := strconv.Atoi(session.UserID)
+	post, err := models.PostRepo.GetPost(comment.PostID)
+
+	if err != nil {
+		fmt.Println("-----error 11111 comment----", err)
+		apiError.Error = "Error cannot get post !!!"
+		WriteJSON(w, http.StatusBadRequest, apiError)
+		return
+	}
+
+	if post.Visibility == "private" {
+		exist, err := models.SubscriptionRepo.UserAlreadyFollow(intUserId, post.AuthorID)
+		if err != nil {
+			fmt.Println("-----error 22222 comment----", err)
+			apiError.Error = "Error cannot get post !!!"
+			WriteJSON(w, http.StatusBadRequest, apiError)
+			return
+		}
+		if !exist {
+			apiError.Error = "Error: User is not allowed to comment"
+			WriteJSON(w, http.StatusMethodNotAllowed, apiError)
+			return
+		}
+	}
 
 	// Check if the comment is already liked by the user
 	isLiked, err := models.Comment_likeRepo.IsCommentLikedByCurrentUser(commentLike.CommentID, commentLike.AuthorID)

@@ -77,12 +77,14 @@ func (cc *CommentRepository) CreateComment(comment *Comment, photo multipart.Fil
 
 // GetComment retrieves a comment from the database by comment_id
 func (cc *CommentRepository) GetComment(commentID int) (*Comment, error) {
-	query := "SELECT * FROM comment WHERE comment_id = ?"
+	query := "SELECT * FROM comments WHERE comment_id = ?"
 	var comment Comment
-	err := cc.db.QueryRow(query, commentID).Scan(&comment.CommentID, &comment.Content, &comment.AuthorID, &comment.PostID, &comment.CreatedAt)
+
+	err := cc.db.QueryRow(query, commentID).Scan(&comment.CommentID, &comment.Content, &comment.AuthorID, &comment.PostID, &comment.CreatedAt, &comment.HasImage)
 	if err != nil {
 		return nil, err
 	}
+	
 	return &comment, nil
 }
 

@@ -141,6 +141,19 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(img)
 }
 
+func ImageCommentGroup(w http.ResponseWriter, r *http.Request) {
+	imageId := r.URL.Query().Get("id")
+	img, err := os.ReadFile("imgCommentGroup/" + imageId + ".jpg")
+
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.Header().Set("Content-Type", "image/jpeg")
+	w.Write(img)
+}
+
 func HandleGetRightBarCategories(w http.ResponseWriter, r *http.Request) {
 	lib.AddCorsGet(w, r)
 

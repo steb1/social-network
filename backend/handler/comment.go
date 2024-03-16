@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -41,6 +42,35 @@ func HandleCreateComment(w http.ResponseWriter, r *http.Request) {
 		apiError.Error = "Error: post_id is not a valid number!!!"
 		WriteJSON(w, http.StatusBadRequest, apiError)
 		return
+	}
+	intUserId, err := strconv.Atoi(session.UserID)
+	if err != nil {
+		apiError.Error = "Error: cannot get user"
+		WriteJSON(w, http.StatusBadRequest, apiError)
+		return
+	}
+	post, err := models.PostRepo.GetPost(postID)
+	if err != nil {
+		apiError.Error = "Error cannot get post !!!"
+		WriteJSON(w, http.StatusBadRequest, apiError)
+		return
+	}
+
+	if post.Visibility == "private" {
+		exist, err := models.SubscriptionRepo.UserAlreadyFollow(intUserId, post.AuthorID)
+		if err != nil {
+			fmt.Println("-----error comment----", err)
+
+			apiError.Error = "Error cannot get post !!!"
+			WriteJSON(w, http.StatusBadRequest, apiError)
+			return
+		}
+
+		if !exist {
+			apiError.Error = "Error: User is not allowed to comment"
+			WriteJSON(w, http.StatusMethodNotAllowed, apiError)
+			return
+		}
 	}
 	comment.PostID = postID
 	createdAt := time.Now()

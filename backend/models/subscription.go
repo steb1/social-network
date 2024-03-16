@@ -346,3 +346,4 @@ func (sr *SubscriptionRepository) GetFollowingStatus(requesterUserId, userId int
 
 	return StatusUnfollow, nil
 }
+
