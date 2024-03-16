@@ -169,9 +169,9 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 
 func HandleGetProfile(w http.ResponseWriter, r *http.Request) {
 	session, ok := IsAuthenticated(r)
+	var apiError ApiError
 
 	if !ok {
-		var apiError ApiError
 		apiError.Error = "StatusUnauthorized"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
 		return
@@ -195,7 +195,21 @@ func HandleGetProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	postOwned, err := models.PostRepo.GetUserOwnPosts(user.UserID)
+	sessionToken := r.Header.Get("Authorization")
+	sessionUser, err := models.SessionRepo.GetSession(sessionToken)
+	if err != nil {
+		apiError.Error = "Go connect first !"
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	}
+	userId, err := strconv.Atoi(sessionUser.UserID)
+	if err != nil {
+		apiError.Error = "Error getting user."
+		WriteJSON(w, http.StatusUnauthorized, apiError)
+		return
+	}
+
+	postOwned, err := models.PostRepo.GetUserOwnPosts(user.UserID, userId)
 	if err != nil {
 		log.Println("🚀 ~ funcHandleGetProfileGetUserOwnPosts ~ err:", err)
 		var apiError ApiError
