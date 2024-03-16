@@ -13,7 +13,7 @@ import (
 )
 
 func HandleCreatePost(w http.ResponseWriter, r *http.Request) {
-	lib.AddCorsPost(w,r)
+	lib.AddCorsPost(w, r)
 
 	var post models.Post
 	var apiError ApiError
@@ -96,13 +96,13 @@ func HandleCreatePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleGetAllPosts(w http.ResponseWriter, r *http.Request) {
-	lib.AddCorsGet(w,r)
+	lib.AddCorsGet(w, r)
 
 	var apiError ApiError
 
 	sessionToken := r.Header.Get("Authorization")
 	session, err := models.SessionRepo.GetSession(sessionToken)
-	if err != nil{
+	if err != nil {
 		apiError.Error = "Go connect first !"
 		WriteJSON(w, http.StatusUnauthorized, apiError)
 		return
@@ -130,10 +130,6 @@ func RetreiveAllPosts(w http.ResponseWriter, r *http.Request, userId int, apiErr
 }
 
 func ImageHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "GET" {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return
-	}
 	imageId := r.URL.Query().Get("id")
 	img, err := os.ReadFile("imgPost/" + imageId + ".jpg")
 	if err != nil {
@@ -146,7 +142,7 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleGetRightBarCategories(w http.ResponseWriter, r *http.Request) {
-	lib.AddCorsGet(w,r)
+	lib.AddCorsGet(w, r)
 
 	var apiError ApiError
 
