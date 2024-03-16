@@ -56,7 +56,7 @@ var Routes = []Route{
 	{Path: "/api/follow", Handler: SubscriptionHandler, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/pendingrequests", Handler: HandlePendingRequests, Methods: []string{"GET", "POST", "OPTIONS"}},
 	{Path: "/api/socket", Handler: SocketHandler, Methods: []string{"GET", "POST", "OPTIONS"}},
-	{Path: "/api/messages", Handler: GetMessages, Methods: []string{"GET", "OPTIONS"}},
+	{Path: "/api/messages/", Handler: GetMessages, Methods: []string{"GET", "OPTIONS"}},
 	{Path: "/api/messageResponse", Handler: GetMessageResponse, Methods: []string{"GET", "POST", "OPTIONS"}},
 	{Path: "/api/getAllGroups", Handler: HandleGetAllGroups, Methods: []string{"GET", "OPTIONS"}},
 	{Path: "/api/getNotifications", Handler: HandleGetNotifications, Methods: []string{"GET", "POST", "OPTIONS"}},
@@ -71,6 +71,7 @@ var Routes = []Route{
 	{Path: "/api/updateNotif", Handler: HandleUpdateNotif, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/handleRequestGroup", Handler: HandleRequestGroup, Methods: []string{"POST", "OPTIONS"}},
 	{Path: "/api/getRightBarCategories", Handler: HandleGetRightBarCategories, Methods: []string{"GET", "OPTIONS"}},
+	{Path: "/api/deleteAllNotif", Handler: DeleteAllNotif, Methods: []string{"GET", "OPTIONS"}},
 }
 
 func MiddlewareIsAuthenticated(handler http.HandlerFunc) http.HandlerFunc {

@@ -34,23 +34,23 @@ func NewEventRepository(db *sql.DB) *EventRepository {
 }
 
 // CreateEvent adds a new event to the database
-func (er *EventRepository) CreateEvent(event *Event) error {
+func (er *EventRepository) CreateEvent(event *Event) (error,int) {
 	query := `
 		INSERT INTO events (title, description, event_date, group_id)
 		VALUES (?, ?, ?, ?)
 	`
 	result, err := er.db.Exec(query, event.Title, event.Description, event.EventDate, event.GroupID)
 	if err != nil {
-		return err
+		return err, 0
 	}
 
 	lastInsertID, err := result.LastInsertId()
 	if err != nil {
-		return err
+		return err, 0
 	}
 
 	event.EventID = int(lastInsertID)
-	return nil
+	return nil, event.EventID
 }
 
 // GetEvent retrieves an event from the database by event_id

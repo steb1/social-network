@@ -22,6 +22,7 @@ type MessageResponse struct {
 	Content  string `json:"content"`
 	SentTime string `json:"sent_time"`
 	Avatar   string `json:"avatar"`
+	User     []User
 }
 
 type MessagePreview struct {
@@ -165,6 +166,9 @@ ORDER BY
 		if err := rows.Scan(&message.UserOrGroupID, &message.Name, &message.Avatar, &nickname, &message.Email, &lastInteraction, &lastmessage, &message.Genre); err != nil {
 			return nil, err
 		}
+		if message.Genre == "group" {
+			message.Avatar = "png-transparent-aquatica-seaworld-orlando-강릉시영상미디어센터-community-group-icon-monochrome-black-noun-project-removebg-preview-removebg-preview.png"
+		}
 		message.LastInteractionTime = lastInteraction.String
 		message.LastMessage = lastmessage.String
 		message.Nickname = nickname.String
@@ -174,10 +178,10 @@ ORDER BY
 	return messages, nil
 }
 
-func (mr *MessageRepository) GetMessagesBetweenUsers(idUser1, idUser2, offset, limit int) (map[string][]MessageResponse, error) {
+func (mr *MessageRepository) GetMessagesBetweenUsers(idUser1, idUser2 int) (map[string][]MessageResponse, error) {
 	result := make(map[string][]MessageResponse)
 
-	rows, err := db.Query(`SELECT  strftime('%Y-%m-%d', sent_time) as date, content, sent_time, COALESCE(sender.nickname, sender.email) AS sender, COALESCE(receiver.nickname, receiver.email) as receiver
+	rows, err := db.Query(`SELECT  strftime('%Y-%m-%d', sent_time) as date, content, sent_time, COALESCE(sender.nickname, sender.email) AS sender, COALESCE(receiver.nickname, receiver.email) as receiver, sender.avatar
 							FROM messages m
 							JOIN 
 								users sender ON m.sender_id = sender.user_id
@@ -186,7 +190,7 @@ func (mr *MessageRepository) GetMessagesBetweenUsers(idUser1, idUser2, offset, l
 							 WHERE (sender_id = ? AND receiver_id = ?)
 								OR (sender_id = ? AND receiver_id = ?)
 							ORDER BY sent_time DESC 
-							LIMIT ?  OFFSET ? `, idUser1, idUser2, idUser2, idUser1, limit, offset)
+							 `, idUser1, idUser2, idUser2, idUser1)
 	if err != nil {
 		return nil, err
 	}
@@ -194,7 +198,7 @@ func (mr *MessageRepository) GetMessagesBetweenUsers(idUser1, idUser2, offset, l
 	for rows.Next() {
 		var message MessageResponse
 		var date string
-		err := rows.Scan(&date, &message.Content, &message.SentTime, &message.Sender, &message.Receiver)
+		err := rows.Scan(&date, &message.Content, &message.SentTime, &message.Sender, &message.Receiver, &message.Avatar)
 
 		if err != nil {
 			fmt.Println(err.Error())
@@ -207,6 +211,7 @@ func (mr *MessageRepository) GetMessagesBetweenUsers(idUser1, idUser2, offset, l
 	for date, messages := range result {
 		result[date] = reverseMessages(messages)
 	}
+
 	return result, nil
 }
 

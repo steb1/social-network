@@ -183,7 +183,7 @@ func HandleInviteUserResponse(w http.ResponseWriter, r *http.Request) {
 
 			response["ok"] = true
 
-			lib.WriteJSONResponse(w, r, response)
+			lib.WriteJSONResponse(w, r,response)
 		} else {
 			err = models.InvitationRepo.DeleteInvitation(userId, intGroupId)
 
@@ -196,7 +196,7 @@ func HandleInviteUserResponse(w http.ResponseWriter, r *http.Request) {
 
 			response["ok"] = true
 
-			lib.WriteJSONResponse(w, r, response)
+			lib.WriteJSONResponse(w, r,response)
 		}
 	}
 }

@@ -66,9 +66,11 @@ func (pvr *PostVisibilityRepository) GetAllPostsUserAuth(user_id string) ([]*Pos
 	for rows.Next() {
 		var post Post
 		post.User = &User{}
-		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.HasImage, &post.User.Nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email); err != nil {
+		var nickname sql.NullString
+		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.HasImage, &nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email); err != nil {
 			return nil, err
 		}
+		post.User.Nickname = lib.GetStringFromNullString(nickname)
 		post.CreatedAt = lib.FormatDateDB(post.CreatedAt)
 		post.Category = PostCategoryRepo.GetPostCategory(post.PostID)
 		posts = append(posts, &post)

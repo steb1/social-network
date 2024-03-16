@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"server/lib"
 )
 
 const (
@@ -138,10 +139,12 @@ func (sr *SubscriptionRepository) GetAbleToTalk(userID int) ([]*User, error) {
 
 	for rows.Next() {
 		var user User
-		err := rows.Scan(&user.UserID, &user.Email, &user.FirstName, &user.LastName, &user.DateOfBirth, &user.Avatar, &user.Nickname, &user.AboutMe)
+		var nickname sql.NullString
+		err := rows.Scan(&user.UserID, &user.Email, &user.FirstName, &user.LastName, &user.DateOfBirth, &user.Avatar, &nickname, &user.AboutMe)
 		if err != nil {
 			return nil, err
 		}
+		user.Nickname = lib.GetStringFromNullString(nickname)
 		ableToTalk = append(ableToTalk, &user)
 	}
 
@@ -169,10 +172,12 @@ func (sr *SubscriptionRepository) GetFollowers(userId int) ([]*User, error) {
 
 	for rows.Next() {
 		var follower User
-		err := rows.Scan(&follower.UserID, &follower.Email, &follower.FirstName, &follower.LastName, &follower.DateOfBirth, &follower.Avatar, &follower.Nickname, &follower.AboutMe)
+		var nickname sql.NullString
+		err := rows.Scan(&follower.UserID, &follower.Email, &follower.FirstName, &follower.LastName, &follower.DateOfBirth, &follower.Avatar, &nickname, &follower.AboutMe)
 		if err != nil {
 			return nil, err
 		}
+		follower.Nickname = lib.GetStringFromNullString(nickname)
 		followers = append(followers, &follower)
 	}
 
@@ -200,10 +205,13 @@ func (sr *SubscriptionRepository) GetFollowersToInvite(userId, intGroupId int) (
 
 	for rows.Next() {
 		var follower User
-		err := rows.Scan(&follower.UserID, &follower.Email, &follower.FirstName, &follower.LastName, &follower.DateOfBirth, &follower.Avatar, &follower.Nickname, &follower.AboutMe)
+		var nickname sql.NullString
+
+		err := rows.Scan(&follower.UserID, &follower.Email, &follower.FirstName, &follower.LastName, &follower.DateOfBirth, &follower.Avatar, &nickname, &follower.AboutMe)
 		if err != nil {
 			return nil, err
 		}
+		follower.Nickname = lib.GetStringFromNullString(nickname)
 
 		exist := MembershipRepo.CheckIfIsMember(follower.UserID, intGroupId)
 		isSubscribed := MembershipRepo.CheckIfSubscribed(follower.UserID, intGroupId, "pending")
@@ -249,10 +257,13 @@ func (sr *SubscriptionRepository) GetFollowing(userId int) ([]*User, error) {
 
 	for rows.Next() {
 		var followee User
-		err := rows.Scan(&followee.UserID, &followee.Email, &followee.FirstName, &followee.LastName, &followee.DateOfBirth, &followee.Avatar, &followee.Nickname, &followee.AboutMe)
+		var nickname sql.NullString
+
+		err := rows.Scan(&followee.UserID, &followee.Email, &followee.FirstName, &followee.LastName, &followee.DateOfBirth, &followee.Avatar, &nickname, &followee.AboutMe)
 		if err != nil {
 			return nil, err
 		}
+		followee.Nickname = lib.GetStringFromNullString(nickname)
 		following = append(following, &followee)
 	}
 

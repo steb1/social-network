@@ -42,11 +42,14 @@ type WebSocketMessage struct {
 }
 
 type MessagePattern struct {
-	Sender   string `json:"sender"`
-	Receiver string `json:"receiver"`
-	Text     string `json:"text"`
-	Time     string `json:"time"`
-	GroupId  int    `json:"groupId"`
+	Sender    string `json:"sender"`
+	Receiver  string `json:"receiver"`
+	Text      string `json:"content"`
+	Time      string `json:"sent_time"`
+	GroupId   int    `json:"groupId"`
+	GroupName string `json:"group_name"`
+	Avatar    string `json:"avatar"`
+	EventName string
 }
 
 func SocketHandler(w http.ResponseWriter, r *http.Request) {
@@ -132,12 +135,78 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 				sendMessagePreview(userInfo, userId, "messagepreview")
 			case "followPrivate":
 				sendFollowPrivate(userInfo, userId, "followPrivate", message.Body)
+			case "eventCreated":
+				handleEventNotif(userInfo, userId, "eventCreated", message.Body)
 			case "logout":
 				connections[userId].Conn.Close()
 				fmt.Println("connection is closed")
 			}
 		}
 	}()
+}
+
+func handleEventNotif(userInfo UserInfo, userId int, command string, messageBody interface{}) {
+	sender, _ := models.UserRepo.GetUserByID(userId)
+
+	bodyMap, ok := messageBody.(map[string]interface{})
+	if !ok {
+		log.Println("Type de corps non pris en charge pour", ok)
+		return
+	}
+
+	groupId := (bodyMap["groupId"])
+
+	intGroupId, _ := strconv.Atoi(fmt.Sprintf("%v", groupId))
+
+	eventid := (bodyMap["eventid"])
+	intEventid, _ := strconv.Atoi(fmt.Sprintf("%v", eventid))
+
+	AllUsersOfGroup, err := models.MembershipRepo.GetAllUsersByGroupID(intGroupId)
+
+	if err != nil {
+		return
+	}
+
+	group, _ := models.GroupRepo.GetGroup(intGroupId)
+	var messagepattern MessagePattern
+	messagepattern.Sender = sender.FirstName + " " + sender.LastName
+	messagepattern.GroupName = group.Title
+
+	fmt.Println("-----------intEventid----", intEventid)
+
+	for _, user := range AllUsersOfGroup {
+		if user.UserID != userId {
+			tosend, exists := connections[user.UserID]
+
+			if !exists {
+				continue
+			}
+
+			if err := EnvoyerMessage(tosend, command, messagepattern); err != nil {
+				log.Println("Error writing message", command, "to connection:", err)
+				continue
+			}
+
+			var notification models.Notification
+
+			notification.CreatedAt = time.Now().String()
+			notification.GroupID = sql.NullInt64{Int64: int64(messagepattern.GroupId), Valid: true}
+
+			notification.IsRead = false
+			notification.SenderID = sender.UserID
+			notification.UserID = user.UserID
+			notification.NotificationType = command
+			notification.EventID = sql.NullInt64{Int64: int64(intEventid), Valid: true}
+
+			err := models.NotifRepo.CreateNotification(&notification)
+
+			if err != nil {
+				fmt.Println("Notification not created", err)
+			}
+
+		}
+	}
+
 }
 
 func sendFollowPrivate(userInfo UserInfo, userId int, command string, messageBody interface{}) {
@@ -212,14 +281,15 @@ func handleMessageForUser(message WebSocketMessage, userId int) {
 
 	sender, _ := bodyMap["sender"].(string)
 	receiver, _ := bodyMap["receiver"].(string)
-	text, _ := bodyMap["text"].(string)
-	time, _ := bodyMap["time"].(string)
-
+	text, _ := bodyMap["content"].(string)
+	time, _ := bodyMap["sent_time"].(string)
+	avatar, _ := bodyMap["avatar"].(string)
 	messagepattern := MessagePattern{
 		Sender:   sender,
 		Receiver: receiver,
 		Text:     text,
 		Time:     time,
+		Avatar:   avatar,
 	}
 
 	var (
@@ -242,6 +312,8 @@ func handleMessageForUser(message WebSocketMessage, userId int) {
 	if groupExists {
 		handleGroupMessage(messagepattern, userId, AllUsersOfGroup, idGroup)
 	}
+
+	fmt.Println("--------------UserId")
 
 	if userExists {
 		handleUserMessage(messagepattern, userId)
@@ -266,6 +338,8 @@ func handleGroupMessage(messagepattern MessagePattern, userId int, AllUsersOfGro
 
 func handleUserMessage(messagepattern MessagePattern, userId int) {
 	log.Println(" 🚀 ~ Message ~ ONE USER")
+	log.Println(" 🚀 ~ message pattern", models.UserRepo.GetIDFromUsernameOrEmail(messagepattern.Receiver))
+
 	sendMessageToUser(userId, messagepattern, models.UserRepo.GetIDFromUsernameOrEmail(messagepattern.Receiver), "chat", 0)
 }
 
@@ -360,6 +434,9 @@ func handleSendInviteNotif(messageType string, messageBody interface{}, user *mo
 	messagepattern.Receiver = invitedUser.FirstName + " " + invitedUser.LastName
 	messagepattern.GroupId, _ = strconv.Atoi(fmt.Sprintf("%v", bodyMap["groupId"]))
 
+	group, _ := models.GroupRepo.GetGroup(messagepattern.GroupId)
+	messagepattern.GroupName = group.Title
+
 	tosend, exists := connections[invitedUser.UserID]
 
 	if !exists {
@@ -397,8 +474,6 @@ func handleSendGroupOwnerNotif(messageType string, messageBody interface{}, user
 		return
 	}
 
-	fmt.Println("Olalalalaaa 1")
-
 	var messagepattern MessagePattern
 
 	messagepattern.GroupId, _ = strconv.Atoi(fmt.Sprintf("%v", bodyMap["groupId"]))
@@ -408,15 +483,13 @@ func handleSendGroupOwnerNotif(messageType string, messageBody interface{}, user
 
 	messagepattern.Sender = user.FirstName + " " + user.LastName
 	messagepattern.Receiver = receiver.FirstName + " " + receiver.LastName
+	messagepattern.GroupName = group.Title
 
 	tosend, exists := connections[receiver.UserID]
 
 	if !exists {
 		return
 	}
-
-	fmt.Println("Olalalalaaa 2")
-	fmt.Println(len(connections), "len connections")
 
 	if err := EnvoyerMessage(tosend, messageType, messagepattern); err != nil {
 		log.Println("Error writing message", messageType, "to connection:", err)
@@ -437,7 +510,5 @@ func handleSendGroupOwnerNotif(messageType string, messageBody interface{}, user
 	if err != nil {
 		fmt.Println("Notification not created")
 	}
-
-	fmt.Println("Olalalalaaa 3")
 
 }

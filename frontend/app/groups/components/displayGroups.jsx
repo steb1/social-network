@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import config from "@/config";
 import { GroupOption } from "@/app/components/groupOption";
 import { GroupInvited } from "./invitedgroups";
-
+import Link from "next/link";
 export async function fetchAllGroups(
   setPublicGroups,
   setOwnGroups,
@@ -23,6 +23,7 @@ export async function fetchAllGroups(
   try {
     const response = await fetch(config.serverApiUrl + "getAllGroups", {
       method: "GET",
+      cache: "no-cache",
       headers: {
         Authorization: token,
       },
@@ -71,10 +72,7 @@ export const DisplayGroups = () => {
   }, []);
 
   return (
-    <main
-      id="site__main"
-      className="2xl:ml-[--w-side]  xl:ml-[--w-side-sm] p-2.5 h-0 mt-0 mb-11"
-    >
+    <div className="2xl:ml-[--w-side]  xl:ml-[--w-side-sm] p-2.5 h-0 mt-0 mb-11">
       <div className="max-w-[1065px] dark:bg-slate-800 mx-auto max-lg:-m-2.5">
         <div className="flex flex-col mt-20">
           <h1 className="text-black text-xl font-bold">Suggestions</h1>
@@ -100,7 +98,7 @@ export const DisplayGroups = () => {
           <div className="carousel carousel-center w-auto p-4 space-x-4 bg-neutral rounded-box">
             {Owngroups ? (
               Owngroups.map((group) => (
-                <a href={"/groups/" + group.group_id}>
+                <Link href={"/groups/" + group.group_id} prefetch={false}>
                   <div
                     id={group.group_id}
                     className="card card-compact w-96 bg-base-100 shadow-xl carousel-item w-96 h-64"
@@ -116,7 +114,7 @@ export const DisplayGroups = () => {
                       <div className="card-actions justify-end"></div>
                     </div>
                   </div>
-                </a>
+                </Link>
               ))
             ) : (
               <p>No groups available.</p>
@@ -136,8 +134,7 @@ export const DisplayGroups = () => {
                   setOwnGroups={setOwnGroups}
                   setServerError={serverError}
                   setSubcribedGroups={setSubcribedGroups}
-                  setInvitedgroups = {setInvitedgroups}
-                 
+                  setInvitedgroups={setInvitedgroups}
                 />
               ))
             ) : (
@@ -151,7 +148,7 @@ export const DisplayGroups = () => {
           <div className="carousel carousel-center w-auto p-4 space-x-4 bg-neutral rounded-box">
             {subcribedGroups ? (
               subcribedGroups.map((group) => (
-                <a href={"/groups/" + group.group_id}>
+                <Link href={"/groups/" + group.group_id} prefetch={false}>
                   <div
                     id={group.group_id}
                     className="card card-compact w-96 bg-base-100 shadow-xl carousel-item w-96 h-64"
@@ -167,7 +164,7 @@ export const DisplayGroups = () => {
                       <div className="card-actions justify-end"></div>
                     </div>
                   </div>
-                </a>
+                </Link>
               ))
             ) : (
               <p>No groups available.</p>
@@ -175,6 +172,6 @@ export const DisplayGroups = () => {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 };

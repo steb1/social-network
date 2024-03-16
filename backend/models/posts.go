@@ -242,9 +242,11 @@ ORDER BY
 	for rows.Next() {
 		var post Post
 		post.User = &User{}
-		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.AuthorID, &post.HasImage, &post.User.Nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email, &post.User.UserID, &post.User.Avatar); err != nil {
+		var nickname sql.NullString
+		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.AuthorID, &post.HasImage, &nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email, &post.User.UserID, &post.User.Avatar); err != nil {
 			return nil, err
 		}
+		post.User.Nickname = lib.GetStringFromNullString(nickname)
 		postIDStr := strconv.Itoa(post.PostID)
 		post.CreatedAt = lib.FormatDateDB(post.CreatedAt)
 		post.Category = PostCategoryRepo.GetPostCategory(post.PostID)
@@ -264,9 +266,9 @@ ORDER BY
 }
 
 // GetUserOwnPosts retrieves posts owned by a specific user from the database
-func (pr *PostRepository) GetUserOwnPosts(userID,CurrentUser int)([]*Post, error) {
+func (pr *PostRepository) GetUserOwnPosts(userID, CurrentUser int) ([]*Post, error) {
 	var query string
-	if (userID==CurrentUser){
+	if userID == CurrentUser {
 		query = `SELECT 
     posts.post_id, 
     posts.title, 
@@ -285,10 +287,9 @@ JOIN
     users ON posts.author_id = users.user_id
 WHERE
 posts.author_id=?
-
 ORDER BY 
     created_at DESC;`
-	}else{
+	} else {
 		query = `SELECT 
     posts.post_id, 
     posts.title, 
@@ -307,9 +308,7 @@ JOIN
     users ON posts.author_id = users.user_id
 WHERE
 posts.author_id=? and posts.visibility="public"
-
 UNION
-
 SELECT 
     posts.post_id, 
     posts.title, 
@@ -331,7 +330,6 @@ JOIN
 WHERE 
 posts.author_id=? and  post_visibilities.user_id_authorized = ?
 	UNION
-
 	SELECT 
 		posts.post_id, 
 		posts.title, 
@@ -352,12 +350,11 @@ posts.author_id=? and  post_visibilities.user_id_authorized = ?
 		users ON posts.author_id = users.user_id
 	WHERE 
 	posts.author_id=? and (posts.visibility = 'private' AND subscriptions.follower_user_id = ?)
-
 ORDER BY 
     created_at DESC;`
 	}
-	
-	rows, err := pr.db.Query(query, userID,userID,CurrentUser,userID,CurrentUser)
+
+	rows, err := pr.db.Query(query, userID, userID, CurrentUser, userID, CurrentUser)
 	if err != nil {
 		return nil, err
 	}

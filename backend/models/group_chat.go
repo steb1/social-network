@@ -76,7 +76,7 @@ func (gcr *GroupChatRepository) DeleteGroupChat(groupChatID int) error {
 	return nil
 }
 
-func (repo *GroupChatRepository) GetMessagesOfAGroup(groupChatID, limit, offset int) (map[string][]MessageResponse, error) {
+func (repo *GroupChatRepository) GetMessagesOfAGroup(groupChatID int) (map[string][]MessageResponse, error) {
 	messages := make(map[string][]MessageResponse)
 	rows, err := repo.db.Query(`SELECT
 		strftime('%Y-%m-%d', sent_time) as date,
@@ -90,8 +90,7 @@ func (repo *GroupChatRepository) GetMessagesOfAGroup(groupChatID, limit, offset 
     	users u ON gc.sender_id = u.user_id
 	WHERE
 		gc.group_id = ?
-	ORDER BY sent_time DESC 
-	LIMIT ?  OFFSET ?;`, groupChatID, limit, offset)
+	ORDER BY sent_time DESC ;`, groupChatID)
 	if err != nil {
 		return nil, err
 	}

@@ -1,25 +1,24 @@
 import config from "@/config";
-import  {useWebSocketContext}  from "@/public/js/websocketContext";
+import { useWebSocketContext } from "@/public/js/websocketContext";
 import { useEffect } from "react";
-
+import Link from "next/link";
 export const GroupRightBar = ({ groupInfo, groupId, invites, setInvites, members }) => {
     const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
     // ---------------------------------- INIT SOCKET ----------------------------------------------
     useEffect(() => {
         // Check if a new JSON message has been received
-        console.log(lastJsonMessage, "----------------not");
+        console.log(lastJsonMessage, "--------groupRightBar--------not");
         switch (lastJsonMessage?.command) {
-                case "messageforuser":
-                    console.log("messageforuser");
-                    break
-                case "handleGroupRequest":
-                    console.log("handleGroupRequest");
-                    break
-                case "inviteUser":
-                    console.log("inviteUser");
-                    break
+            case "messageforuser":
+                console.log("messageforuser");
+                break;
+            case "handleGroupRequest":
+                console.log("handleGroupRequest");
+                break;
+            case "inviteUser":
+                console.log("inviteUser");
+                break;
         }
-    
     });
     const handleInviteUsers = async (e, invitedId) => {
         const message = {
@@ -55,6 +54,7 @@ export const GroupRightBar = ({ groupInfo, groupId, invites, setInvites, members
         try {
             const response = await fetch(config.serverApiUrl + "inviteUser", {
                 method: "POST",
+                cache: "no-cache",
                 headers: {
                     Authorization: token,
                 },
@@ -179,20 +179,20 @@ export const GroupRightBar = ({ groupInfo, groupId, invites, setInvites, members
                         {invites
                             ? invites.map((invites, i) => (
                                   <div key={invites.user_id} className='side-list-item'>
-                                      <a href='timeline-group.html'>
+                                      <a href='#'>
                                           <img
-                                              src='../assets/images/avatars/avatar-5.jpg'
+                                              src={`${config.ServerApiImage}/${invites.avatar}`}
                                               alt=''
                                               className='side-list-image w-9 h-9 rounded-full'
                                           />
                                       </a>
                                       <div className='flex-1'>
-                                          <a href='timeline-group.html'>
+                                          <Link href={`/profile/${invites.user_id}`}>
                                               <h4 className='side-list-title'>
                                                   {" "}
                                                   {`${invites.first_name} ${invites.last_name}`}{" "}
                                               </h4>
-                                          </a>
+                                          </Link>
                                       </div>
                                       <button
                                           onClick={(e) => handleInviteUsers(e, invites.user_id)}

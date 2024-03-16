@@ -35,6 +35,7 @@ type ChatResponse struct {
 	MessagesPreview   []*models.MessagePreview            `json:"messagesPreview"`
 	Messages          map[string][]models.MessageResponse `json:"messages"`
 	Groups            []*models.GroupInfo                 `json:"groups"`
+	User              []models.User
 }
 
 type Test struct {
@@ -58,36 +59,19 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	to := r.URL.Query().Get("to")
-	toID := models.UserRepo.GetIDFromUsernameOrEmail(to)
-
-	// Check if it's a user
-	userExists, _ := models.UserRepo.UserExists(toID)
-
-	// Check if it's a group
-	idGroup, err := strconv.Atoi(to)
-	groupExists := false
-
-	if err == nil {
-		_, groupErr := models.MembershipRepo.GetAllUsersByGroupID(idGroup)
-		groupExists = groupErr == nil
-	}
-
-	// If ni user ni group
-	if !userExists && !groupExists {
-		WriteJSON(w, http.StatusNotFound, nil)
-	}
-
 	id, _ := strconv.Atoi(session.UserID)
+	// Check if it's a user
 
-	user, err := models.UserRepo.GetUserByID(id)
-	if err != nil {
-		log.Println("🚀 ~ funcHandleGetProfileGetUserByID ~ err:", err)
+	userExists, _ := models.UserRepo.UserExists(id)
+	if !userExists {
+		log.Println("🚀 ~ funcHandleGetProfileGetFollowing ~ err:", userExists)
 		var apiError ApiError
-		apiError.Error = "Not found user"
-		WriteJSON(w, http.StatusNotFound, apiError)
+		apiError.Error = "Not found followings"
+		WriteJSON(w, http.StatusInternalServerError, apiError)
 		return
 	}
+
+	user, err := models.UserRepo.GetUserByID(id)
 
 	ableToTalk, err := models.SubscriptionRepo.GetAbleToTalk(user.UserID)
 	if err != nil {
@@ -116,16 +100,33 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 		log.Println("🚀 ~ funcGetMessageResponse ~ GetAllGroupsForUser ~ err:", err)
 	}
 
-	messages := map[string][]models.MessageResponse{}
-	if userExists {
-		offset, error := strconv.Atoi(r.URL.Query().Get("offset"))
-		if error != nil {
-			offset = 0
-		}
-		error = nil
+	var tabUsers []models.User
+	mess, err := models.MessageRepo.GetMessagePreviewsForAnUser(user.UserID)
+	if err != nil {
+		log.Println("🚀 ~ GetMessagePreviewsForAnUser ~ err:", err)
+		var apiError ApiError
+		apiError.Error = "Not found followings"
+		WriteJSON(w, http.StatusInternalServerError, apiError)
+		return
+	}
 
-		limit := 20
-		messages, _ = models.MessageRepo.GetMessagesBetweenUsers(user.UserID, toID, offset, limit)
+	messages := map[string][]models.MessageResponse{}
+
+	if mess[0].Genre == "user" {
+		// offset, error := strconv.Atoi(r.URL.Query().Get("offset"))
+		// if error != nil {
+		// 	offset = 0
+		// }
+		// error = nil
+
+		// toTalk, _ := models.UserRepo.GetUserByID(mess[0].UserOrGroupID)
+
+		// if err == nil {
+		// 	tabUsers = append(tabUsers, *toTalk)
+		// }
+
+		// limit := 20
+		messages, _ = models.MessageRepo.GetMessagesBetweenUsers(user.UserID, mess[0].UserOrGroupID)
 		if err != nil {
 			log.Println("��� ~ funcHandleGetProfileGetMessagesBetweenUsers ~ err:", err)
 			var apiError ApiError
@@ -133,17 +134,16 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 			WriteJSON(w, http.StatusInternalServerError, apiError)
 			return
 		}
-	}
+	} else {
+		// offset, error := strconv.Atoi(r.URL.Query().Get("offset"))
+		// if error != nil {
+		// 	offset = 0
+		// }
+		// error = nil
 
-	if groupExists {
-		offset, error := strconv.Atoi(r.URL.Query().Get("offset"))
-		if error != nil {
-			offset = 0
-		}
-		error = nil
+		// limit := 20
 
-		limit := 20
-		messages, err = models.GroupChatRepo.GetMessagesOfAGroup(idGroup, limit, offset)
+		messages, err = models.GroupChatRepo.GetMessagesOfAGroup(mess[0].UserOrGroupID)
 		if err != nil {
 			log.Println("��� ~ func GetMessagesOfAGroup ~ err:", err)
 			var apiError ApiError
@@ -161,6 +161,7 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 		MessagesPreview:   messagesPreview,
 		Groups:            Groups,
 		Messages:          messages,
+		User:              tabUsers,
 	}
 
 	WriteJSON(w, http.StatusOK, chatResponse)
@@ -168,7 +169,6 @@ func GetMessageResponse(w http.ResponseWriter, r *http.Request) {
 
 func HandleGetProfile(w http.ResponseWriter, r *http.Request) {
 	session, ok := IsAuthenticated(r)
-
 	var apiError ApiError
 	if !ok {
 		apiError.Error = "StatusUnauthorized"
@@ -200,8 +200,8 @@ func HandleGetProfile(w http.ResponseWriter, r *http.Request) {
 		WriteJSON(w, http.StatusNotFound, apiError)
 		return
 	}
-	currentUser,_:=strconv.Atoi(sessions.UserID)
-	postOwned, err := models.PostRepo.GetUserOwnPosts(user.UserID,currentUser)
+	currentUser, _ := strconv.Atoi(sessions.UserID)
+	postOwned, err := models.PostRepo.GetUserOwnPosts(user.UserID, currentUser)
 	if err != nil {
 		log.Println("🚀 ~ funcHandleGetProfileGetUserOwnPosts ~ err:", err)
 		var apiError ApiError

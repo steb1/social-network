@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"server/lib"
 )
 
 // Membership structure represents the "memberships" table
@@ -138,10 +139,13 @@ func (cm *MembershipRepository) GetAllRequestByGroupID(groupID int) ([]User, err
 	var users []User
 	for rows.Next() {
 		var user User
+		var nickname sql.NullString
+
 		err := rows.Scan(
 			&user.UserID, &user.Email, &user.Password, &user.FirstName, &user.LastName,
-			&user.DateOfBirth, &user.Avatar, &user.Nickname, &user.AboutMe, &user.AccountType,
+			&user.DateOfBirth, &user.Avatar, &nickname, &user.AboutMe, &user.AccountType,
 		)
+		user.Nickname = lib.GetStringFromNullString(nickname)
 		if err != nil {
 			return nil, err
 		}
