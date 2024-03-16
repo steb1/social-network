@@ -36,8 +36,6 @@ func HandleGetNotifications(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(userId)
-
 	if r.Method == http.MethodGet {
 
 		notifications, err := models.NotifRepo.GetNotificationsByUserID(userId)
