@@ -14,6 +14,9 @@ import { AddStoryGroup } from "./addStroryGroup";
 
 export async function fetchGroupDetail(setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId, setIsowner, setMembers, setInvites) {
 	let token = document.cookie.split("=")[1];
+	if (!token) {
+		return
+	}
 	try {
 		const response = await fetch(config.serverApiUrl + "getGroupDetail", {
 			method: "POST",

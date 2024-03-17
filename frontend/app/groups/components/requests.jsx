@@ -98,10 +98,10 @@ export const Requests = ({
           </button>
         </div>
       </div>
-      <div className="flex flex-row w-5 h-5 px-1 my-auto gap-3  items-center rounded-full">
+      <div className="flex flex-row w-10 h-10 px-1 my-auto gap-3  items-center rounded-full">
         <button
           onClick={(e) => handleRequest(e, "reject", request.user_id)}
-          className="hover:bg-slate-100"
+          className="hover:bg-slate-600"
         >
           <img src="../assets/images/group/delete.png" />
         </button>
