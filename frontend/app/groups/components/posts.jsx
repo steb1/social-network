@@ -85,7 +85,6 @@ export const PostText = ({
     const handleLikeClick = async (PostID) => {
         const formData = new FormData();
         formData.append("PostID", PostID);
-        console.log(PostID, "feeeurr");
 
         const response = await fetch(config.serverApiUrl + "likePostGroup", {
             method: "POST",

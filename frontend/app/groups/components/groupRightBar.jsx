@@ -7,16 +7,12 @@ export const GroupRightBar = ({ groupInfo, groupId, invites, setInvites, members
     // ---------------------------------- INIT SOCKET ----------------------------------------------
     useEffect(() => {
         // Check if a new JSON message has been received
-        console.log(lastJsonMessage, "--------groupRightBar--------not");
         switch (lastJsonMessage?.command) {
             case "messageforuser":
-                console.log("messageforuser");
                 break;
             case "handleGroupRequest":
-                console.log("handleGroupRequest");
                 break;
             case "inviteUser":
-                console.log("inviteUser");
                 break;
         }
     });
@@ -26,12 +22,11 @@ export const GroupRightBar = ({ groupInfo, groupId, invites, setInvites, members
             groupId: groupId,
             time: Date.now(),
         };
-        console.log("1");
+
         const WebSocketMessage = {
             command: "inviteUser",
             body: message,
         };
-        // console.log(e);
 
         let token = document.cookie.split("=")[1];
         if (!token) {
@@ -41,15 +36,6 @@ export const GroupRightBar = ({ groupInfo, groupId, invites, setInvites, members
         const formData = new FormData();
         formData.append("groupId", groupId);
         formData.append("invitedId", invitedId);
-
-        if (token) {
-            // Use the token as needed
-            console.log("Token:", token);
-            console.log(groupId);
-            console.log(invitedId);
-        } else {
-            console.log("Token not found in cookies");
-        }
 
         try {
             const response = await fetch(config.serverApiUrl + "inviteUser", {
@@ -209,52 +195,3 @@ export const GroupRightBar = ({ groupInfo, groupId, invites, setInvites, members
         </div>
     );
 };
-
-// async function handleInviteUsers(e, groupId, invitedId, setInvites) {
-//     // console.log(e);
-
-//     let token = document.cookie.split("=")[1];
-//     if (!token) {
-//         return;
-//     }
-
-//     const formData = new FormData();
-//     formData.append("groupId", groupId);
-//     formData.append("invitedId", invitedId);
-
-//     if (token) {
-//         // Use the token as needed
-//         console.log("Token:", token);
-//     } else {
-//         console.log("Token not found in cookies");
-//     }
-
-//     try {
-//         const response = await fetch(config.serverApiUrl + "inviteUser", {
-//             method: "POST",
-//             headers: {
-//                 Authorization: token,
-//             },
-//             credentials: "include",
-//             body: formData,
-//         });
-
-//         if (response.ok) {
-//             const contentType = response.headers.get("content-type");
-//             if (contentType && contentType.includes("application/json")) {
-//                 const data = await response.json();
-//                 e.target.classList.add("btn-disabled");
-//                 e.target.classList.remove("bg-primary");
-//                 //setInvites(data.Followers)
-//             } else {
-//                 console.error("Response is not in JSON format");
-//             }
-//         } else {
-//             const errorResponse = await response.json();
-//             const errorMessage = errorResponse.error || "An error occurred.";
-//             console.error("No Group retrieved:", errorMessage);
-//         }
-//     } catch (error) {
-//         console.error("Error while fetching groups:", error);
-//     }
-// }
