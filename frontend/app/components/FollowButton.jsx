@@ -11,7 +11,6 @@ const FollowButton = ({ FollowStatus, userId, cookie }) => {
     useWebSocketContext();
 
   const follow = async () => {
-    console.log("--------nnnn", userId);
     const message = {
       userId: userId,
       time: Date.now(),
@@ -38,7 +37,6 @@ const FollowButton = ({ FollowStatus, userId, cookie }) => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
         if (data.type === "Followed") {
           setFollowStatus("Unfollow");
         }

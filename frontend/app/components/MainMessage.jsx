@@ -32,10 +32,6 @@ const MainMessage = ({ to }) => {
     const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
     // ---------------------------------- INIT SOCKET ----------------------------------------------
     useEffect(() => {
-        cmsRef.current.addEventListener("scroll", () => {
-            console.log("Scrolling....");
-        });
-
         fetchMessages(
             (to = { to }),
             setMessages,
@@ -52,17 +48,14 @@ const MainMessage = ({ to }) => {
         );
 
         // Check if a new JSON message has been received
-        console.log(lastJsonMessage, "---------MainMessage-------not");
         switch (lastJsonMessage?.command) {
             case "messageforuser":
-                console.log("------------message----------", lastJsonMessage);
                 if (
                     Chatter &&
                     Chatter[0] &&
                     lastJsonMessage.body.sender !== Chatter[0]?.nickname &&
                     lastJsonMessage.body.sender !== Chatter[0]?.email
                 ) {
-                    console.log("Je suis retourné...");
                     return;
                 }
 
@@ -70,17 +63,10 @@ const MainMessage = ({ to }) => {
                 sendMessageWeb("messagepreview", "");
                 break;
             case "messageforgroup":
-                console.log("------------messageFORGROUPPP----------", lastJsonMessage);
-                console.log("Chatterrrr", Chatter);
-                console.log("GROUPE CHATTEEER", GroupChatter);
-                console.log("GROUPPPP", group);
                 const senderInGroup = lastJsonMessage.body.receiver == group?.group_id && !Chatter;
-                console.log("SenderIngroup:", senderInGroup);
                 if (!senderInGroup) {
-                    console.log("finishh");
                     return;
                 }
-                console.log("J'ai continué....");
                 let currentDate = new Date(Date.now());
                 let formattedDate = currentDate.toISOString().split("T")[0];
                 setMessages((prevState) => {
@@ -96,12 +82,12 @@ const MainMessage = ({ to }) => {
                 sendMessageWeb("messagepreview", "");
                 break;
             case "handleGroupRequest":
-                console.log("handleGroupRequest");
                 break;
             case "inviteUser":
-                console.log("inviteUser");
+                break;
             case "messagepreview":
                 setMessagesPreviews(lastJsonMessage.body);
+                break;
             default:
         }
     }, [lastJsonMessage]);
@@ -120,16 +106,6 @@ const MainMessage = ({ to }) => {
             alert("No empty message");
             return;
         }
-        console.log("SENDEEEER", Sender);
-        console.log("AvatarSender", AvatarSender);
-        console.log(
-            Chatter[0]?.nickname,
-            "---------",
-            Chatter[0]?.email,
-            "---------",
-            String(GroupChatter.GroupID),
-            "totttttttttttttttt"
-        );
 
         const message = {
             sender: Sender,

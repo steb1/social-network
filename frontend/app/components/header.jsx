@@ -7,65 +7,47 @@ import { useWebSocketContext } from "@/public/js/websocketContext";
 import { CustomAlert } from "./CustomAlert";
 
 const Header = () => {
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState(""); 
-  let { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
-  // ---------------------------------- INIT SOCKET ----------------------------------------------
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+    let { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
+    // ---------------------------------- INIT SOCKET ----------------------------------------------
 
-  useEffect(() => {
-    // Attach the onClose callback
-    // Check if a new JSON message has been received
-    switch (lastJsonMessage?.command) {
-        
-      case "handleGroupRequest":
-        console.log("handleGroupRequest");
-        
-        setShowAlert(true);
-        setAlertMessage(
-          `${lastJsonMessage.body.sender} is interested in joining your group "${lastJsonMessage.body.group_name}".`
-        );
-        break;
-      case "inviteUser":
-        console.log("inviteUser");
-        
-        setShowAlert(true);
-        setAlertMessage(
-          `${lastJsonMessage.body.sender} has invited you to join the group "${lastJsonMessage.body.group_name}".`
-        );
-        break;
-      case "followPrivate":
-        console.log("followPrivate");
-        
-        setShowAlert(true);
-        setAlertMessage(
-          `${lastJsonMessage.body.sender} wants to follow your private account.`
-        );
-        break;
-      case "eventCreated" :
-        console.log("eventCreated");
-        
-        setShowAlert(true);
-        setAlertMessage(
-          `${lastJsonMessage.body.sender} created an event in ${lastJsonMessage.body.group_name}.`
-        );
-        break
-     case "messageforgroup" :
-            console.log("eventCreated");
-            
-            setShowAlert(true);
-            setAlertMessage(
-              `${lastJsonMessage.body.sender} sent a message in group.`
-            );     
-     case "messageforuser" :
-            console.log("eventCreated");
-            
-            setShowAlert(true);
-            setAlertMessage(
-              `${lastJsonMessage.body.sender} sent a message.`
-            );     
-    }
+    useEffect(() => {
+        // Attach the onClose callback
+        // Check if a new JSON message has been received
+        switch (lastJsonMessage?.command) {
+            case "handleGroupRequest":
+                setShowAlert(true);
+                setAlertMessage(
+                    `${lastJsonMessage.body.sender} is interested in joining your group "${lastJsonMessage.body.group_name}".`
+                );
+                break;
+            case "inviteUser":
+                "inviteUser";
 
-  }, [lastJsonMessage]);
+                setShowAlert(true);
+                setAlertMessage(
+                    `${lastJsonMessage.body.sender} has invited you to join the group "${lastJsonMessage.body.group_name}".`
+                );
+                break;
+            case "followPrivate":
+                setShowAlert(true);
+                setAlertMessage(`${lastJsonMessage.body.sender} wants to follow your private account.`);
+                break;
+            case "eventCreated":
+                setShowAlert(true);
+                setAlertMessage(
+                    `${lastJsonMessage.body.sender} created an event in ${lastJsonMessage.body.group_name}.`
+                );
+                break;
+            case "messageforgroup":
+                setShowAlert(true);
+                setAlertMessage(`${lastJsonMessage.body.sender} sent a message in group.`);
+            case "messageforuser":
+                setShowAlert(true);
+                setAlertMessage(`${lastJsonMessage.body.sender} sent a message.`);
+        }
+    }, [lastJsonMessage]);
 
     useEffect(() => {
         let name = document.getElementById("GroupName");
@@ -137,35 +119,30 @@ async function handleCreateGroup() {
         return;
     }
 
-    console.log("clicked");
+    ("clicked");
     let requestData = {
         name: name.value.trim(),
         description: description.value.trim(),
     };
 
     let token = document.cookie.split("=")[1];
-
-    if (token) {
-        // Use the token as needed
-        console.log("Token:", token);
-    } else {
-        console.log("Token not found in cookies");
+    if (!token) {
+        return;
     }
 
     try {
         const response = await fetch(config.serverApiUrl + "createGroup", {
-          method: "POST",
-          cache: "no-cache",
-          headers: {
-            Authorization: token,
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify(requestData),
+            method: "POST",
+            cache: "no-cache",
+            headers: {
+                Authorization: token,
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify(requestData),
         });
 
         if (response.ok) {
-            console.log("ooook");
             name.value = "";
             description.value = "";
             button.classList.add("btn-disabled");

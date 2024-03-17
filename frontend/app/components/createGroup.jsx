@@ -104,13 +104,6 @@ async function handleCreateGroup() {
 
     let token = document.cookie.split("=")[1];
 
-    if (token) {
-        // Use the token as needed
-        console.log("Token:", token);
-    } else {
-        console.log("Token not found in cookies");
-    }
-
     try {
         const response = await fetch(config.serverApiUrl + "createGroup", {
             method: "POST",
@@ -123,7 +116,6 @@ async function handleCreateGroup() {
         });
 
         if (response.ok) {
-            console.log("ooook");
             name.value = "";
             description.value = "";
             button.classList.add("btn-disabled");

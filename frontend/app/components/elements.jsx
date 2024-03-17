@@ -18,13 +18,6 @@ export const Element = () => {
             return;
         }
 
-        if (token) {
-            // Use the token as needed
-            console.log("Token:", token);
-        } else {
-            console.log("Token not found in cookies");
-        }
-
         try {
             const response = await fetch(config.serverApiUrl + "getNotifications", {
                 method: "GET",
@@ -39,9 +32,7 @@ export const Element = () => {
                 const contentType = response.headers.get("content-type");
                 if (contentType && contentType.includes("application/json")) {
                     const data = await response.json();
-                    console.log("------ data", data.notifications);
                     setNotifications(data.notifications);
-                    console.log("------ previews", data.messagesPreview);
                     setMessagesPreview(data.messagesPreview);
                 } else {
                     console.error("Response is not in JSON format");
@@ -62,13 +53,6 @@ export const Element = () => {
             return;
         }
 
-        if (token) {
-            // Use the token as needed
-            console.log("Token:", token);
-        } else {
-            console.log("Token not found in cookies");
-        }
-
         const formData = new FormData();
         formData.append("notifId", id);
 
@@ -85,8 +69,6 @@ export const Element = () => {
 
             if (response.ok) {
                 fetchNotification();
-            } else {
-                console.log("Notif not updated");
             }
         } catch (error) {
             console.error("Error while fetching groups:", error);
@@ -98,35 +80,27 @@ export const Element = () => {
     useEffect(() => {
         fetchNotification();
         // Check if a new JSON message has been received
-        // console.log(lastJsonMessage, "--------group option--------not");
         switch (lastJsonMessage?.command) {
             case "handleGroupRequest":
-                console.log("handleGroupRequest");
                 fetchNotification();
                 break;
             case "inviteUser":
-                console.log("----------------------inviteUser");
                 fetchNotification();
                 break;
             case "eventCreated":
-                console.log("eventCreated");
                 fetchNotification();
                 break;
             case "followPrivate":
-                console.log("followPrivate");
                 fetchNotification();
                 break;
             case "messagePreview":
-                console.log("messagePreview");
                 fetchNotification();
                 break;
             case "messageforuser":
-                console.log("messagePreview");
                 fetchNotification();
                 setNewmessage(true);
                 break;
             case "messageforgroup":
-                console.log("messagePreview");
                 fetchNotification();
                 setNewmessage(true);
                 break;
@@ -139,8 +113,6 @@ export const Element = () => {
 
     numberofnotifs = countElementsWithCondition(notifications, (notification) => !notification.is_read);
 
-    console.log("------numberofnotifs-------", numberofnotifs);
-
     //setNumberofnotifs(numberofnotifs)
 
     const deleteAllNotif = async () => {
@@ -149,12 +121,6 @@ export const Element = () => {
             return;
         }
 
-        if (token) {
-            // Use the token as needed
-            console.log("Token:", token);
-        } else {
-            console.log("Token not found in cookies");
-        }
         try {
             const response = await fetch(config.serverApiUrl + "deleteAllNotif", {
                 method: "GET",
@@ -167,7 +133,6 @@ export const Element = () => {
                 const contentType = response.headers.get("content-type");
                 if (contentType && contentType.includes("application/json")) {
                     const data = await response.json();
-                    console.log("------ data", data.notifications);
                     setNotifications(data.notifications);
                 } else {
                     console.error("Response is not in JSON format");
