@@ -41,8 +41,8 @@ export const PostText = ({ posts, setPosts }) => {
       console.log("Comment cannot be empty");
       return;
     }
-    if (commentContent.length > 400) {
-      console.log("Comment exceeds character limit (400 characters)");
+    if (commentContent.length > 1000) {
+      console.log("Comment exceeds character limit (1000 characters)");
       return;
     }
     const commentImg = form.querySelector(
@@ -164,11 +164,11 @@ export const PostText = ({ posts, setPosts }) => {
                 </div>
               </div>
             </div>
-            <div className="sm:px-4 p-2.5 pt-0">
+            <div className="sm:px-4 p-2.5 pt-0 break-words whitespace-pre-line">
               <p className="font-normal"> {post.content}</p>
               {/* categories */}
               <div className="flex gap-1 text-xs font-semibold">
-                {post.category.map((category, index) => (
+                {post?.category.map((category, index) => (
                   <span key={index} className="text-blue-500">
                     #{category}
                   </span>
@@ -342,7 +342,7 @@ export const PostText = ({ posts, setPosts }) => {
                 <label
                   htmlFor={`chooseImageC-${post.post_id}`}
                   className={`flex items-center w-[calc(9%)] absolute top-1 right-1 gap-2 font-semibold  cursor-pointer hover:bg-opacity-80 p-1 px-1.5 rounded-xl transition-all hover:bg-red-300 ${imageSelected[post.post_id] ? "bg-red-600/60  dark:hover:bg-red-600/70 dark:bg-red-600/60" : "bg-pink-100/60"}  dark:bg-white/10 dark:hover:bg-white/20`}
-                  >
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="w-6 h-6 stroke-pink-600 fill-pink-200/70"

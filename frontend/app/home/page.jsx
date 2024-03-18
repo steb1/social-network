@@ -11,7 +11,7 @@ const HomePage = () => {
     return (
         <Layout>
             <div className='flex mt-5'>
-                <div className='flex-1 pt-8 px-5  xl:space-y-6 space-y-3 lg:ml-80'>
+                <div className='flex-1 pt-8 px-5  xl:space-y-6 space-y-3 lg:ml-80 max-w-[950px]'>
                     {/* Add Story Section */}
                     <AddStory />
                     {/* Posts Section */}
