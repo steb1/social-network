@@ -102,7 +102,7 @@ func (repo *NotificationRepository) GetNotificationsByUserID(userID int) ([]Noti
 			return nil, err
 		}
 
-		if notification.NotificationType == "event" {
+		if notification.NotificationType == "eventCreated" {
 			notification.Event, _ = EventRepo.GetEvent(int(notification.EventID.Int64))
 		}
 

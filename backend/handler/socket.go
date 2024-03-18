@@ -157,9 +157,13 @@ func handleEventNotif(userInfo UserInfo, userId int, command string, messageBody
 
 	groupId := (bodyMap["groupId"])
 
-	intGroupId, _ := strconv.Atoi(fmt.Sprintf("%v", groupId))
+	intGroupId, err := strconv.Atoi(fmt.Sprintf("%v", groupId))
 
-	eventid := (bodyMap["eventid"])
+	if err !=  nil {
+		fmt.Println("------intGroupId-----", intGroupId)
+	}
+
+	eventid := (bodyMap["id"])
 	intEventid, _ := strconv.Atoi(fmt.Sprintf("%v", eventid))
 
 	AllUsersOfGroup, err := models.MembershipRepo.GetAllUsersByGroupID(intGroupId)
@@ -167,6 +171,8 @@ func handleEventNotif(userInfo UserInfo, userId int, command string, messageBody
 	if err != nil {
 		return
 	}
+
+	fmt.Println("------intGroupId-----", intGroupId)
 
 	group, _ := models.GroupRepo.GetGroup(intGroupId)
 	var messagepattern MessagePattern
@@ -179,7 +185,6 @@ func handleEventNotif(userInfo UserInfo, userId int, command string, messageBody
 		if user.UserID != userId {
 			tosend, exists := connections[user.UserID]
 
-
 			if exists {
 				if err := EnvoyerMessage(tosend, command, messagepattern); err != nil || !exists{
 					log.Println("Error writing message", command, "to connection:", err)
@@ -189,13 +194,15 @@ func handleEventNotif(userInfo UserInfo, userId int, command string, messageBody
 			var notification models.Notification
 
 			notification.CreatedAt = time.Now().String()
-			notification.GroupID = sql.NullInt64{Int64: int64(messagepattern.GroupId), Valid: true}
+			notification.GroupID = sql.NullInt64{Int64: int64(intGroupId), Valid: true}
 
 			notification.IsRead = false
 			notification.SenderID = sender.UserID
 			notification.UserID = user.UserID
 			notification.NotificationType = command
 			notification.EventID = sql.NullInt64{Int64: int64(intEventid), Valid: true}
+
+			fmt.Println("-------", messagepattern.GroupId, "++++++++", intEventid)
 
 			err := models.NotifRepo.CreateNotification(&notification)
 
@@ -434,6 +441,7 @@ func handleSendInviteNotif(messageType string, messageBody interface{}, user *mo
 	tosend, exists := connections[invitedUser.UserID]
 
 	fmt.Println(len(connections), "len connections")
+
 
 	if err := EnvoyerMessage(tosend, messageType, messagepattern); err != nil || !exists {
 		log.Println("Error writing message", messageType, "to connection:", err)

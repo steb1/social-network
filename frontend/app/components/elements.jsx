@@ -34,6 +34,7 @@ export const Element = () => {
                     const data = await response.json();
                     setNotifications(data.notifications);
                     setMessagesPreview(data.messagesPreview);
+                    console.log("-------", data);
                 } else {
                     console.error("Response is not in JSON format");
                 }
@@ -280,7 +281,7 @@ export const Element = () => {
                                               href={
                                                   notification.notification_type === "inviteUser"
                                                       ? "/groups"
-                                                      : notification.notification_type === "requestGroup"
+                                                      : notification.notification_type === "requestGroup" || notification.notification_type === "eventCreated"
                                                         ? `/groups/${notification.Group?.group_id}`
                                                         : notification.notification_type === "followPrivate"
                                                           ? `/followRequests`
@@ -292,7 +293,7 @@ export const Element = () => {
                                               <div className='relative w-12 h-12 shrink-0'>
                                                   {" "}
                                                   <img
-                                                      src='assets/images/avatars/avatar-3.jpg'
+                                                      src='../assets/images/avatars/avatar-1.jpg'
                                                       alt=''
                                                       className='object-cover w-full h-full rounded-full'
                                                   />
@@ -310,7 +311,9 @@ export const Element = () => {
                                                             ? `requests to join the group `
                                                             : notification.notification_type === "followPrivate"
                                                               ? `wants to follow your private account.`
-                                                              : ""}
+                                                              : notification?.notification_type === "eventCreated" 
+                                                              ? `created an event "${notification?.Event?.title}" in group`
+                                                                : ""}
                                                       {notification.Group?.title ? (
                                                           <>
                                                               <b className='font-bold mr-1'>

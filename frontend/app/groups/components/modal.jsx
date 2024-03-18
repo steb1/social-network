@@ -116,6 +116,7 @@ export const Modal = ({
                     fetchGroupDetail(setPosts, setGroup, setEvents, setRequests, setMessages, setServerError, groupId);
                     const id = data?.id;
                     message.id = id;
+                    console.log("----id-----", message);
                     sendJsonMessage(WebSocketMessage);
                 } else {
                     console.error("Response is not in JSON format");
