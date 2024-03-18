@@ -45,6 +45,8 @@ export const Modal = ({ setPosts, posts }) => {
                 checkboxes.forEach((checkbox) => {
                     checkbox.checked = false;
                 });
+                let image=document.querySelector('input[name="media_post"]')
+                image.value="";
             }
         } catch (error) {
             console.error("Erreur lors de la lecture de la réponse JSON :", error);
