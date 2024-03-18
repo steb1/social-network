@@ -30,7 +30,6 @@ export const Modal = ({
             body: NewformData,
         });
         try {
-            const jsonData = await response.json();
             if (response.ok) {
                 UIkit.modal("#create-statusGroup").hide();
                 fetchGroupDetail(
@@ -75,6 +74,8 @@ export const Modal = ({
             !DescriptionEvent.value.trim() ||
             !EventDate.value.trim() ||
             !EventTitle.value.trim() ||
+            DescriptionEvent.value.length > 100 ||
+            EventTitle.value.length > 100 ||
             selectedDate < currentDate
         ) {
             alert("Please fill the form properly");
@@ -204,71 +205,6 @@ export const Modal = ({
                                     className='file-input file-input-bordered file-input-xs w-full max-w-xs'
                                 />
                             </button>
-                            <div className='btn' onClick={() => document.getElementById("my_modal_1").showModal()}>
-                                Categories
-                            </div>
-                            <dialog id='my_modal_1' className='modal'>
-                                <div className='modal-box w-[400px]'>
-                                    <div className='modal-action flex flex-col dark:border-slate-700'>
-                                        <div className='p-5 flex justify-between items-center'>
-                                            <input
-                                                className='checkbox checkbox-info select_category'
-                                                type='checkbox'
-                                                name='category'
-                                                id='Technology'
-                                                value='Technology'
-                                            />
-                                            <label htmlFor='Technology'>Technology</label>
-                                            <input
-                                                className='checkbox checkbox-info select_category'
-                                                type='checkbox'
-                                                name='category'
-                                                id='Health'
-                                                value='Health'
-                                            />
-                                            <label htmlFor='Health'>Health</label>
-                                            <input
-                                                className='checkbox checkbox-info select_category'
-                                                type='checkbox'
-                                                name='category'
-                                                id='Politic'
-                                                value='Politics'
-                                            />
-                                            <label htmlFor='Politic'>Politics</label>
-                                        </div>
-                                        <div className='p-5 flex justify-between items-center'>
-                                            <input
-                                                className='checkbox checkbox-info select_category'
-                                                type='checkbox'
-                                                name='category'
-                                                id='Sport'
-                                                value='Sports'
-                                            />
-                                            <label htmlFor='Sport'>Sports</label>
-                                            <input
-                                                className='checkbox checkbox-info select_category'
-                                                type='checkbox'
-                                                name='category'
-                                                id='Religion'
-                                                value='Religion'
-                                            />
-                                            <label htmlFor='Religion'>Religion</label>
-                                            <input
-                                                className='checkbox checkbox-info select_category'
-                                                type='checkbox'
-                                                name='category'
-                                                id='Other'
-                                                value='Others'
-                                            />
-                                            <label htmlFor='Other'>Others</label>
-                                        </div>
-                                        <form method='dialog'>
-                                            {/* if there is a button in form, it will close the modal */}
-                                            <button className='btn'>Close</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </dialog>
                         </div>
                         <div className='p-5 flex justify-between items-center'>
                             <div className='flex items-center gap-2'>

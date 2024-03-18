@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -42,7 +43,7 @@ type SigninResponse struct {
 }
 
 func SigninHandler(w http.ResponseWriter, r *http.Request) {
-	lib.AddCorsPost(w,r)
+	lib.AddCorsPost(w, r)
 
 	if r.Method == "OPTIONS" {
 		return
@@ -130,7 +131,7 @@ func IsTokenValid(sessionToken string) (models.Session, bool) {
 }
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
-	lib.AddCorsGet(w,r)
+	lib.AddCorsGet(w, r)
 
 	var user models.User
 	var apiError ApiError
@@ -242,6 +243,18 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	if avatarFilename == "" {
 		avatarFilename = "blankProfile.png"
+	}
+
+	if strings.TrimSpace(nickname) == "" {
+		fmt.Println("coucou")
+		splitted := strings.Split(email, "@")[0]
+		id := models.UserRepo.GetIDFromUsernameOrEmail(splitted)
+		if id != 0 {
+			randomNumber := rand.Intn(1000)
+			nickname = fmt.Sprintf("%s%d", splitted, randomNumber)
+		} else {
+			nickname = splitted
+		}
 	}
 
 	user.LastName = lastname

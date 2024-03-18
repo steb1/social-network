@@ -93,7 +93,7 @@ async function handleCreateGroup() {
     let description = document.getElementById("GroupDescription");
     let button = document.getElementById("createGroup");
 
-    if (name.value.trim().length == 0 || description.value.trim().length == 0) {
+    if (name.value.trim().length == 0 || description.value.trim().length == 0 || name.value.length > 30  || description.value.length > 50) {
         return;
     }
 
