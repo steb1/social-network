@@ -364,12 +364,14 @@ ORDER BY
 	}
 	defer rows.Close()
 	var posts []*Post
+	var nickname sql.NullString
 	for rows.Next() {
 		var post Post
 		post.User = &User{}
-		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.HasImage, &post.User.Nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email, &post.User.Avatar, &post.AuthorID); err != nil {
+		if err := rows.Scan(&post.PostID, &post.Title, &post.Content, &post.CreatedAt, &post.Visibility, &post.HasImage, &nickname, &post.User.FirstName, &post.User.LastName, &post.User.Email, &post.User.Avatar, &post.AuthorID); err != nil {
 			return nil, err
 		}
+		post.User.Nickname = lib.GetStringFromNullString(nickname)
 		postIDStr := strconv.Itoa(post.PostID)
 		post.CreatedAt = lib.FormatDateDB(post.CreatedAt)
 		post.Category = PostCategoryRepo.GetPostCategory(post.PostID)
