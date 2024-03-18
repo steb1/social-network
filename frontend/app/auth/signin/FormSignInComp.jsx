@@ -43,6 +43,7 @@ const FormSignInComp = () => {
           localStorage.setItem("nickname", data.user?.nickname);
           localStorage.setItem("firstname", data.user?.first_name);
           localStorage.setItem("lastname", data.user?.last_name);
+          window.location.reload();
           router.replace("/");
         } else {
           const errorResponse = await response.json();
