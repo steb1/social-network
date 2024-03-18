@@ -179,8 +179,11 @@ func handleEventNotif(userInfo UserInfo, userId int, command string, messageBody
 		if user.UserID != userId {
 			tosend, exists := connections[user.UserID]
 
-			if err := EnvoyerMessage(tosend, command, messagepattern); err != nil || !exists{
-				log.Println("Error writing message", command, "to connection:", err)
+
+			if exists {
+				if err := EnvoyerMessage(tosend, command, messagepattern); err != nil || !exists{
+					log.Println("Error writing message", command, "to connection:", err)
+				}
 			}
 
 			var notification models.Notification
@@ -227,8 +230,10 @@ func sendFollowPrivate(userInfo UserInfo, userId int, command string, messageBod
 
 	fmt.Println(len(connections), "len connections")
 
-	if err := EnvoyerMessage(tosend, command, messagepattern); err != nil || !exists {
-		log.Println("Error writing message", command, "to connection:", err)
+	if exists {
+		if err := EnvoyerMessage(tosend, command, messagepattern); err != nil || !exists {
+			log.Println("Error writing message", command, "to connection:", err)
+		}
 	}
 
 	var notification models.Notification
@@ -472,9 +477,12 @@ func handleSendGroupOwnerNotif(messageType string, messageBody interface{}, user
 
 	tosend, exists := connections[receiver.UserID]
 
-	if err := EnvoyerMessage(tosend, messageType, messagepattern); err != nil || !exists {
-		log.Println("Error writing message", messageType, "to connection:", err)
-		
+	
+	if exists {
+		if err := EnvoyerMessage(tosend, messageType, messagepattern); err != nil {
+			log.Println("Error writing message", messageType, "to connection:", err)
+			
+		}
 	}
 
 	var notification models.Notification
