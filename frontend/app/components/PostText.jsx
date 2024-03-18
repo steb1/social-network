@@ -73,10 +73,6 @@ export const PostText = ({ posts, setPosts }) => {
           ...prevSelected,
           [post_id]: false,
         }));
-        setImageSelected((prevSelected) => ({
-          ...prevSelected,
-          [post_id]: false,
-        }));
         setPosts(jsonData.posts);
       } else {
         console.error("Failed to submit comment:", jsonData);
@@ -345,8 +341,8 @@ export const PostText = ({ posts, setPosts }) => {
                 />
                 <label
                   htmlFor={`chooseImageC-${post.post_id}`}
-                  className={`flex items-center w-[calc(9%)] absolute top-1 right-1 gap-2 font-semibold  cursor-pointer hover:bg-opacity-80 p-1 px-1.5 rounded-xl transition-all hover:bg-red-300 dark:bg-white/10 dark:hover:bg-white/20 ${imageSelected[post.post_id] ? "bg-red-600/60" : "bg-pink-100/60"}`}
-                >
+                  className={`flex items-center w-[calc(9%)] absolute top-1 right-1 gap-2 font-semibold  cursor-pointer hover:bg-opacity-80 p-1 px-1.5 rounded-xl transition-all hover:bg-red-300 ${imageSelected[post.post_id] ? "bg-red-600/60  dark:hover:bg-red-600/70 dark:bg-red-600/60" : "bg-pink-100/60"}  dark:bg-white/10 dark:hover:bg-white/20`}
+                  >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="w-6 h-6 stroke-pink-600 fill-pink-200/70"

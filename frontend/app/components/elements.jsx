@@ -222,12 +222,12 @@ export const Element = () => {
 
                         {/*footer*/}
                         <a href='#'>
-                            <div class='text-center py-4 border-t border-slate-100 text-sm font-medium text-blue-600 dark:text-white dark:border-gray-600'>
+                            <div className='text-center py-4 border-t border-slate-100 text-sm font-medium text-blue-600 dark:text-white dark:border-gray-600'>
                                 {" "}
                                 See all Messages{" "}
                             </div>
                         </a>
-                        <div class='w-3 h-3 absolute -top-1.5 right-3 bg-white border-l border-t rotate-45 max-md:hidden dark:bg-dark3 dark:border-transparent'></div>
+                        <div className='w-3 h-3 absolute -top-1.5 right-3 bg-white border-l border-t rotate-45 max-md:hidden dark:bg-dark3 dark:border-transparent'></div>
                     </div>
                     {/*notification*/}
                     <button
@@ -261,7 +261,7 @@ export const Element = () => {
                         {/*heading*/}
                         <div className='flex items-center justify-between gap-2 p-4 pb-2'>
                             <h3 className='font-bold text-xl'> Notifications </h3>
-                            <div classname=' flex right-0 gap-2 justify-self-end '>
+                            <div className=' flex right-0 gap-2 justify-self-end '>
                                 <button
                                     onClick={deleteAllNotif}
                                     className=' w-16 h-16 px-1 text-slate-700	dark:text-white'
