@@ -1,25 +1,17 @@
-"use server"
-import Sidebar from "@/app/components/sidebar";
-import Header from "@/app/components/header";
+"use server";
+import Layout from "../../components/Layout";
 import { GroupDetail } from "../components/groupDetail";
 
-const Group = ( { params }) => {
-    return (
-    <div className="flex flex-col">
+const Group = ({ params }) => {
+  return (
+    <Layout>
+      <div className="flex flex-row">
         <div className="">
-            <Header/> 
+          <GroupDetail params={params} />
         </div>
-        <div className="flex flex-row">
-            <div className="mt-10">
-                <Sidebar/>
-            </div>
-            <div className="">
-              <GroupDetail params={ params }/>
-            </div>
-           
-        </div>
-    </div>
-    )}
+      </div>
+    </Layout>
+  );
+};
 
-
-export default Group
+export default Group;

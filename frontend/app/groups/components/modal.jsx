@@ -32,6 +32,10 @@ export const Modal = ({
         try {
             if (response.ok) {
                 UIkit.modal("#create-statusGroup").hide();
+                const body = document.querySelector(".post_body_group");
+                body.value = "";
+                let image=document.querySelector('input[name="media_post"]')
+                image.value="";
                 fetchGroupDetail(
                     setPosts,
                     setGroup,
@@ -187,7 +191,7 @@ export const Modal = ({
                         <div className='space-y-5 mt-3 p-2'>
                             <textarea
                                 name='body'
-                                className='post_body w-full !text-black placeholder:!text-black !bg-white !border-transparent focus:!border-transparent focus:!ring-transparent !font-normal !text-xl   dark:!text-white dark:placeholder:!text-white dark:!bg-slate-800'
+                                className='post_body_group w-full !text-black placeholder:!text-black !bg-white !border-transparent focus:!border-transparent focus:!ring-transparent !font-normal !text-xl   dark:!text-white dark:placeholder:!text-white dark:!bg-slate-800'
                                 rows={6}
                                 placeholder='What do you have in mind?'
                                 defaultValue={""}

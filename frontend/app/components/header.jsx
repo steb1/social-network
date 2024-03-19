@@ -23,8 +23,6 @@ const Header = () => {
                 );
                 break;
             case "inviteUser":
-                "inviteUser";
-
                 setShowAlert(true);
                 setAlertMessage(
                     `${lastJsonMessage.body.sender} has invited you to join the group "${lastJsonMessage.body.group_name}".`
@@ -43,9 +41,11 @@ const Header = () => {
             case "messageforgroup":
                 setShowAlert(true);
                 setAlertMessage(`${lastJsonMessage.body.sender} sent a message in group.`);
+                break; 
             case "messageforuser":
                 setShowAlert(true);
                 setAlertMessage(`${lastJsonMessage.body.sender} sent a message.`);
+                break;
         }
     }, [lastJsonMessage]);
 
