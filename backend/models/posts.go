@@ -74,7 +74,7 @@ func (pr *PostRepository) CreatePost(post *Post, photo multipart.File, categorie
 		_ = PostVisibilityRepo.CreatePostVisibility(post.PostID, UserIDAuthorized)
 	}
 	if post.HasImage == 0 {
-		return nil, 0
+		return nil,  post.PostID
 	}
 	defer photo.Close()
 	if err := os.MkdirAll("imgPost", os.ModePerm); err != nil {
